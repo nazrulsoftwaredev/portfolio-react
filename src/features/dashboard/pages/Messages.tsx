@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   Search,
   MoreHorizontal,
@@ -11,12 +10,7 @@ import {
   Plus,
   Hash,
 } from "lucide-react";
-import { PremiumButton } from "../components/PremiumButton";
 import { PageHeader } from "../components/common";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 import { Button, Input } from "@/components/ui";
 
 const messages = [
@@ -60,13 +54,8 @@ const messages = [
 
 export const Messages: React.FC = () => {
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      initial={false}
-      animate="visible"
-      className="h-[calc(100vh-12rem)] flex flex-col space-y-10"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="h-[calc(100vh-12rem)] flex flex-col space-y-10">
+      <div>
         <PageHeader
           title={
             <>
@@ -76,30 +65,28 @@ export const Messages: React.FC = () => {
           }
           subtitle={
             <>
-              SESSION: <span className="text-emerald-400">ENCRYPTED</span>
+              SESSION: <span className="text-emerald-600">ENCRYPTED</span>
             </>
           }
           actions={
-            <PremiumButton variant="primary" icon={Plus}>
-              NEW PROTOCOL
-            </PremiumButton>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              New Protocol
+            </Button>
           }
         />
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0">
         {/* Message List */}
-        <motion.div
-          variants={dashboardItemVariants}
-          className="lg:col-span-4 premium-card !p-0 flex flex-col overflow-hidden"
-        >
-          <div className="p-6 border-b border-white/5 space-y-6">
+        <div className="lg:col-span-4 premium-card !p-0 flex flex-col overflow-hidden">
+          <div className="p-6 border-b border-border space-y-6 bg-muted/20">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-accent-primary transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="SEARCH TRANSMISSIONS..."
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-accent-primary/20 focus:border-accent-primary/50 transition-all uppercase placeholder:text-on-surface-variant/40"
+                className="w-full bg-background border border-border rounded-2xl py-3 pl-12 pr-4 text-[10px] font-semibold tracking-widest text-foreground uppercase placeholder:text-muted-foreground"
               />
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
@@ -109,10 +96,10 @@ export const Messages: React.FC = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap tracking-[0.15em] transition-all border ${
+                  className={`px-4 py-2 rounded-xl text-[10px] font-semibold whitespace-nowrap tracking-[0.15em] border ${
                     idx === 0
-                      ? "bg-accent-primary text-black border-accent-primary"
-                      : "text-on-surface-variant hover:text-white hover:bg-white/5 border-transparent bg-transparent"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40 border-transparent bg-transparent"
                   }`}
                 >
                   {tab}
@@ -121,75 +108,71 @@ export const Messages: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-white/5">
+          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-border">
             {messages.map((msg) => (
-              <motion.div
+              <div
                 key={msg.id}
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
-                className={`p-6 cursor-pointer transition-colors relative group ${msg.unread ? "bg-accent-primary/5" : ""}`}
+                className={`p-6 cursor-pointer relative ${msg.unread ? "bg-primary/5" : ""}`}
               >
                 {msg.unread && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-primary shadow-[0_0_10px_rgba(172,199,255,0.5)]"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
                 )}
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-surface border border-white/5 group-hover:border-accent-primary/50 transition-colors shrink-0 overflow-hidden">
+                  <div className="w-14 h-14 rounded-2xl bg-muted border border-border shrink-0 overflow-hidden">
                     <img
                       src={msg.avatar}
                       alt={msg.sender}
-                      className="w-full h-full object-cover p-2 opacity-60 group-hover:opacity-100 transition-opacity"
+                      className="w-full h-full object-cover p-2 opacity-70"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="font-display font-black text-white italic text-base truncate uppercase tracking-tight">
+                      <p className="font-display font-semibold text-foreground text-base truncate uppercase tracking-tight">
                         {msg.sender}
                       </p>
-                      <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-[0.2em]">
+                      <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
                         {msg.time}
                       </p>
                     </div>
-                    <p className="text-xs font-bold text-accent-primary truncate mb-1 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-primary truncate mb-1 uppercase tracking-wider">
                       {msg.subject}
                     </p>
-                    <p className="text-[10px] text-on-surface-variant truncate font-medium">
+                    <p className="text-[10px] text-muted-foreground truncate font-medium">
                       {msg.preview}
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Chat Window */}
-        <motion.div
-          variants={dashboardItemVariants}
-          className="lg:col-span-8 premium-card !p-0 flex flex-col overflow-hidden"
-        >
-          <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+        <div className="lg:col-span-8 premium-card !p-0 flex flex-col overflow-hidden">
+          <div className="p-6 border-b border-border flex items-center justify-between bg-muted/20">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-surface border border-white/5 overflow-hidden">
+                <div className="w-14 h-14 rounded-2xl bg-muted border border-border overflow-hidden">
                   <img
                     src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
                     alt="Acme Corp"
                     className="w-full h-full object-cover p-2"
                   />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full border border-white/10 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full border border-border flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
                 </div>
               </div>
               <div>
-                <h4 className="font-display font-black text-2xl text-white italic tracking-tight uppercase">
+                <h4 className="font-display font-semibold text-2xl text-foreground tracking-tight uppercase">
                   ACME CORP
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
-                  <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">
+                  <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-[0.2em]">
                     DIRECT LINK ACTIVE
                   </p>
-                  <Hash className="w-3 h-3 text-on-surface-variant" />
-                  <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.2em]">
+                  <Hash className="w-3 h-3 text-muted-foreground" />
+                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
                     PROJECT_NEON
                   </p>
                 </div>
@@ -200,7 +183,7 @@ export const Messages: React.FC = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-2xl text-on-surface-variant border border-transparent hover:border-white/10 hover:bg-white/5"
+                className="h-12 w-12 rounded-2xl text-muted-foreground border border-transparent"
               >
                 <Phone className="w-5 h-5" />
               </Button>
@@ -208,7 +191,7 @@ export const Messages: React.FC = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-2xl text-on-surface-variant border border-transparent hover:border-white/10 hover:bg-white/5"
+                className="h-12 w-12 rounded-2xl text-muted-foreground border border-transparent"
               >
                 <MoreHorizontal className="w-5 h-5" />
               </Button>
@@ -217,83 +200,79 @@ export const Messages: React.FC = () => {
 
           <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10 bg-[radial-gradient(circle_at_top_right,rgba(172,199,255,0.03),transparent_40%)]">
             <div className="flex flex-col items-center gap-4">
-              <div className="px-5 py-1.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-on-surface-variant">
+              <div className="px-5 py-1.5 rounded-full bg-muted border border-border text-[9px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                 TRANS MISSION LOG: MARCH 24
               </div>
             </div>
 
             <div className="flex gap-5 max-w-[85%]">
-              <div className="w-12 h-12 rounded-2xl bg-surface border border-white/5 overflow-hidden shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-muted border border-border overflow-hidden shrink-0">
                 <img
                   src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
                   alt="Acme Corp"
-                  className="w-full h-full object-cover p-2 opacity-60"
+                  className="w-full h-full object-cover p-2 opacity-70"
                 />
               </div>
               <div className="space-y-2">
-                <div className="p-6 rounded-3xl rounded-tl-none bg-white/[0.03] border border-white/5 text-sm leading-relaxed text-white font-medium">
+                <div className="p-6 rounded-3xl rounded-tl-none bg-muted/40 border border-border text-sm leading-relaxed text-foreground font-medium">
                   Hey Nazrul, just wanted to check in on the latest designs for
                   the Neon Genesis project. The client is really excited to see
                   the progress!
                 </div>
-                <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-widest pl-2">
+                <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest pl-2">
                   10:24 AM / RECEIVED
                 </p>
               </div>
             </div>
 
             <div className="flex gap-5 max-w-[85%] ml-auto flex-row-reverse">
-              <div className="w-12 h-12 rounded-2xl bg-accent-primary overflow-hidden shrink-0 flex items-center justify-center border-4 border-surface shadow-[0_0_20px_rgba(172,199,255,0.2)]">
-                <User className="w-6 h-6 text-black" />
+              <div className="w-12 h-12 rounded-2xl bg-primary overflow-hidden shrink-0 flex items-center justify-center border-4 border-background">
+                <User className="w-6 h-6 text-primary-foreground" />
               </div>
               <div className="space-y-2 text-right">
-                <div className="p-6 rounded-3xl rounded-tr-none bg-accent-primary text-black text-sm leading-relaxed font-black">
+                <div className="p-6 rounded-3xl rounded-tr-none bg-primary text-primary-foreground text-sm leading-relaxed font-semibold">
                   Hi! I'm just putting the finishing touches on the identity
                   system. I'll have the full presentation ready for you by the
                   end of the day. Stay tuned.
                 </div>
-                <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-widest pr-2">
+                <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest pr-2">
                   10:32 AM / TRANSMITTED
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="p-6 border-t border-white/5 bg-white/[0.01]">
-            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[2rem] p-3 focus-within:border-accent-primary/40 focus-within:ring-4 focus-within:ring-accent-primary/5 transition-all">
+          <div className="p-6 border-t border-border bg-muted/20">
+            <div className="flex items-center gap-4 bg-muted border border-border rounded-[2rem] p-3">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-2xl text-on-surface-variant hover:bg-white/5"
+                className="h-12 w-12 rounded-2xl text-muted-foreground"
               >
                 <Paperclip className="w-5 h-5" />
               </Button>
               <Input
                 type="text"
                 placeholder="TYPE NEW PROTOCOL..."
-                className="flex-1 bg-transparent border-none outline-none text-[10px] font-black tracking-widest py-2 px-2 text-white placeholder:text-on-surface-variant/40"
+                className="flex-1 bg-transparent border-none outline-none text-[10px] font-semibold tracking-widest py-2 px-2 text-foreground placeholder:text-muted-foreground"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-2xl text-on-surface-variant hover:bg-white/5"
+                className="h-12 w-12 rounded-2xl text-muted-foreground"
               >
                 <Smile className="w-5 h-5" />
               </Button>
-              <PremiumButton
-                variant="primary"
-                size="sm"
-                icon={Send}
-                className="!h-12 !w-12 !rounded-2xl !p-0"
-              >
-                <span className="sr-only">SEND</span>
-              </PremiumButton>
+              <Button size="icon" className="h-12 w-12 rounded-2xl">
+                <Send className="w-5 h-5" />
+                <span className="sr-only">Send</span>
+              </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

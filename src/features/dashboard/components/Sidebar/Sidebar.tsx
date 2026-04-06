@@ -34,14 +34,13 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
 
   return (
     <aside
-      className={`relative h-full flex flex-col rounded-3xl border border-white/10
-                 bg-[#11141d]/90 backdrop-blur-xl
-                 shadow-[0_16px_50px_rgba(0,0,0,0.45)] overflow-hidden
+      className={`relative h-full flex flex-col rounded-3xl border border-border
+                 bg-card/90 backdrop-blur-xl
+                 shadow-lg overflow-hidden
                  transition-[width] duration-300 ease-out ${className ?? ""}`}
       style={{ width: isOpen ? 280 : 96 }}
     >
-      {/* LIGHT GLOW */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.08] to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
 
       {/* HEADER */}
       <div
@@ -51,7 +50,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
           className={`flex items-center ${isOpen ? "w-full" : "justify-center"}`}
         >
           {/* LOGO */}
-          <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white/10 border border-white/10">
+          <div className="w-10 h-10 rounded-2xl overflow-hidden bg-muted border border-border">
             <img
               src="/logo.png"
               alt="Dashboard logo"
@@ -62,10 +61,10 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
           {/* TITLE */}
           {isOpen && (
             <div className="ml-3">
-              <h1 className="text-sm font-semibold tracking-wide text-white">
+              <h1 className="text-sm font-semibold tracking-wide text-foreground">
                 Dashboard
               </h1>
-              <p className="text-xs text-white/50">Control center</p>
+              <p className="text-xs text-muted-foreground">Control center</p>
             </div>
           )}
         </div>
@@ -87,13 +86,13 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                 {isActive && (
                   <div
                     className="absolute inset-0 rounded-2xl
-                               bg-gradient-to-r from-cyan-400/20 to-sky-300/10
-                               border border-cyan-200/20"
+                               bg-primary/10
+                               border border-primary/20"
                   />
                 )}
 
                 {/* HOVER BG */}
-                <div className="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/[0.06] transition-colors" />
+                <div className="absolute inset-0 rounded-2xl bg-transparent group-hover:bg-muted/50 transition-colors" />
 
                 {/* CONTENT */}
                 <div
@@ -108,22 +107,20 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                   >
                     <item.icon
                       className={`w-5 h-5 transition-all ${
-                        isActive
-                          ? "text-cyan-100 drop-shadow-[0_0_8px_rgba(34,211,238,0.35)]"
-                          : "text-white/65"
+                        isActive ? "text-primary" : "text-muted-foreground"
                       }`}
                     />
                   </div>
 
                   {!isOpen && (
-                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[11px] font-semibold text-cyan-100 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 whitespace-nowrap">
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[11px] font-semibold text-foreground opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 whitespace-nowrap">
                       {item.label}
                     </span>
                   )}
 
                   {/* LABEL */}
                   {isOpen && (
-                    <span className="ml-2 text-sm font-medium text-white transition-all duration-200 group-hover:text-cyan-100 group-hover:translate-x-0.5">
+                    <span className="ml-2 text-sm font-medium text-foreground transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5">
                       {item.label}
                     </span>
                   )}
@@ -136,15 +133,15 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
 
       {/* FOOTER */}
       <div className="p-3">
-        <div className="h-px bg-white/10 mb-3" />
+        <div className="h-px bg-border mb-3" />
 
         <button
           type="button"
           className={`relative w-full flex items-center h-12 rounded-2xl
           ${isOpen ? "px-3" : "justify-center"}
-          text-white/65 hover:text-rose-300`}
+          text-muted-foreground hover:text-foreground`}
         >
-          <div className="absolute inset-0 rounded-2xl bg-rose-400/0 hover:bg-rose-400/15 transition" />
+          <div className="absolute inset-0 rounded-2xl bg-transparent hover:bg-muted/60 transition" />
 
           <LogOut className="w-5 h-5 relative z-10" />
 

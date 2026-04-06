@@ -1,5 +1,4 @@
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
@@ -156,7 +155,7 @@
   }
   .theme {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: "Geist Variable", sans-serif;
   }
   .dark {
     --background: oklch(0.145 0 0);
@@ -192,7 +191,7 @@
     --sidebar-ring: oklch(0.556 0 0);
   }
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   html {
     @apply font-sans;
@@ -313,9 +312,11 @@
   }
 
   .bg-radial-gradient {
-    background: radial-gradient(circle at center,
-        var(--tw-gradient-from),
-        var(--tw-gradient-to));
+    background: radial-gradient(
+      circle at center,
+      var(--tw-gradient-from),
+      var(--tw-gradient-to)
+    );
   }
 
   .text-reveal {
@@ -332,16 +333,20 @@
   }
 
   .bg-vignette {
-    background: radial-gradient(circle at center,
-        transparent 0%,
-        rgba(0, 0, 0, 0.03) 100%);
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.03) 100%
+    );
   }
 
   @media (prefers-color-scheme: dark) {
     .bg-vignette {
-      background: radial-gradient(circle at center,
-          transparent 0%,
-          rgba(0, 0, 0, 0.4) 100%);
+      background: radial-gradient(
+        circle at center,
+        transparent 0%,
+        rgba(0, 0, 0, 0.4) 100%
+      );
     }
   }
 
@@ -421,40 +426,17 @@
 
 /* Scoped dashboard theme to keep homepage visuals unchanged. */
 .dashboard-shell {
-  --background: #0a0a0a;
-  --surface: #121212;
-  --surface-dim: #080808;
-  --surface-bright: #1c1c1c;
-  --on-surface: #ffffff;
-  --on-surface-variant: #888888;
-  --outline: rgba(255, 255, 255, 0.05);
-  --outline-variant: rgba(255, 255, 255, 0.03);
-  --border: rgba(255, 255, 255, 0.06);
-  --glass-bg: rgba(255, 255, 255, 0.02);
-  --accent-primary: #acc7ff;
-  --accent-secondary: #ba9eff;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .dashboard-shell .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(160%);
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .premium-card {
-  @apply glass rounded-[2rem] p-8 transition-all duration-500 ease-out;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-}
-
-.premium-card:hover {
-  @apply border-white/20 -translate-y-1;
-  box-shadow: 
-    0 20px 40px -12px rgba(0, 0, 0, 0.5),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+  @apply rounded-xl border border-border bg-card text-card-foreground shadow-sm;
 }
 
 .text-gradient {
@@ -490,13 +472,17 @@
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background: radial-gradient(circle at 50% 50%, rgba(172, 199, 255, 0.05) 0%, transparent 50%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(172, 199, 255, 0.05) 0%,
+    transparent 50%
+  );
   filter: blur(100px);
 }
 
 body.dashboard-mode {
-  background-color: #0f0f0f;
-  color: #ffffff;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 body.dashboard-mode::before {

@@ -1,9 +1,7 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Briefcase, Plus, ShieldCheck, Target, Users } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Toast } from "@/shared/components";
-import { PremiumButton } from "../components/PremiumButton";
 import { PageHeader } from "../components/common";
 import {
   ClientDialog,
@@ -13,10 +11,6 @@ import {
   useClientsManager,
 } from "../components/Clients";
 import { formatGrowth } from "../components/Clients/utils";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 
 export const Clients: React.FC = () => {
   const {
@@ -49,13 +43,8 @@ export const Clients: React.FC = () => {
   } = useClientsManager();
 
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      initial={false}
-      animate="visible"
-      className="space-y-10"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="space-y-10">
+      <div>
         <PageHeader
           title={
             <>
@@ -66,21 +55,17 @@ export const Clients: React.FC = () => {
           subtitle={
             <>
               DATABASE STATUS:{" "}
-              <span className="text-emerald-400">LIVE ACTIVE</span>
+              <span className="text-emerald-600">LIVE ACTIVE</span>
             </>
           }
           actions={
-            <PremiumButton
-              variant="primary"
-              icon={Plus}
-              type="button"
-              onClick={openCreateDialog}
-            >
+            <Button className="gap-2" type="button" onClick={openCreateDialog}>
+              <Plus className="w-4 h-4" />
               INITIATE CLIENT
-            </PremiumButton>
+            </Button>
           }
         />
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <ClientsStatItem
@@ -88,35 +73,28 @@ export const Clients: React.FC = () => {
           label="TOTAL NODES"
           value={String(stats.totalNodes)}
           trend={stats.totalTrend}
-          variants={dashboardItemVariants}
         />
         <ClientsStatItem
           icon={Briefcase}
           label="ACTIVE SPRINT"
           value={String(stats.activeCount)}
           trend={stats.activeTrend}
-          variants={dashboardItemVariants}
         />
         <ClientsStatItem
           icon={ShieldCheck}
           label="TRUST INDEX"
           value={stats.trustIndex}
           trend={formatGrowth(Math.max(1, Math.round(stats.totalNodes / 10)))}
-          variants={dashboardItemVariants}
         />
         <ClientsStatItem
           icon={Target}
           label="AVG. LTV"
           value={stats.avgLtv}
           trend={stats.totalTrend}
-          variants={dashboardItemVariants}
         />
       </div>
 
-      <motion.div
-        variants={dashboardItemVariants}
-        className="premium-card !p-0 overflow-hidden"
-      >
+      <div className="premium-card !p-0 overflow-hidden">
         <ClientsToolbar
           query={query}
           statusFilter={statusFilter}
@@ -135,8 +113,8 @@ export const Clients: React.FC = () => {
           onDelete={removeClient}
         />
 
-        <div className="px-8 py-5 border-t border-white/5 bg-white/[0.01] flex items-center justify-between gap-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+        <div className="px-8 py-5 border-t border-border bg-muted/20 flex items-center justify-between gap-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Page {pagination.currentPage} / {pagination.totalPages} - Total{" "}
             {pagination.totalItems}
           </p>
@@ -148,7 +126,7 @@ export const Clients: React.FC = () => {
               disabled={pagination.currentPage === 1}
               variant="outline"
               size="sm"
-              className="rounded-lg border-white/10 text-xs font-black uppercase tracking-wider text-white bg-transparent hover:bg-white/5"
+              className="rounded-lg text-xs font-semibold uppercase tracking-wider"
             >
               Prev
             </Button>
@@ -162,10 +140,10 @@ export const Clients: React.FC = () => {
                   onClick={() => goToPage(page)}
                   variant="outline"
                   size="sm"
-                  className={`rounded-lg border text-xs font-black uppercase tracking-wider transition-all ${
+                  className={`rounded-lg border text-xs font-semibold uppercase tracking-wider ${
                     pagination.currentPage === page
-                      ? "border-accent-primary bg-accent-primary text-white"
-                      : "border-white/10 text-white bg-transparent hover:bg-white/5"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-foreground bg-transparent"
                   }`}
                 >
                   {page}
@@ -179,13 +157,13 @@ export const Clients: React.FC = () => {
               disabled={pagination.currentPage === pagination.totalPages}
               variant="outline"
               size="sm"
-              className="rounded-lg border-white/10 text-xs font-black uppercase tracking-wider text-white bg-transparent hover:bg-white/5"
+              className="rounded-lg text-xs font-semibold uppercase tracking-wider"
             >
               Next
             </Button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <ClientDialog
         mode={dialogMode}
@@ -209,6 +187,6 @@ export const Clients: React.FC = () => {
           />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };

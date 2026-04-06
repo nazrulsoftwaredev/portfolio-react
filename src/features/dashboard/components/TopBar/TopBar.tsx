@@ -63,7 +63,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   return (
     <header
       className="sticky top-0 z-30 h-20 px-5 md:px-6 flex items-center justify-between gap-4
-                 border-b border-white/10 bg-[#131824]/90 backdrop-blur-xl"
+                 border-b border-border bg-card/90 backdrop-blur-xl"
     >
       {/* LEFT */}
       <div className="flex items-center gap-4 w-full max-w-2xl">
@@ -73,7 +73,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
           onClick={onToggleSidebar}
-          className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+          className="p-3 rounded-2xl bg-muted/40 border border-border hover:bg-muted transition"
         >
           {isSidebarOpen ? (
             <PanelLeftClose className="w-5 h-5" />
@@ -82,26 +82,26 @@ export const TopBar: React.FC<TopBarProps> = ({
           )}
         </motion.button>
 
-        <div className="hidden lg:flex items-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-medium text-cyan-100">
+        <div className="hidden lg:flex items-center rounded-xl border border-border bg-muted/50 px-3 py-1.5 text-xs font-medium text-muted-foreground">
           {workspaceName}
         </div>
 
         {/* SEARCH */}
         <motion.div layout className="relative flex-1 group">
           <div className="absolute left-4 top-1/2 -translate-y-1/2">
-            <Search className="w-4 h-4 text-white/40 group-focus-within:text-white" />
+            <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-foreground" />
           </div>
 
           <Input
             placeholder="Search..."
             className="w-full pl-11 pr-14 py-3 rounded-2xl
-                       bg-white/5 border border-white/10
-                       text-sm outline-none
-                       focus:ring-2 focus:ring-cyan-300/30
+                       bg-background border border-border
+                       text-sm outline-none text-foreground
+                       focus:ring-2 focus:ring-ring/40
                        transition-all"
           />
 
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-white/50">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] text-muted-foreground">
             <Command className="w-3 h-3" /> K
           </div>
         </motion.div>
@@ -119,10 +119,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               setShowNotifications(!showNotifications);
               setShowProfile(false);
             }}
-            className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition relative"
+            className="p-3 rounded-2xl bg-muted/40 border border-border hover:bg-muted transition relative"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-cyan-300 rounded-full" />
+            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
           </motion.button>
 
           <AnimatePresence>
@@ -145,10 +145,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={spring}
                   className="absolute right-0 mt-3 w-80 rounded-2xl
-                             bg-[#121724]/95 backdrop-blur-xl
-                             border border-white/10 shadow-2xl z-50 overflow-hidden"
+                             bg-popover/95 backdrop-blur-xl
+                             border border-border shadow-2xl z-50 overflow-hidden"
                 >
-                  <div className="p-4 border-b border-white/10 text-sm font-semibold">
+                  <div className="p-4 border-b border-border text-sm font-semibold">
                     Notifications
                   </div>
 
@@ -159,10 +159,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="p-4 hover:bg-white/5 transition cursor-pointer"
+                        className="p-4 hover:bg-muted/50 transition cursor-pointer"
                       >
                         <p className="text-sm font-medium">New update #{i}</p>
-                        <p className="text-xs text-white/50">
+                        <p className="text-xs text-muted-foreground">
                           This is a notification message
                         </p>
                       </motion.div>
@@ -182,7 +182,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               setShowProfile(!showProfile);
               setShowNotifications(false);
             }}
-            className="w-11 h-11 rounded-2xl overflow-hidden cursor-pointer border border-white/10"
+            className="w-11 h-11 rounded-2xl overflow-hidden cursor-pointer border border-border"
           >
             <img
               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nazrul"
@@ -210,12 +210,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={spring}
                   className="absolute right-0 mt-3 w-60 rounded-2xl
-                             bg-[#121724]/95 backdrop-blur-xl
-                             border border-white/10 shadow-2xl z-50 overflow-hidden"
+                             bg-popover/95 backdrop-blur-xl
+                             border border-border shadow-2xl z-50 overflow-hidden"
                 >
-                  <div className="p-4 border-b border-white/10">
+                  <div className="p-4 border-b border-border">
                     <p className="text-sm font-semibold">Nazrul Islam</p>
-                    <p className="text-xs text-white/50">Creative Lead</p>
+                    <p className="text-xs text-muted-foreground">
+                      Creative Lead
+                    </p>
                   </div>
 
                   {[
@@ -229,7 +231,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         type="button"
                         key={i}
                         whileHover={{ x: 4 }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-white/5 transition"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-muted/50 transition"
                       >
                         <Icon className="w-4 h-4" />
                         {item.label}
@@ -237,12 +239,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                     );
                   })}
 
-                  <div className="border-t border-white/10" />
+                  <div className="border-t border-border" />
 
                   <motion.button
                     type="button"
                     whileHover={{ x: 4 }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:bg-destructive/10"
                   >
                     <LogOut className="w-4 h-4" />
                     Logout

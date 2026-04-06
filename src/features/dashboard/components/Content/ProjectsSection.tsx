@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import type { PortfolioData, ProjectGalleryItem } from "@/shared/types";
-import { PremiumButton } from "../PremiumButton";
+import { Button, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { ProjectCard } from "./ProjectCard";
 
 type ViewMode = "grid" | "list";
@@ -30,48 +29,43 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-display font-black text-white italic uppercase tracking-tight">
+          <h3 className="text-2xl font-display font-semibold text-foreground uppercase tracking-tight">
             Portfolio Index
           </h3>
-          <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
             MASTER ARCHIVE DATA
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-            <button
-              type="button"
-              onClick={() => setViewMode("grid")}
-              className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                viewMode === "grid"
-                  ? "bg-accent-primary text-black"
-                  : "text-on-surface-variant hover:text-white"
-              }`}
-            >
-              GRID
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("list")}
-              className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                viewMode === "list"
-                  ? "bg-accent-primary text-black"
-                  : "text-on-surface-variant hover:text-white"
-              }`}
-            >
-              LIST
-            </button>
-          </div>
-          <PremiumButton
-            variant="primary"
-            icon={Plus}
-            size="sm"
-            className="!h-10 !w-10 !rounded-xl !p-0"
+          <Tabs
+            value={viewMode}
+            onValueChange={(value) => setViewMode(value as ViewMode)}
+          >
+            <TabsList className="bg-muted/40 border border-border rounded-2xl">
+              <TabsTrigger
+                value="grid"
+                className="text-[10px] uppercase tracking-widest"
+              >
+                Grid
+              </TabsTrigger>
+              <TabsTrigger
+                value="list"
+                className="text-[10px] uppercase tracking-widest"
+              >
+                List
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button
+            variant="default"
+            size="icon"
+            className="h-10 w-10 rounded-xl"
             type="button"
             onClick={onAddProject}
           >
-            <span className="sr-only">ADD</span>
-          </PremiumButton>
+            <Plus className="w-4 h-4" />
+            <span className="sr-only">Add</span>
+          </Button>
         </div>
       </div>
 
@@ -82,17 +76,15 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
             : "space-y-8"
         }
       >
-        <AnimatePresence>
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={`${project.title}-${index}`}
-              project={project}
-              index={index}
-              onChange={onUpdateProject}
-              onDelete={onRemoveProject}
-            />
-          ))}
-        </AnimatePresence>
+        {projects.map((project, index) => (
+          <ProjectCard
+            key={`${project.title}-${index}`}
+            project={project}
+            index={index}
+            onChange={onUpdateProject}
+            onDelete={onRemoveProject}
+          />
+        ))}
       </div>
     </div>
   );

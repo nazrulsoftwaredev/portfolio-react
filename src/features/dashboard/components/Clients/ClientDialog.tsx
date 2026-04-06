@@ -1,6 +1,5 @@
 import React from "react";
 import { X } from "lucide-react";
-import { PremiumButton } from "../PremiumButton";
 import { Button, Input } from "@/components/ui";
 import { STATUS_ORDER } from "./constants";
 import type { Client, ClientDialogMode, ClientValidationErrors } from "./types";
@@ -29,16 +28,16 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-background border border-white/10 rounded-2xl p-8 space-y-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-2xl p-8 space-y-6 shadow-lg">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-accent-primary">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-primary">
               {mode === "create" ? "Quick Create" : "Quick Edit"}
             </p>
-            <h3 className="text-2xl font-display font-black text-white italic uppercase tracking-tight mt-1">
+            <h3 className="text-2xl font-display font-semibold text-foreground uppercase tracking-tight mt-1">
               {mode === "create" ? "Initiate Client" : "Edit Client"}
             </h3>
-            <p className="text-xs text-on-surface-variant font-bold uppercase tracking-[0.2em] mt-2">
+            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-[0.2em] mt-2">
               {mode === "create"
                 ? "Add a new client profile with complete contact details"
                 : "Update client profile and protocol details"}
@@ -47,7 +46,7 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 border border-white/10 text-on-surface-variant hover:text-white"
+            className="p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground"
             aria-label="Close client dialog"
           >
             <X className="w-5 h-5" />
@@ -56,7 +55,7 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Client Name
             </label>
             <Input
@@ -67,18 +66,18 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   name: event.target.value,
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground"
               placeholder="Acme Holdings"
             />
             {errors.name && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
                 {errors.name}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Industry
             </label>
             <Input
@@ -89,18 +88,18 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   industry: event.target.value,
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground"
               placeholder="Technology"
             />
             {errors.industry && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
                 {errors.industry}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Email
             </label>
             <Input
@@ -111,18 +110,18 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   email: event.target.value,
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground"
               placeholder="hello@client.com"
             />
             {errors.email && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
                 {errors.email}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Phone
             </label>
             <Input
@@ -133,13 +132,13 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   phone: event.target.value,
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground"
               placeholder="+1-555-0100"
             />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Website
             </label>
             <Input
@@ -150,18 +149,18 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   website: event.target.value,
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground"
               placeholder="https://client.com"
             />
             {errors.website && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
                 {errors.website}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Lifetime Value
             </label>
             <Input
@@ -174,12 +173,12 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   value: Math.max(0, Number(event.target.value || 0)),
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Momentum %
             </label>
             <Input
@@ -191,12 +190,12 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                   growth: Number(event.target.value || 0),
                 }))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-black text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Protocol Status
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -208,10 +207,10 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
                     onDraftChange((previous) => ({ ...previous, status }))
                   }
                   variant="outline"
-                  className={`px-4 py-2 rounded-xl h-auto text-[10px] font-black uppercase tracking-[0.15em] border transition-all ${
+                  className={`px-4 py-2 rounded-xl h-auto text-[10px] font-semibold uppercase tracking-[0.15em] border ${
                     draftClient.status === status
-                      ? "bg-accent-primary text-white border-accent-primary"
-                      : "bg-white/5 text-white border-white/10"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border"
                   }`}
                 >
                   {status}
@@ -222,12 +221,12 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">
-          <PremiumButton variant="outline" type="button" onClick={onClose}>
-            CANCEL
-          </PremiumButton>
-          <PremiumButton variant="primary" type="button" onClick={onSave}>
-            {mode === "create" ? "CREATE CLIENT" : "SAVE CHANGES"}
-          </PremiumButton>
+          <Button variant="outline" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={onSave}>
+            {mode === "create" ? "Create Client" : "Save Changes"}
+          </Button>
         </div>
       </div>
     </div>

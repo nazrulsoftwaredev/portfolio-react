@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   BarChart,
   Bar,
@@ -23,12 +22,8 @@ import {
   Activity,
   Layers,
 } from "lucide-react";
-import { PremiumButton } from "../components/PremiumButton";
+import { Button } from "@/components/ui";
 import { PageHeader } from "../components/common";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 
 const trafficData = [
   { name: "Mon", desktop: 4000, mobile: 2400, tablet: 1200 },
@@ -47,28 +42,25 @@ const deviceData = [
 ];
 
 const PopularRoute = ({ route, views, growth }: any) => (
-  <motion.div
-    whileHover={{ x: 8 }}
-    className="flex items-center justify-between p-5 rounded-2xl hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-all group cursor-pointer"
-  >
+  <div className="flex items-center justify-between p-5 rounded-2xl border border-border bg-muted/30">
     <div className="flex items-center gap-5">
-      <div className="w-12 h-12 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-text-secondary group-hover:text-accent-primary group-hover:rotate-3 transition-all duration-500">
+      <div className="w-12 h-12 rounded-2xl bg-background border border-border flex items-center justify-center text-muted-foreground">
         <Globe className="w-6 h-6" />
       </div>
       <div>
-        <p className="font-black text-sm tracking-tight text-white uppercase">
+        <p className="font-semibold text-sm tracking-tight text-foreground uppercase">
           {route}
         </p>
-        <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mt-1">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">
           {views} UNIQUE NODES
         </p>
       </div>
     </div>
     <div
-      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wider border ${
+      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider border ${
         growth.startsWith("+")
-          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/10"
-          : "bg-red-500/10 text-red-400 border-red-500/10"
+          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+          : "bg-red-500/10 text-red-600 border-red-500/20"
       }`}
     >
       {growth.startsWith("+") ? (
@@ -78,18 +70,13 @@ const PopularRoute = ({ route, views, growth }: any) => (
       )}
       {growth}
     </div>
-  </motion.div>
+  </div>
 );
 
 export const Analytics: React.FC = () => {
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      initial={false}
-      animate="visible"
-      className="space-y-10"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="space-y-10">
+      <div>
         <PageHeader
           title={
             <>
@@ -99,46 +86,45 @@ export const Analytics: React.FC = () => {
           }
           subtitle={
             <>
-              PERIOD: <span className="text-accent-primary">ACTIVE SPRINT</span>
+              PERIOD: <span className="text-primary">ACTIVE SPRINT</span>
             </>
           }
           actions={
             <>
-              <PremiumButton variant="outline" icon={Calendar}>
+              <Button variant="outline" className="gap-2">
+                <Calendar className="w-4 h-4" />
                 Last 30 Days
-              </PremiumButton>
-              <PremiumButton variant="primary" icon={Filter}>
+              </Button>
+              <Button className="gap-2">
+                <Filter className="w-4 h-4" />
                 Filters
-              </PremiumButton>
+              </Button>
             </>
           }
         />
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <motion.div
-          variants={dashboardItemVariants}
-          className="lg:col-span-2 premium-card space-y-10"
-        >
+        <div className="lg:col-span-2 premium-card space-y-10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+              <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
                 TRAFFIC FLOW
               </h3>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
                 Cross-platform node activity
               </p>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-accent-primary shadow-[0_0_10px_rgba(172,199,255,0.5)]"></div>
-                <span className="text-[10px] text-white font-black uppercase tracking-widest">
+                <div className="w-2.5 h-2.5 rounded-full bg-primary"></div>
+                <span className="text-[10px] text-foreground font-semibold uppercase tracking-widest">
                   DESKTOP
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-accent-secondary shadow-[0_0_10px_rgba(255,221,121,0.5)]"></div>
-                <span className="text-[10px] text-white font-black uppercase tracking-widest">
+                <div className="w-2.5 h-2.5 rounded-full bg-secondary"></div>
+                <span className="text-[10px] text-foreground font-semibold uppercase tracking-widest">
                   MOBILE
                 </span>
               </div>
@@ -160,19 +146,19 @@ export const Analytics: React.FC = () => {
                 <CartesianGrid
                   strokeDasharray="10 10"
                   vertical={false}
-                  stroke="rgba(255,255,255,0.03)"
+                  stroke="rgba(100,100,100,0.15)"
                 />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#666", fontSize: 10, fontWeight: 700 }}
+                  tick={{ fill: "#666", fontSize: 10, fontWeight: 600 }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#666", fontSize: 10, fontWeight: 700 }}
+                  tick={{ fill: "#666", fontSize: 10, fontWeight: 600 }}
                 />
                 <Tooltip
                   cursor={{
@@ -181,17 +167,16 @@ export const Analytics: React.FC = () => {
                     strokeDasharray: "4 4",
                   }}
                   contentStyle={{
-                    backgroundColor: "#111",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "16px",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    backgroundColor: "var(--popover)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "12px",
                     padding: "12px",
                   }}
-                  itemStyle={{ fontSize: "12px", fontWeight: 900 }}
+                  itemStyle={{ fontSize: "12px", fontWeight: 700 }}
                   labelStyle={{
-                    color: "#888",
+                    color: "var(--muted-foreground)",
                     marginBottom: "4px",
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: "10px",
                   }}
                 />
@@ -202,7 +187,7 @@ export const Analytics: React.FC = () => {
                   strokeWidth={4}
                   fillOpacity={1}
                   fill="url(#colorDesktop)"
-                  animationDuration={2000}
+                  isAnimationActive={false}
                 />
                 <Area
                   type="monotone"
@@ -211,22 +196,19 @@ export const Analytics: React.FC = () => {
                   strokeWidth={4}
                   fillOpacity={1}
                   fill="url(#colorMobile)"
-                  animationDuration={2000}
+                  isAnimationActive={false}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={dashboardItemVariants}
-          className="premium-card space-y-10 flex flex-col"
-        >
+        <div className="premium-card space-y-10 flex flex-col">
           <div>
-            <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+            <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
               DEVICE RATIO
             </h3>
-            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
               Platform segmentation
             </p>
           </div>
@@ -243,6 +225,7 @@ export const Analytics: React.FC = () => {
                   paddingAngle={10}
                   dataKey="value"
                   stroke="none"
+                  isAnimationActive={false}
                 >
                   {deviceData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -250,64 +233,62 @@ export const Analytics: React.FC = () => {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#111",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    backgroundColor: "var(--popover)",
+                    border: "1px solid var(--border)",
                     borderRadius: "12px",
                   }}
                 />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <p className="text-4xl font-display font-black text-white italic">
+              <p className="text-4xl font-display font-semibold text-foreground">
                 100%
               </p>
-              <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.2em]">
+              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
                 TOTAL NODES
               </p>
             </div>
           </div>
 
-          <div className="space-y-4 pt-6 border-t border-white/5">
+          <div className="space-y-4 pt-6 border-t border-border">
             {deviceData.map((device) => (
               <div
                 key={device.name}
-                className="flex items-center justify-between group"
+                className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-4">
                   <div
                     className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                     style={{ backgroundColor: device.color }}
                   ></div>
-                  <span className="text-xs font-black text-white uppercase tracking-widest group-hover:text-accent-primary transition-colors">
+                  <span className="text-xs font-semibold text-foreground uppercase tracking-widest">
                     {device.name}
                   </span>
                 </div>
-                <span className="text-sm font-display font-black text-white tabular-nums italic">
+                <span className="text-sm font-display font-semibold text-foreground tabular-nums">
                   {device.value}%
                 </span>
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <motion.div
-          variants={dashboardItemVariants}
-          className="premium-card space-y-8"
-        >
+        <div className="premium-card space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+              <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
                 POPULAR ROUTES
               </h3>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
                 High-traffic access points
               </p>
             </div>
-            <PremiumButton variant="outline" size="sm" icon={Activity}>
-              VIEW FULL LOG
-            </PremiumButton>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Activity className="w-4 h-4" />
+              View Full Log
+            </Button>
           </div>
           <div className="space-y-3">
             <PopularRoute
@@ -328,24 +309,22 @@ export const Analytics: React.FC = () => {
               growth="+15.4%"
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={dashboardItemVariants}
-          className="premium-card space-y-10"
-        >
+        <div className="premium-card space-y-10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+              <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
                 AUDIENCE GROWTH
               </h3>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
                 Expansion metrics
               </p>
             </div>
-            <PremiumButton variant="outline" size="sm" icon={Layers}>
-              EXPORT DATA
-            </PremiumButton>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Layers className="w-4 h-4" />
+              Export Data
+            </Button>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -353,26 +332,26 @@ export const Analytics: React.FC = () => {
                 <CartesianGrid
                   strokeDasharray="10 10"
                   vertical={false}
-                  stroke="rgba(255,255,255,0.03)"
+                  stroke="rgba(100,100,100,0.15)"
                 />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#666", fontSize: 10, fontWeight: 700 }}
+                  tick={{ fill: "#666", fontSize: 10, fontWeight: 600 }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#666", fontSize: 10, fontWeight: 700 }}
+                  tick={{ fill: "#666", fontSize: 10, fontWeight: 600 }}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(255,255,255,0.02)" }}
                   contentStyle={{
-                    backgroundColor: "#111",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "16px",
+                    backgroundColor: "var(--popover)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "12px",
                   }}
                 />
                 <Bar
@@ -380,18 +359,20 @@ export const Analytics: React.FC = () => {
                   fill="#acc7ff"
                   radius={[6, 6, 0, 0]}
                   barSize={24}
+                  isAnimationActive={false}
                 />
                 <Bar
                   dataKey="mobile"
                   fill="#ffdd79"
                   radius={[6, 6, 0, 0]}
                   barSize={24}
+                  isAnimationActive={false}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

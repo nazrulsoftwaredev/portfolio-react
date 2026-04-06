@@ -27,7 +27,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
     <div className="premium-card space-y-8">
       <IconTitle
         icon={
-          <div className="p-2 rounded-xl bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
             <ImageIcon className="w-5 h-5" />
           </div>
         }
@@ -41,7 +41,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             rows={2}
             value={about.scrubText || ""}
             onChange={(event) => onUpdateAbout("scrubText", event.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold tracking-wide text-white focus:ring-4 focus:ring-accent-primary/5 focus:border-accent-primary/50 outline-none transition-all resize-none"
+            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-xs font-semibold tracking-wide text-foreground resize-none"
           />
         </div>
         <div className="space-y-3">
@@ -50,7 +50,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             rows={3}
             value={about.bioText || ""}
             onChange={(event) => onUpdateAbout("bioText", event.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold tracking-wide text-white focus:ring-4 focus:ring-accent-primary/5 focus:border-accent-primary/50 outline-none transition-all resize-none"
+            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-xs font-semibold tracking-wide text-foreground resize-none"
           />
         </div>
 
@@ -60,7 +60,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             <button
               type="button"
               onClick={onAddFocusItem}
-              className="text-[10px] uppercase tracking-[0.2em] text-accent-primary font-black"
+              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
             >
               Add Item
             </button>
@@ -68,7 +68,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
           {(about.focusItems || []).map((item, index) => (
             <div
               key={`${item.title}-${index}`}
-              className="space-y-2 bg-white/[0.02] border border-white/10 rounded-xl p-3"
+              className="space-y-2 bg-muted/20 border border-border rounded-xl p-3"
             >
               <div className="flex items-center gap-2">
                 <Input
@@ -76,12 +76,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                   onChange={(event) =>
                     onUpdateFocusItem(index, "title", event.target.value)
                   }
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white"
+                  className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
                 />
                 <button
                   type="button"
                   onClick={() => onRemoveFocusItem(index)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-on-surface-variant hover:text-red-500"
+                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                   aria-label="Delete focus item"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -93,7 +93,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                 onChange={(event) =>
                   onUpdateFocusItem(index, "description", event.target.value)
                 }
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white resize-none"
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground resize-none"
               />
             </div>
           ))}

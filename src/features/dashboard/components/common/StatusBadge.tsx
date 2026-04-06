@@ -7,8 +7,8 @@ const statusStyles: Record<string, string> = {
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   pending: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   overdue: "bg-red-500/10 text-red-400 border-red-500/20",
-  draft: "bg-white/10 text-on-surface-variant border-white/10",
-  inactive: "bg-white/10 text-on-surface-variant border-white/10",
+  draft: "bg-muted text-muted-foreground border-border",
+  inactive: "bg-muted text-muted-foreground border-border",
 };
 
 const statusIcons: Record<
@@ -34,7 +34,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const statusKey = status.trim().toLowerCase();
   const tone =
-    statusStyles[statusKey] ?? "bg-white/10 text-white border-white/10";
+    statusStyles[statusKey] ?? "bg-muted text-foreground border-border";
   const Icon = statusIcons[statusKey] ?? CircleDashed;
 
   return (

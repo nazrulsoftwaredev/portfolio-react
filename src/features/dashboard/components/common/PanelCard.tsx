@@ -21,12 +21,12 @@ export const PanelCard: React.FC<PanelCardProps> = ({
       {(title || subtitle) && (
         <CardHeader className="mb-0 p-0 pb-6">
           {title ? (
-            <CardTitle className="text-xl font-display font-black tracking-tight text-white italic uppercase">
+            <CardTitle className="text-xl font-display font-semibold tracking-tight text-foreground uppercase">
               {title}
             </CardTitle>
           ) : null}
           {subtitle ? (
-            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
               {subtitle}
             </p>
           ) : null}

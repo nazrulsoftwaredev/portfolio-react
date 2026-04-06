@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Check, ChevronRight, Monitor } from "lucide-react";
 import type {
   AboutContent,
@@ -10,7 +9,7 @@ import type {
   TechDomain,
   Testimonial,
 } from "@/shared/types";
-import { PremiumButton } from "../components/PremiumButton";
+import { Button } from "@/components/ui";
 import { usePortfolioContent } from "@/features/portfolio/hooks/usePortfolioContent";
 import {
   AboutSection,
@@ -23,10 +22,6 @@ import {
   TestimonialsSection,
 } from "../components/Content";
 import { PageHeader } from "../components/common";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 
 type SaveState = "saved" | "saving" | "error";
 type ContentSectionId =
@@ -498,13 +493,8 @@ export const Content: React.FC = () => {
   };
 
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      initial={false}
-      animate="visible"
-      className="space-y-14"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="space-y-14">
+      <div>
         <PageHeader
           title={
             <>
@@ -514,50 +504,51 @@ export const Content: React.FC = () => {
           }
           subtitle={
             <>
-              DEPLOYMENT:{" "}
-              <span className="text-accent-primary">{saveMessage}</span>
+              DEPLOYMENT: <span className="text-primary">{saveMessage}</span>
             </>
           }
           actions={
             <>
-              <PremiumButton
+              <Button
                 variant="outline"
-                icon={Monitor}
+                className="gap-2"
                 type="button"
                 onClick={() => {
                   window.open("/", "_blank");
                 }}
               >
-                PREVIEW LIVE
-              </PremiumButton>
-              <PremiumButton
-                variant="primary"
-                icon={Check}
+                <Monitor className="w-4 h-4" />
+                Preview Live
+              </Button>
+              <Button
+                className="gap-2"
                 type="button"
                 onClick={() => {
                   save(draft);
                   setSaveState("saved");
                 }}
               >
-                PUBLISH SYNC
-              </PremiumButton>
-              <PremiumButton
+                <Check className="w-4 h-4" />
+                Publish Sync
+              </Button>
+              <Button
                 variant="secondary"
-                icon={ChevronRight}
+                className="gap-2"
                 type="button"
                 onClick={() => {
                   reset();
                   setSaveState("saved");
                 }}
               >
-                RESET
-              </PremiumButton>
+                <ChevronRight className="w-4 h-4" />
+                Reset
+              </Button>
             </>
           }
         />
-      </motion.div>
+      </div>
 
-      <motion.div variants={dashboardItemVariants}>
+      <div>
         <SectionSwitcher
           sections={sections}
           activeSection={activeSection}
@@ -565,11 +556,9 @@ export const Content: React.FC = () => {
             setActiveSection(sectionId as ContentSectionId)
           }
         />
-      </motion.div>
+      </div>
 
-      <motion.div variants={dashboardItemVariants} className="pt-1">
-        {renderActiveSection()}
-      </motion.div>
-    </motion.div>
+      <div className="pt-1">{renderActiveSection()}</div>
+    </div>
   );
 };

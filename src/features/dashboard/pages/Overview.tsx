@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   Users,
   FileText,
@@ -20,18 +19,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { PremiumButton } from "../components/PremiumButton";
 import {
+  Badge,
+  Button,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 
 type RevenuePoint = {
   label: string;
@@ -165,25 +161,22 @@ const StatCard = ({
   trendPositive = true,
   bgGradient,
 }: StatCardProps) => (
-  <motion.div
-    variants={dashboardItemVariants}
-    className="premium-card group relative overflow-hidden"
-  >
-    {/* Background Aura */}
+  <div className="premium-card relative overflow-hidden">
     <div
-      className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40 ${bgGradient}`}
+      className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 ${bgGradient}`}
     />
 
-    <div className="flex items-center justify-between relative z-10">
-      <div className="p-3 rounded-2xl bg-white/5 border border-white/5 text-white group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+    <div className="flex items-center justify-between">
+      <div className="p-3 rounded-2xl bg-muted border border-border text-foreground">
         <Icon className="w-6 h-6" />
       </div>
       {trend && (
-        <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black tracking-wider border ${
+        <Badge
+          variant="outline"
+          className={`gap-1.5 px-2.5 py-1 text-[10px] font-semibold tracking-wider border ${
             trendPositive
-              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/10"
-              : "bg-red-500/10 text-red-400 border-red-500/10"
+              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+              : "bg-red-500/10 text-red-600 border-red-500/20"
           }`}
         >
           {trendPositive ? (
@@ -192,30 +185,25 @@ const StatCard = ({
             <ArrowDownRight className="w-3 h-3" />
           )}
           {trend}
-        </div>
+        </Badge>
       )}
     </div>
 
-    <div className="mt-6 relative z-10">
-      <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest">
+    <div className="mt-6">
+      <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
         {label}
       </p>
-      <h3 className="text-3xl font-display font-black mt-2 text-white tabular-nums">
+      <h3 className="text-3xl font-display font-semibold mt-2 text-foreground tabular-nums">
         {value}
       </h3>
     </div>
 
-    <div className="mt-4 flex items-center gap-2 relative z-10">
-      <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "70%" }}
-          transition={{ duration: 1.5, delay: 0.5 }}
-          className="h-full bg-gradient-to-r from-accent-primary to-accent-secondary"
-        />
+    <div className="mt-4 flex items-center gap-2">
+      <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
+        <div className="h-full w-[70%] bg-gradient-to-r from-primary/70 to-secondary/60" />
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 export const Overview: React.FC = () => {
@@ -310,30 +298,28 @@ export const Overview: React.FC = () => {
   ]);
 
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      animate="visible"
-      className="space-y-10"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="space-y-10">
+      <div>
         <div>
-          <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight">
+          <h2 className="text-4xl font-display font-black tracking-tighter text-foreground leading-tight">
             BUSINESS <br />
             COMMAND CENTER
           </h2>
-          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
-            STATUS: <span className="text-emerald-400">OPERATIONS ACTIVE</span>
+          <p className="text-muted-foreground font-semibold mt-2 text-sm uppercase tracking-[0.2em]">
+            STATUS: <span className="text-emerald-600">OPERATIONS ACTIVE</span>
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <PremiumButton variant="outline" icon={Plus}>
+          <Button variant="outline" className="gap-2">
+            <Plus className="w-4 h-4" />
             New Invoice
-          </PremiumButton>
-          <PremiumButton variant="primary" icon={Plus}>
+          </Button>
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
             New Project
-          </PremiumButton>
+          </Button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Key Business Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -372,16 +358,13 @@ export const Overview: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <motion.div
-          variants={dashboardItemVariants}
-          className="lg:col-span-2 premium-card space-y-8"
-        >
+        <div className="lg:col-span-2 premium-card space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+              <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
                 REVENUE INSIGHTS
               </h3>
-              <p className="text-xs text-on-surface-variant font-bold uppercase tracking-widest mt-1">
+              <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mt-1">
                 Revenue and invoice trends by selected period
               </p>
             </div>
@@ -389,10 +372,10 @@ export const Overview: React.FC = () => {
               value={selectedRange}
               onValueChange={(value) => setSelectedRange(value as RevenueRange)}
             >
-              <SelectTrigger className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 h-auto text-xs font-bold text-white focus:ring-2 focus:ring-accent-primary/20 transition-all cursor-pointer">
+              <SelectTrigger className="bg-background border border-border rounded-xl px-4 py-2.5 h-auto text-xs font-semibold text-foreground cursor-pointer">
                 <SelectValue placeholder="Select range" />
               </SelectTrigger>
-              <SelectContent className="bg-surface border-white/10 text-white">
+              <SelectContent className="bg-popover border-border text-foreground">
                 {rangeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -406,55 +389,55 @@ export const Overview: React.FC = () => {
             <button
               type="button"
               onClick={() => setSelectedStat("revenue")}
-              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+              className={`rounded-2xl border bg-muted/30 p-4 text-left ${
                 selectedStat === "revenue"
-                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
-                  : "border-white/10 hover:border-white/20"
+                  ? "border-primary/40 ring-1 ring-primary/30"
+                  : "border-border"
               }`}
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Period Revenue
               </p>
-              <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
+              <p className="mt-2 text-xl font-display font-semibold text-foreground tabular-nums">
                 {formatCurrency(chartSummary.totalRevenue)}
               </p>
             </button>
             <button
               type="button"
               onClick={() => setSelectedStat("invoices")}
-              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+              className={`rounded-2xl border bg-muted/30 p-4 text-left ${
                 selectedStat === "invoices"
-                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
-                  : "border-white/10 hover:border-white/20"
+                  ? "border-primary/40 ring-1 ring-primary/30"
+                  : "border-border"
               }`}
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Total Invoices
               </p>
-              <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
+              <p className="mt-2 text-xl font-display font-semibold text-foreground tabular-nums">
                 {chartSummary.totalInvoices}
               </p>
             </button>
             <button
               type="button"
               onClick={() => setSelectedStat("ticket")}
-              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+              className={`rounded-2xl border bg-muted/30 p-4 text-left ${
                 selectedStat === "ticket"
-                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
-                  : "border-white/10 hover:border-white/20"
+                  ? "border-primary/40 ring-1 ring-primary/30"
+                  : "border-border"
               }`}
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Avg Ticket
               </p>
-              <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
+              <p className="mt-2 text-xl font-display font-semibold text-foreground tabular-nums">
                 {formatCurrency(Math.round(chartSummary.averageTicket))}
               </p>
             </button>
           </div>
 
-          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/5 px-4 py-3">
-            <p className="text-xs text-cyan-100 font-semibold tracking-wide">
+          <div className="rounded-2xl border border-border bg-muted/30 px-4 py-3">
+            <p className="text-xs text-muted-foreground font-semibold tracking-wide">
               {statInsight}
             </p>
           </div>
@@ -481,7 +464,7 @@ export const Overview: React.FC = () => {
                 <CartesianGrid
                   strokeDasharray="10 10"
                   vertical={false}
-                  stroke="rgba(255,255,255,0.03)"
+                  stroke="rgba(100,100,100,0.15)"
                 />
                 <XAxis
                   dataKey="label"
@@ -510,19 +493,18 @@ export const Overview: React.FC = () => {
                   }}
                   labelFormatter={(label: any) => `Period: ${label}`}
                   contentStyle={{
-                    backgroundColor: "#111",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "16px",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    backgroundColor: "var(--popover)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "12px",
                     padding: "12px",
                   }}
                   itemStyle={{
-                    color: "#acc7ff",
+                    color: "var(--foreground)",
                     fontWeight: 800,
                     fontSize: "14px",
                   }}
                   labelStyle={{
-                    color: "#888",
+                    color: "var(--muted-foreground)",
                     marginBottom: "4px",
                     fontWeight: 700,
                     fontSize: "10px",
@@ -542,24 +524,24 @@ export const Overview: React.FC = () => {
                     strokeWidth: 2,
                     fill: "#0d111b",
                   }}
-                  animationDuration={2000}
+                  isAnimationActive={false}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
           {selectedPoint && (
-            <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Selected: {selectedPoint.label}
               </p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-foreground">
                 Revenue: {formatCurrency(selectedPoint.revenue)}
               </p>
-              <p className="text-sm font-semibold text-white/90">
+              <p className="text-sm font-semibold text-foreground">
                 Invoices: {selectedPoint.invoices}
               </p>
-              <p className="text-sm font-semibold text-cyan-200">
+              <p className="text-sm font-semibold text-primary">
                 Ticket:{" "}
                 {formatCompactCurrency(
                   selectedPoint.revenue / selectedPoint.invoices,
@@ -567,19 +549,15 @@ export const Overview: React.FC = () => {
               </p>
             </div>
           )}
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={dashboardItemVariants}
-          className="premium-card space-y-6"
-        >
+        <div className="premium-card space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-display font-black tracking-tight text-white italic">
+            <h3 className="text-lg font-display font-semibold tracking-tight text-foreground">
               RECENT ACTIVITY
             </h3>
-            <button className="text-accent-primary text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-70 transition-opacity flex items-center gap-1 group">
-              VIEW ALL{" "}
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            <button className="text-primary text-[10px] font-semibold uppercase tracking-[0.2em] flex items-center gap-1">
+              VIEW ALL <ArrowRight className="w-3 h-3" />
             </button>
           </div>
 
@@ -605,10 +583,10 @@ export const Overview: React.FC = () => {
                 onClick={() =>
                   setActivityFilter(filter.value as "ALL" | ActivityType)
                 }
-                className={`rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
+                className={`rounded-xl px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] ${
                   activityFilter === filter.value
-                    ? "bg-cyan-400/15 text-cyan-100 border border-cyan-300/30"
-                    : "bg-white/5 text-white/65 border border-white/10 hover:bg-white/10"
+                    ? "bg-primary/10 text-primary border border-primary/20"
+                    : "bg-muted/40 text-muted-foreground border border-border"
                 }`}
               >
                 {filter.label}
@@ -618,58 +596,51 @@ export const Overview: React.FC = () => {
 
           <div className="space-y-5">
             {filteredActivities.map((activity, i) => (
-              <motion.div
+              <div
                 key={i}
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-white/5 transition-all"
+                className="flex items-center gap-4 p-2 rounded-2xl hover:bg-muted/40"
               >
-                <div
-                  className={`p-3 rounded-xl ${activity.color} transition-colors`}
-                >
+                <div className={`p-3 rounded-xl ${activity.color}`}>
                   <activity.icon className={`w-5 h-5 ${activity.textColor}`} />
                 </div>
                 <div className="flex-1">
-                  <p className="font-black text-sm text-white tracking-tight">
+                  <p className="font-semibold text-sm text-foreground tracking-tight">
                     {activity.label}
                   </p>
-                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-0.5">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-0.5">
                     {activity.client || activity.industry || activity.preview}
                   </p>
                 </div>
-                <p className="text-sm font-bold text-emerald-400">
+                <p className="text-sm font-semibold text-emerald-600">
                   {activity.amount}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      <motion.div
-        variants={dashboardItemVariants}
-        className="premium-card !p-0 overflow-hidden"
-      >
-        <div className="p-8 flex items-center justify-between border-b border-white/5">
-          <h3 className="text-xl font-display font-black tracking-tight text-white italic">
+      <div className="premium-card !p-0 overflow-hidden">
+        <div className="p-8 flex items-center justify-between border-b border-border">
+          <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
             CLIENT PORTFOLIO
           </h3>
           <div className="flex items-center gap-3">
             <div className="flex -space-x-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <motion.div
+                <div
                   key={i}
-                  whileHover={{ y: -5, zIndex: 10 }}
-                  className="w-10 h-10 rounded-2xl border-4 border-surface bg-surface overflow-hidden cursor-pointer"
+                  className="w-10 h-10 rounded-2xl border-4 border-background bg-muted overflow-hidden"
                 >
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 123}`}
                     alt="Client"
                     className="w-full h-full object-cover"
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
-            <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black text-accent-primary">
+            <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-[10px] font-semibold text-primary">
               +6
             </div>
           </div>
@@ -678,7 +649,7 @@ export const Overview: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em] bg-white/[0.02]">
+              <tr className="text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.2em] bg-muted/30">
                 <th className="px-8 py-4">Client Name</th>
                 <th className="px-8 py-4">Industry</th>
                 <th className="px-8 py-4">Status</th>
@@ -686,7 +657,7 @@ export const Overview: React.FC = () => {
                 <th className="px-8 py-4 text-right">Growth</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {[
                 {
                   name: "Acme Corp",
@@ -717,33 +688,30 @@ export const Overview: React.FC = () => {
                   growth: "+25%",
                 },
               ].map((client, i) => (
-                <tr
-                  key={i}
-                  className="group hover:bg-white/[0.03] transition-colors"
-                >
+                <tr key={i} className="group hover:bg-muted/30">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-2xl bg-accent-primary/10 text-accent-primary flex items-center justify-center font-black text-xs border border-accent-primary/20 group-hover:rotate-6 transition-transform">
+                      <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs border border-primary/20">
                         {client.name[0]}
                       </div>
-                      <span className="font-black text-sm tracking-tight text-white">
+                      <span className="font-semibold text-sm tracking-tight text-foreground">
                         {client.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-8 py-6 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                  <td className="px-8 py-6 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     {client.type}
                   </td>
                   <td className="px-8 py-6">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border bg-emerald-500/10 text-emerald-400 border-emerald-500/10">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
                       {client.status}
                     </span>
                   </td>
-                  <td className="px-8 py-6 font-display font-bold text-sm text-white tabular-nums">
+                  <td className="px-8 py-6 font-display font-semibold text-sm text-foreground tabular-nums">
                     {client.value}
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <span className="text-emerald-400 font-bold text-sm">
+                    <span className="text-emerald-600 font-semibold text-sm">
                       {client.growth}
                     </span>
                   </td>
@@ -752,7 +720,7 @@ export const Overview: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };

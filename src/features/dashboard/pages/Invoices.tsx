@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   Calendar,
   Download,
@@ -10,12 +9,7 @@ import {
   Search,
   Send,
 } from "lucide-react";
-import { PremiumButton } from "../components/PremiumButton";
 import { PageHeader, PanelCard, StatusBadge } from "../components/common";
-import {
-  dashboardContainerVariants,
-  dashboardItemVariants,
-} from "../constants/animationVariants";
 import {
   Button,
   Input,
@@ -90,13 +84,8 @@ const summaryCards = [
 
 export const Invoices: React.FC = () => {
   return (
-    <motion.div
-      variants={dashboardContainerVariants}
-      initial={false}
-      animate="visible"
-      className="space-y-10"
-    >
-      <motion.div variants={dashboardItemVariants}>
+    <div className="space-y-10">
+      <div>
         <PageHeader
           title={
             <>
@@ -106,90 +95,89 @@ export const Invoices: React.FC = () => {
           }
           subtitle={
             <>
-              BILLING CHANNEL: <span className="text-emerald-400">LIVE</span>
+              BILLING CHANNEL: <span className="text-emerald-600">LIVE</span>
             </>
           }
           actions={
-            <PremiumButton variant="primary" icon={Plus}>
-              CREATE INVOICE
-            </PremiumButton>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              Create Invoice
+            </Button>
           }
         />
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <motion.div
-          variants={dashboardItemVariants}
-          className="lg:col-span-2 premium-card !p-0 overflow-hidden"
-        >
-          <div className="p-6 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.01]">
+        <div className="lg:col-span-2 premium-card !p-0 overflow-hidden">
+          <div className="p-6 border-b border-border flex flex-col sm:flex-row items-center justify-between gap-4 bg-muted/20">
             <div className="relative w-full sm:w-96 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-accent-primary transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="SEARCH INVOICES..."
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black tracking-[0.15em] text-white focus:outline-none focus:ring-2 focus:ring-accent-primary/20 focus:border-accent-primary/40 transition-all uppercase placeholder:text-on-surface-variant/40"
+                className="w-full bg-background border border-border rounded-2xl py-3 pl-12 pr-4 text-[10px] font-semibold tracking-[0.15em] text-foreground uppercase placeholder:text-muted-foreground"
               />
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <PremiumButton variant="outline" icon={Filter}>
-                FILTER
-              </PremiumButton>
+              <Button variant="outline" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filter
+              </Button>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <Table className="w-full text-left">
               <TableHeader>
-                <TableRow className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em] bg-white/[0.02] hover:bg-white/[0.02]">
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                <TableRow className="text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.2em] bg-muted/30 hover:bg-muted/30">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Invoice ID
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Client
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Issue Date
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Due Date
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Amount
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-muted-foreground">
                     Status
                   </TableHead>
-                  <TableHead className="px-8 py-4 text-right text-on-surface-variant">
+                  <TableHead className="px-8 py-4 text-right text-muted-foreground">
                     Actions
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody className="divide-y divide-white/5">
+              <TableBody className="divide-y divide-border">
                 {invoices.map((invoice) => (
                   <TableRow
                     key={invoice.id}
-                    className="group hover:bg-white/[0.03] transition-colors"
+                    className="group hover:bg-muted/30"
                   >
                     <TableCell className="px-8 py-6">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-4 h-4 text-accent-primary" />
-                        <span className="font-black text-sm tracking-tight text-white">
+                        <FileText className="w-4 h-4 text-primary" />
+                        <span className="font-semibold text-sm tracking-tight text-foreground">
                           {invoice.id}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-sm font-semibold text-white">
+                    <TableCell className="px-8 py-6 text-sm font-semibold text-foreground">
                       {invoice.client}
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                    <TableCell className="px-8 py-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                       {invoice.date}
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                    <TableCell className="px-8 py-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                       {invoice.dueDate}
                     </TableCell>
-                    <TableCell className="px-8 py-6 font-display font-black text-base text-white tabular-nums">
+                    <TableCell className="px-8 py-6 font-display font-semibold text-base text-foreground tabular-nums">
                       {invoice.amount}
                     </TableCell>
                     <TableCell className="px-8 py-6">
@@ -201,7 +189,7 @@ export const Invoices: React.FC = () => {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-10 w-10 rounded-xl text-on-surface-variant hover:text-accent-primary hover:bg-white/10"
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
                         >
                           <Download className="w-4 h-4" />
                         </Button>
@@ -209,7 +197,7 @@ export const Invoices: React.FC = () => {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-10 w-10 rounded-xl text-on-surface-variant hover:text-accent-primary hover:bg-white/10"
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
                         >
                           <Send className="w-4 h-4" />
                         </Button>
@@ -217,7 +205,7 @@ export const Invoices: React.FC = () => {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-10 w-10 rounded-xl text-on-surface-variant hover:text-accent-primary hover:bg-white/10"
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
                         >
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
@@ -228,10 +216,10 @@ export const Invoices: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </motion.div>
+        </div>
 
         <div className="lg:col-span-1 space-y-8">
-          <motion.div variants={dashboardItemVariants}>
+          <div>
             <PanelCard
               title="FINANCIAL SUMMARY"
               subtitle="Real-time invoice metrics"
@@ -242,10 +230,10 @@ export const Invoices: React.FC = () => {
                   className={`flex items-center justify-between p-4 rounded-2xl border ${card.tone}`}
                 >
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em]">
                       {card.label}
                     </p>
-                    <h4 className="text-2xl font-display font-black mt-1 text-white">
+                    <h4 className="text-2xl font-display font-semibold mt-1 text-foreground">
                       {card.value}
                     </h4>
                   </div>
@@ -253,31 +241,31 @@ export const Invoices: React.FC = () => {
                 </div>
               ))}
             </PanelCard>
-          </motion.div>
+          </div>
 
-          <motion.div variants={dashboardItemVariants}>
+          <div>
             <PanelCard title="RECENT ACTIVITY" subtitle="Latest payment events">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-accent-primary" />
+                  <div className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-foreground">
                       Invoice{" "}
-                      <span className="text-accent-primary">#INV-2024-005</span>{" "}
-                      was paid by Eco World
+                      <span className="text-primary">#INV-2024-005</span> was
+                      paid by Eco World
                     </p>
-                    <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.2em] mt-1">
+                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em] mt-1">
                       2 HOURS AGO
                     </p>
                   </div>
                 </div>
               ))}
             </PanelCard>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

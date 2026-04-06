@@ -26,7 +26,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-tertiary/10 blur-[120px] rounded-full"></div>
       </div>
 
-      <div className="w-full max-w-md space-y-8 relative z-10 animate-in fade-in zoom-in duration-700">
+      <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-primary/30">
             <span className="text-background font-bold text-3xl">C</span>
@@ -105,13 +105,13 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all group">
+            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-muted/60 transition-all group">
               <Globe className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
             </button>
-            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all group">
+            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-muted/60 transition-all group">
               <User className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
             </button>
-            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all group">
+            <button className="glass p-4 rounded-2xl flex items-center justify-center hover:bg-muted/60 transition-all group">
               <MessageSquare className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
             </button>
           </div>

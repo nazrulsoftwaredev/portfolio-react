@@ -30,7 +30,7 @@ export const DashboardFeature: React.FC = () => {
   }
 
   return (
-    <div className="dashboard-shell min-h-screen bg-background text-on-surface">
+    <div className="dashboard-shell min-h-screen bg-background text-foreground">
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Overview />} />

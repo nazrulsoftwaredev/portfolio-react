@@ -18,11 +18,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       className={`flex flex-col md:flex-row md:items-center justify-between gap-6 ${className}`}
     >
       <div>
-        <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight uppercase">
+        <h2 className="text-4xl font-display font-semibold tracking-tighter text-foreground leading-tight uppercase">
           {title}
         </h2>
         {subtitle ? (
-          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
+          <p className="text-muted-foreground font-semibold mt-2 text-sm uppercase tracking-[0.2em]">
             {subtitle}
           </p>
         ) : null}

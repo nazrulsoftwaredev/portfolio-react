@@ -25,7 +25,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     <div className="premium-card space-y-8">
       <IconTitle
         icon={
-          <div className="p-2 rounded-xl bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
             <Globe className="w-5 h-5" />
           </div>
         }
@@ -38,7 +38,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           <button
             type="button"
             onClick={onAddTestimonial}
-            className="text-[10px] uppercase tracking-[0.2em] text-accent-primary font-black"
+            className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
           >
             Add Quote
           </button>
@@ -46,7 +46,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         {testimonials.map((item, index) => (
           <div
             key={`${item.author}-${index}`}
-            className="space-y-2 bg-white/[0.02] border border-white/10 rounded-xl p-3"
+            className="space-y-2 bg-muted/20 border border-border rounded-xl p-3"
           >
             <Textarea
               rows={3}
@@ -54,7 +54,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               onChange={(event) =>
                 onUpdateTestimonial(index, "quote", event.target.value)
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white resize-none"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground resize-none"
             />
             <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
               <Input
@@ -62,19 +62,19 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 onChange={(event) =>
                   onUpdateTestimonial(index, "author", event.target.value)
                 }
-                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white"
+                className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
               />
               <Input
                 value={item.company}
                 onChange={(event) =>
                   onUpdateTestimonial(index, "company", event.target.value)
                 }
-                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white"
+                className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
               />
               <button
                 type="button"
                 onClick={() => onRemoveTestimonial(index)}
-                className="p-2 rounded-lg hover:bg-red-500/10 text-on-surface-variant hover:text-red-500"
+                className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                 aria-label="Delete testimonial"
               >
                 <Trash2 className="w-4 h-4" />

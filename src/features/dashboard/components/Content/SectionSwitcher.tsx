@@ -28,15 +28,15 @@ export const SectionSwitcher: React.FC<SectionSwitcherProps> = ({
               <TabsTrigger
                 key={section.id}
                 value={section.id}
-                className={`rounded-xl border px-5 py-3.5 text-xs md:text-sm font-black uppercase tracking-[0.14em] transition-all ${
+                className={`rounded-xl border px-5 py-3.5 text-xs md:text-sm font-semibold uppercase tracking-[0.14em] ${
                   isActive
-                    ? "border-accent-primary bg-accent-primary/95 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
-                    : "border-white/20 bg-slate-900/70 text-white hover:bg-slate-800/80 hover:border-white/35"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground"
                 }`}
               >
                 <span>{section.label}</span>
                 {typeof section.count === "number" && (
-                  <span className="ml-2 rounded-full bg-black/35 px-2.5 py-0.5 text-[10px] font-extrabold">
+                  <span className="ml-2 rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold">
                     {section.count}
                   </span>
                 )}
@@ -45,7 +45,7 @@ export const SectionSwitcher: React.FC<SectionSwitcherProps> = ({
           })}
         </TabsList>
       </Tabs>
-      <p className="text-xs md:text-sm font-black uppercase tracking-[0.12em] text-white/85">
+      <p className="text-xs md:text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         Edit one section at a time from the tabs above.
       </p>
     </div>

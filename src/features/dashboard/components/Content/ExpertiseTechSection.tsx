@@ -34,13 +34,13 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
   onRemoveTechDomain,
 }) => {
   const fieldClassName =
-    "bg-slate-900/80 border border-white/20 rounded-xl px-3 py-2.5 text-sm font-semibold text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent-secondary/30";
+    "bg-background border border-border rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none";
 
   return (
     <div className="premium-card space-y-8">
       <IconTitle
         icon={
-          <div className="p-2 rounded-xl bg-accent-secondary/10 text-accent-secondary border border-accent-secondary/20">
+          <div className="p-2 rounded-xl bg-secondary/10 text-secondary-foreground border border-border">
             <Type className="w-5 h-5" />
           </div>
         }
@@ -54,7 +54,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
             <button
               type="button"
               onClick={onAddExpertise}
-              className="text-[10px] uppercase tracking-[0.2em] text-white font-black"
+              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
             >
               Add Expertise
             </button>
@@ -62,7 +62,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
           {expertise.map((item, index) => (
             <div
               key={`${item.title}-${index}`}
-              className="space-y-2 bg-slate-950/70 border border-white/15 rounded-xl p-3"
+              className="space-y-2 bg-muted/20 border border-border rounded-xl p-3"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <Input
@@ -92,7 +92,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onRemoveExpertise(index)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-on-surface-variant hover:text-red-500"
+                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                   aria-label="Delete expertise item"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -108,7 +108,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
             <button
               type="button"
               onClick={onAddTechDomain}
-              className="text-[10px] uppercase tracking-[0.2em] text-white font-black"
+              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
             >
               Add Domain
             </button>
@@ -116,7 +116,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
           {techStack.map((domain, index) => (
             <div
               key={`${domain.category}-${index}`}
-              className="space-y-2 bg-slate-950/70 border border-white/15 rounded-xl p-3"
+              className="space-y-2 bg-muted/20 border border-border rounded-xl p-3"
             >
               <Input
                 value={domain.category}
@@ -136,13 +136,13 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onRemoveTechDomain(index)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-on-surface-variant hover:text-red-500"
+                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                   aria-label="Delete tech domain"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-[10px] text-white/70 uppercase tracking-widest">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
                 Separate tools with commas
               </p>
             </div>
