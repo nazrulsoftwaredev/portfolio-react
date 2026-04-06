@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
   MoreHorizontal, 
@@ -7,13 +8,19 @@ import {
   AlertCircle, 
   GripVertical,
   Calendar,
-  DollarSign
+  DollarSign,
+  Layout,
+  List as ListIcon,
+  ChevronRight,
+  TrendingUp
 } from 'lucide-react';
+import { PremiumButton } from '../components/PremiumButton';
 
 const pipelineData = [
   {
-    title: 'Leads',
+    title: 'LEADS',
     count: 3,
+    color: 'accent-primary',
     items: [
       { id: 1, client: 'Nike', project: 'Global Campaign', value: '$25K', date: 'Mar 24', priority: 'High' },
       { id: 2, client: 'Apple', project: 'Vision Pro UI', value: '$42K', date: 'Mar 26', priority: 'Medium' },
@@ -21,107 +28,168 @@ const pipelineData = [
     ]
   },
   {
-    title: 'Proposal',
+    title: 'PROPOSAL',
     count: 2,
+    color: 'accent-secondary',
     items: [
       { id: 4, client: 'Spotify', project: 'Artist Portal', value: '$12K', date: 'Mar 22', priority: 'High' },
       { id: 5, client: 'Airbnb', project: 'Experience Design', value: '$35K', date: 'Mar 25', priority: 'Medium' },
     ]
   },
   {
-    title: 'Active',
+    title: 'ACTIVE',
     count: 2,
+    color: 'emerald',
     items: [
       { id: 6, client: 'Netflix', project: 'TUDUM 2024', value: '$85K', date: 'Apr 12', priority: 'High' },
       { id: 7, client: 'Google', project: 'Gemini Branding', value: '$120K', date: 'May 05', priority: 'High' },
     ]
   },
   {
-    title: 'Completed',
+    title: 'COMPLETED',
     count: 5,
+    color: 'purple',
     items: [
       { id: 8, client: 'Meta', project: 'Quest 3 Launch', value: '$45K', date: 'Feb 15', priority: 'Medium' },
     ]
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 const PipelineCard = ({ client, project, value, date, priority }: any) => (
-  <div className="glass rounded-2xl p-5 space-y-4 group cursor-grab active:cursor-grabbing hover:border-primary/30 transition-all duration-300">
-    <div className="flex items-center justify-between">
-      <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-        priority === 'High' ? 'bg-red-400/10 text-red-400' : 
-        priority === 'Medium' ? 'bg-tertiary/10 text-tertiary' : 'bg-primary/10 text-primary'
+  <motion.div 
+    whileHover={{ y: -5, x: 2 }}
+    whileTap={{ scale: 0.98 }}
+    className="premium-card !p-5 group cursor-grab active:cursor-grabbing border-white/5 hover:border-accent-primary/30 transition-all duration-300 relative overflow-hidden"
+  >
+    <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <GripVertical className="w-4 h-4 text-on-surface-variant/40" />
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border ${
+        priority === 'High' ? 'bg-red-500/10 text-red-500 border-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 
+        priority === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/10' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/10'
       }`}>
-        {priority}
+        {priority} PRIORITY
       </div>
-      <button className="p-1.5 rounded-lg hover:bg-white/5 text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+      <button className="p-1 rounded-lg hover:bg-white/5 text-on-surface-variant transition-colors">
         <MoreHorizontal className="w-4 h-4" />
       </button>
     </div>
     
-    <div>
-      <h4 className="font-display font-bold text-lg">{client}</h4>
-      <p className="text-sm text-text-secondary">{project}</p>
+    <div className="space-y-1">
+      <h4 className="font-display font-black text-xl text-white italic tracking-tight uppercase">{client}</h4>
+      <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">{project}</p>
     </div>
 
-    <div className="flex items-center justify-between pt-4 border-t border-border">
-      <div className="flex items-center gap-1.5 text-xs font-medium text-text-secondary">
-        <Calendar className="w-3.5 h-3.5" />
+    <div className="flex items-center justify-between pt-5 mt-5 border-t border-white/5">
+      <div className="flex items-center gap-2 text-[10px] font-black text-on-surface-variant uppercase tracking-[0.15em]">
+        <Calendar className="w-3.5 h-3.5 text-accent-primary" />
         {date}
       </div>
-      <div className="flex items-center gap-1.5 text-sm font-bold text-primary">
-        <DollarSign className="w-3.5 h-3.5" />
+      <div className="flex items-center gap-1.5 text-lg font-display font-black text-white italic tabular-nums">
         {value}
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
 export const Pipeline: React.FC = () => {
   return (
-    <div className="h-full flex flex-col space-y-8 animate-in slide-in-from-left-4 duration-700">
-      <div className="flex items-center justify-between">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="h-[calc(100vh-12rem)] flex flex-col space-y-10"
+    >
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-display font-bold tracking-tight">Client Pipeline</h2>
-          <p className="text-text-secondary mt-1">Track your leads and active projects through the workflow.</p>
+          <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight uppercase">
+            PROJECT <br />PIPELINE
+          </h2>
+          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
+            FLOW STATUS: <span className="text-emerald-400">OPTIMAL</span>
+          </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border">
-            <button className="px-4 py-1.5 rounded-lg bg-primary text-background text-xs font-bold">Board</button>
-            <button className="px-4 py-1.5 rounded-lg text-text-secondary text-xs font-bold hover:text-text-primary">List</button>
+          <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
+            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-primary text-black text-[10px] font-black uppercase tracking-widest transition-all">
+              <Layout className="w-3.5 h-3.5" />
+              BOARD
+            </button>
+            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-on-surface-variant hover:text-white text-[10px] font-black uppercase tracking-widest transition-all">
+              <ListIcon className="w-3.5 h-3.5" />
+              LIST
+            </button>
           </div>
-          <button className="bg-primary text-background px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
-            <Plus className="w-5 h-5" />
-            Add Lead
-          </button>
+          <PremiumButton variant="primary" icon={Plus}>
+            ADD LEAD
+          </PremiumButton>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex-1 flex gap-6 overflow-x-auto pb-8 min-h-[600px]">
-        {pipelineData.map((column) => (
-          <div key={column.title} className="flex-shrink-0 w-80 flex flex-col gap-6">
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-3">
-                <h3 className="font-display font-bold text-lg">{column.title}</h3>
-                <span className="px-2 py-0.5 rounded-lg bg-secondary text-text-secondary text-xs font-bold">{column.count}</span>
+      <div className="flex-1 flex gap-8 overflow-x-auto no-scrollbar pb-10 min-h-0">
+        {pipelineData.map((column, idx) => (
+          <motion.div 
+            key={column.title} 
+            variants={itemVariants}
+            className="flex-shrink-0 w-[22rem] flex flex-col gap-6"
+          >
+            <div className="flex items-center justify-between px-3">
+              <div className="flex items-center gap-4">
+                <div className={`w-2 h-6 rounded-full bg-${column.color === 'accent-primary' ? 'accent-primary' : column.color === 'accent-secondary' ? 'accent-secondary' : column.color}-500 shadow-[0_0_10px_rgba(0,0,0,0.5)]`} />
+                <h3 className="font-display font-black text-xl text-white italic tracking-tight uppercase">{column.title}</h3>
+                <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-white text-[10px] font-black tabular-nums border border-white/10">
+                  {column.count}
+                </span>
               </div>
-              <button className="p-1.5 rounded-lg hover:bg-white/5 text-text-secondary">
-                <Plus className="w-4 h-4" />
+              <button className="p-2 rounded-xl hover:bg-white/5 text-on-surface-variant hover:text-white transition-all">
+                <Plus className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex-1 space-y-4 p-2 rounded-3xl bg-white/[0.02] border border-dashed border-border/50">
-              {column.items.map((item) => (
-                <PipelineCard key={item.id} {...item} />
-              ))}
-              <button className="w-full py-4 rounded-2xl border border-dashed border-border text-sm font-medium text-text-secondary hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2">
-                <Plus className="w-4 h-4" />
-                Add Item
-              </button>
+            <div className="flex-1 space-y-5 p-3 rounded-3xl bg-white/[0.015] border border-dashed border-white/10 hover:border-white/20 transition-colors overflow-y-auto no-scrollbar">
+              <AnimatePresence mode="popLayout">
+                {column.items.map((item) => (
+                  <PipelineCard key={item.id} {...item} />
+                ))}
+              </AnimatePresence>
+              
+              <motion.button 
+                whileHover={{ scale: 1.01, backgroundColor: 'rgba(255,255,255,0.03)' }}
+                whileTap={{ scale: 0.99 }}
+                className="w-full py-6 rounded-2xl border border-dashed border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant hover:text-accent-primary hover:border-accent-primary/40 transition-all flex items-center justify-center gap-3 group"
+              >
+                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+                INITIATE NEW ITEM
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };

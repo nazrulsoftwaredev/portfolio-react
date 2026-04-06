@@ -4,30 +4,25 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "moduleResolution": "node",
+    "types": ["vite/client"],
     "skipLibCheck": true,
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    /* React */
     "jsx": "react-jsx",
+
+    /* Strict */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases for cleaner imports */
+    /* Path aliases */
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@/shared/*": ["src/shared/*"],
-      "@/shared/components": ["src/shared/components/index.ts"],
-      "@/shared/hooks": ["src/shared/hooks/index.ts"],
-      "@/shared/utils": ["src/shared/utils/index.ts"],
-      "@/shared/types": ["src/shared/types/index.ts"],
-      "@/shared/constants": ["src/shared/constants/index.ts"],
-      "@/shared/services": ["src/shared/services/index.ts"],
       "@/features/*": ["src/features/*"],
       "@/config/*": ["src/config/*"]
     }

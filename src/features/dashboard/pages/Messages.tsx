@@ -1,161 +1,295 @@
-import React from 'react';
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Send, 
-  Paperclip, 
-  Smile, 
-  User, 
-  Mail, 
-  Phone, 
-  Globe, 
-  ArrowUpRight, 
-  TrendingDown,
-  Plus
-} from 'lucide-react';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
+  Send,
+  Paperclip,
+  Smile,
+  User,
+  Mail,
+  Phone,
+  Globe,
+  ArrowUpRight,
+  Plus,
+  Circle,
+  Hash,
+} from "lucide-react";
+import { PremiumButton } from "../components/PremiumButton";
 
 const messages = [
-  { id: 1, sender: 'Acme Corp', subject: 'Project Neon Genesis Update', preview: 'Hey Nazrul, just wanted to check in on the latest designs for the Neon Genesis project...', time: '2h ago', unread: true, avatar: 'https://i.pravatar.cc/100?u=acme' },
-  { id: 2, sender: 'Global Tech', subject: 'Inquiry: Web Design Services', preview: 'We are looking for a creative partner to help us redesign our corporate website...', time: '5h ago', unread: false, avatar: 'https://i.pravatar.cc/100?u=global' },
-  { id: 3, sender: 'Studio X', subject: 'Feedback on Motion Graphics', preview: 'The latest motion graphics look amazing! We have a few minor tweaks to suggest...', time: '1d ago', unread: false, avatar: 'https://i.pravatar.cc/100?u=studio' },
-  { id: 4, sender: 'Future Labs', subject: 'Partnership Opportunity', preview: 'We are impressed by your portfolio and would like to discuss a potential partnership...', time: '2d ago', unread: false, avatar: 'https://i.pravatar.cc/100?u=future' },
+  {
+    id: 1,
+    sender: "Acme Corp",
+    subject: "Project Neon Genesis",
+    preview: "Hey Nazrul, just wanted to check in on the latest designs...",
+    time: "2h ago",
+    unread: true,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=acme",
+  },
+  {
+    id: 2,
+    sender: "Global Tech",
+    subject: "Web Design Inquiry",
+    preview: "We are looking for a creative partner to help us redesign...",
+    time: "5h ago",
+    unread: false,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=global",
+  },
+  {
+    id: 3,
+    sender: "Studio X",
+    subject: "Motion Graphics Feedback",
+    preview: "The latest motion graphics look amazing! Minor tweaks...",
+    time: "1d ago",
+    unread: false,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=studio",
+  },
+  {
+    id: 4,
+    sender: "Future Labs",
+    subject: "Partnership Opportunity",
+    preview: "We are impressed by your portfolio and would like to...",
+    time: "2d ago",
+    unread: false,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=future",
+  },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
 
 export const Messages: React.FC = () => {
   return (
-    <div className="h-full flex flex-col space-y-8 animate-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center justify-between">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="h-[calc(100vh-12rem)] flex flex-col space-y-10"
+    >
+      <motion.div
+        variants={itemVariants}
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6"
+      >
         <div>
-          <h2 className="text-3xl font-display font-bold tracking-tight">Messages</h2>
-          <p className="text-text-secondary mt-1">Manage your project enquiries and client feedback.</p>
+          <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight">
+            COMMUNICATIONS <br />
+            INTERFACE
+          </h2>
+          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
+            SESSION: <span className="text-emerald-400">ENCRYPTED</span>
+          </p>
         </div>
-        <button className="bg-primary text-background px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
-          <Plus className="w-5 h-5" />
-          New Message
-        </button>
-      </div>
+        <PremiumButton variant="primary" icon={Plus}>
+          NEW PROTOCOL
+        </PremiumButton>
+      </motion.div>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[600px]">
-        <div className="lg:col-span-1 glass rounded-3xl overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-border space-y-4">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
+        {/* Message List */}
+        <motion.div
+          variants={itemVariants}
+          className="lg:col-span-4 premium-card !p-0 flex flex-col overflow-hidden"
+        >
+          <div className="p-6 border-b border-white/5 space-y-6">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-primary transition-colors" />
-              <input 
-                type="text" 
-                placeholder="Search messages..." 
-                className="w-full bg-secondary/50 border border-border rounded-xl py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-accent-primary transition-colors" />
+              <input
+                type="text"
+                placeholder="SEARCH TRANSMISSIONS..."
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-accent-primary/20 focus:border-accent-primary/50 transition-all uppercase placeholder:text-on-surface-variant/40"
               />
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              {['All', 'Unread', 'Archived', 'Drafts'].map((tab) => (
-                <button key={tab} className={`px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                  tab === 'All' ? 'bg-primary text-background' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
-                }`}>
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+              {["ALL", "UNREAD", "ARCHIVED", "DRAFTS"].map((tab, idx) => (
+                <button
+                  key={tab}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap tracking-[0.15em] transition-all border ${
+                    idx === 0
+                      ? "bg-accent-primary text-black border-accent-primary"
+                      : "text-on-surface-variant hover:text-white hover:bg-white/5 border-transparent"
+                  }`}
+                >
                   {tab}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-white/5">
             {messages.map((msg) => (
-              <div key={msg.id} className={`p-6 border-b border-border cursor-pointer hover:bg-white/[0.02] transition-colors relative group ${msg.unread ? 'bg-primary/5' : ''}`}>
-                {msg.unread && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>}
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-secondary overflow-hidden border border-border group-hover:border-primary/50 transition-colors">
-                    <img src={msg.avatar} alt={msg.sender} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <motion.div
+                key={msg.id}
+                whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                className={`p-6 cursor-pointer transition-colors relative group ${msg.unread ? "bg-accent-primary/5" : ""}`}
+              >
+                {msg.unread && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-primary shadow-[0_0_10px_rgba(172,199,255,0.5)]"></div>
+                )}
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-surface border border-white/5 group-hover:border-accent-primary/50 transition-colors shrink-0 overflow-hidden">
+                    <img
+                      src={msg.avatar}
+                      alt={msg.sender}
+                      className="w-full h-full object-cover p-2 opacity-60 group-hover:opacity-100 transition-opacity"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <p className="font-display font-bold text-lg truncate">{msg.sender}</p>
-                      <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">{msg.time}</p>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-display font-black text-white italic text-base truncate uppercase tracking-tight">
+                        {msg.sender}
+                      </p>
+                      <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-[0.2em]">
+                        {msg.time}
+                      </p>
                     </div>
-                    <p className="text-sm font-medium text-text-primary truncate mt-1">{msg.subject}</p>
-                    <p className="text-xs text-text-secondary truncate mt-1">{msg.preview}</p>
+                    <p className="text-xs font-bold text-accent-primary truncate mb-1 uppercase tracking-wider">
+                      {msg.subject}
+                    </p>
+                    <p className="text-[10px] text-on-surface-variant truncate font-medium">
+                      {msg.preview}
+                    </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="lg:col-span-2 glass rounded-3xl overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-border flex items-center justify-between bg-white/[0.02]">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-secondary overflow-hidden border border-border">
-                <img src="https://i.pravatar.cc/100?u=acme" alt="Acme Corp" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        {/* Chat Window */}
+        <motion.div
+          variants={itemVariants}
+          className="lg:col-span-8 premium-card !p-0 flex flex-col overflow-hidden"
+        >
+          <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-surface border border-white/5 overflow-hidden">
+                  <img
+                    src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
+                    alt="Acme Corp"
+                    className="w-full h-full object-cover p-2"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full border border-white/10 flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                </div>
               </div>
               <div>
-                <h4 className="font-display font-bold text-xl">Acme Corp</h4>
-                <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  Online
-                </p>
+                <h4 className="font-display font-black text-2xl text-white italic italic tracking-tight uppercase">
+                  ACME CORP
+                </h4>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">
+                    DIRECT LINK ACTIVE
+                  </p>
+                  <Hash className="w-3 h-3 text-on-surface-variant" />
+                  <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.2em]">
+                    PROJECT_NEON
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button className="p-2.5 rounded-xl hover:bg-white/10 text-text-secondary transition-all">
+              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant border border-transparent hover:border-white/10 transition-all">
                 <Phone className="w-5 h-5" />
               </button>
-              <button className="p-2.5 rounded-xl hover:bg-white/10 text-text-secondary transition-all">
+              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant border border-transparent hover:border-white/10 transition-all">
                 <MoreHorizontal className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          <div className="flex-1 p-8 overflow-y-auto space-y-8">
-            <div className="flex flex-col items-center gap-4 py-8">
-              <div className="px-4 py-1 rounded-full bg-secondary text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                Today, March 24
+          <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10 bg-[radial-gradient(circle_at_top_right,rgba(172,199,255,0.03),transparent_40%)]">
+            <div className="flex flex-col items-center gap-4">
+              <div className="px-5 py-1.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-on-surface-variant">
+                TRANS MISSION LOG: MARCH 24
               </div>
             </div>
 
-            <div className="flex gap-4 max-w-[80%]">
-              <div className="w-10 h-10 rounded-xl bg-secondary overflow-hidden shrink-0">
-                <img src="https://i.pravatar.cc/100?u=acme" alt="Acme Corp" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div className="flex gap-5 max-w-[85%]">
+              <div className="w-12 h-12 rounded-2xl bg-surface border border-white/5 overflow-hidden shrink-0">
+                <img
+                  src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
+                  alt="Acme Corp"
+                  className="w-full h-full object-cover p-2 opacity-60"
+                />
               </div>
               <div className="space-y-2">
-                <div className="p-4 rounded-2xl rounded-tl-none bg-secondary/50 border border-border text-sm leading-relaxed">
-                  Hey Nazrul, just wanted to check in on the latest designs for the Neon Genesis project. The client is really excited to see the progress!
+                <div className="p-6 rounded-3xl rounded-tl-none bg-white/[0.03] border border-white/5 text-sm leading-relaxed text-white font-medium">
+                  Hey Nazrul, just wanted to check in on the latest designs for
+                  the Neon Genesis project. The client is really excited to see
+                  the progress!
                 </div>
-                <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">10:24 AM</p>
+                <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-widest pl-2">
+                  10:24 AM / RECEIVED
+                </p>
               </div>
             </div>
 
-            <div className="flex gap-4 max-w-[80%] ml-auto flex-row-reverse">
-              <div className="w-10 h-10 rounded-xl bg-primary overflow-hidden shrink-0 flex items-center justify-center">
-                <User className="w-6 h-6 text-background" />
+            <div className="flex gap-5 max-w-[85%] ml-auto flex-row-reverse">
+              <div className="w-12 h-12 rounded-2xl bg-accent-primary overflow-hidden shrink-0 flex items-center justify-center border-4 border-surface shadow-[0_0_20px_rgba(172,199,255,0.2)]">
+                <User className="w-6 h-6 text-black" />
               </div>
               <div className="space-y-2 text-right">
-                <div className="p-4 rounded-2xl rounded-tr-none bg-primary text-background text-sm leading-relaxed font-medium">
-                  Hi! I'm just putting the finishing touches on the identity system. I'll have the full presentation ready for you by the end of the day.
+                <div className="p-6 rounded-3xl rounded-tr-none bg-accent-primary text-black text-sm leading-relaxed font-black">
+                  Hi! I'm just putting the finishing touches on the identity
+                  system. I'll have the full presentation ready for you by the
+                  end of the day. Stay tuned.
                 </div>
-                <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">10:32 AM</p>
+                <p className="text-[9px] text-on-surface-variant font-black uppercase tracking-widest pr-2">
+                  10:32 AM / TRANSMITTED
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="p-6 border-t border-border bg-white/[0.02]">
-            <div className="flex items-center gap-4 bg-secondary/50 border border-border rounded-2xl p-2 focus-within:border-primary/50 transition-all">
-              <button className="p-2.5 rounded-xl hover:bg-white/10 text-text-secondary transition-all">
+          <div className="p-6 border-t border-white/5 bg-white/[0.01]">
+            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[2rem] p-3 focus-within:border-accent-primary/40 focus-within:ring-4 focus-within:ring-accent-primary/5 transition-all">
+              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant transition-all">
                 <Paperclip className="w-5 h-5" />
               </button>
-              <input 
-                type="text" 
-                placeholder="Type your message..." 
-                className="flex-1 bg-transparent border-none outline-none text-sm py-2 px-2"
+              <input
+                type="text"
+                placeholder="TYPE NEW PROTOCOL..."
+                className="flex-1 bg-transparent border-none outline-none text-[10px] font-black tracking-widest py-2 px-2 text-white placeholder:text-on-surface-variant/40"
               />
-              <button className="p-2.5 rounded-xl hover:bg-white/10 text-text-secondary transition-all">
+              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant transition-all">
                 <Smile className="w-5 h-5" />
               </button>
-              <button className="p-2.5 rounded-xl bg-primary text-background hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
-                <Send className="w-5 h-5" />
-              </button>
+              <PremiumButton
+                variant="primary"
+                size="sm"
+                icon={Send}
+                className="!h-12 !w-12 !rounded-2xl !p-0"
+              >
+                <span className="sr-only">SEND</span>
+              </PremiumButton>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };

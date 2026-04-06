@@ -346,22 +346,77 @@
 
 /* Scoped dashboard theme to keep homepage visuals unchanged. */
 .dashboard-shell {
-  --background: #0e0e0e;
-  --surface: #1a1a1a;
-  --surface-dim: #111111;
-  --surface-bright: #2a2a2a;
+  --background: #0a0a0a;
+  --surface: #121212;
+  --surface-dim: #080808;
+  --surface-bright: #1c1c1c;
   --on-surface: #ffffff;
-  --on-surface-variant: #a0a0a0;
-  --outline: rgba(255, 255, 255, 0.08);
-  --outline-variant: rgba(255, 255, 255, 0.05);
-  --border: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --on-surface-variant: #888888;
+  --outline: rgba(255, 255, 255, 0.05);
+  --outline-variant: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --accent-primary: #acc7ff;
+  --accent-secondary: #ba9eff;
 }
 
 .dashboard-shell .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.premium-card {
+  @apply glass rounded-[2rem] p-8 transition-all duration-500 ease-out;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+}
+
+.premium-card:hover {
+  @apply border-white/20 -translate-y-1;
+  box-shadow: 
+    0 20px 40px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.animate-glow {
+  animation: glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    filter: drop-shadow(0 0 5px rgba(172, 199, 255, 0.2));
+  }
+  to {
+    filter: drop-shadow(0 0 20px rgba(172, 199, 255, 0.4));
+  }
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  opacity: 0.02;
+  pointer-events: none;
+  background-image: var(--grain);
+}
+
+.aura-bg {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 50%, rgba(172, 199, 255, 0.05) 0%, transparent 50%);
+  filter: blur(100px);
 }
 
 body.dashboard-mode {
