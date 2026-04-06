@@ -1,0 +1,375 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #fdfdfd;
+    --surface: #f9f9f9;
+    --surface-dim: #f2f2f2;
+    --surface-bright: #ffffff;
+    --on-surface: #0a0a0a;
+    --on-surface-variant: #6b7280;
+    --primary: #0a0a0a;
+    --secondary: #4b5563;
+    --outline: #e5e7eb;
+    --outline-variant: #f3f4f6;
+    --glass-bg: rgba(253, 253, 253, 0.7);
+    --border: rgba(10, 10, 10, 0.04);
+    --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    --aura-1: rgba(99, 102, 241, 0.03);
+    /* Soft Indigo */
+    --aura-2: rgba(244, 63, 94, 0.02);
+    /* Soft Rose */
+    --aura-3: rgba(14, 165, 233, 0.03);
+    /* Soft Sky */
+    --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+
+    /* Opacity scale */
+    --opacity-subtle: 0.2;
+    /* 20% - Very subtle dimmers */
+    --opacity-medium: 0.4;
+    /* 40% - Medium emphasis */
+    --opacity-strong: 0.6;
+    /* 60% - Strong emphasis */
+    --opacity-text-disabled: 0.3;
+    /* 30% - Disabled text */
+
+    /* Spacing rhythm (8px baseline) */
+    --space-xs: 0.5rem;
+    /* 8px */
+    --space-sm: 1rem;
+    /* 16px */
+    --space-md: 1.5rem;
+    /* 24px */
+    --space-lg: 2rem;
+    /* 32px */
+    --space-xl: 3rem;
+    /* 48px */
+    --space-2xl: 4rem;
+    /* 64px */
+    --space-3xl: 6rem;
+    /* 96px */
+    --space-4xl: 8rem;
+    /* 128px */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #080808;
+      --surface: #0c0c0c;
+      --surface-dim: #050505;
+      --surface-bright: #121212;
+      --on-surface: #fdfdfd;
+      --on-surface-variant: #9ca3af;
+      --primary: #fdfdfd;
+      --secondary: #9ca3af;
+      --outline: #1f2937;
+      --outline-variant: #111827;
+      --glass-bg: rgba(8, 8, 8, 0.7);
+      --border: rgba(253, 253, 253, 0.03);
+      --aura-1: rgba(67, 56, 202, 0.08);
+      /* Deep Indigo */
+      --aura-2: rgba(190, 18, 60, 0.05);
+      /* Deep Rose */
+      --aura-3: rgba(3, 105, 161, 0.08);
+      /* Deep Sky */
+    }
+  }
+
+  body {
+    font-family:
+      "Inter",
+      -apple-system,
+      system-ui,
+      sans-serif;
+    background-color: var(--background);
+    color: var(--on-surface);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading {
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+  }
+
+  .font-serif {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+  }
+
+  body.has-custom-cursor * {
+    cursor: none !important;
+  }
+
+  /* Static premium grain texture - Non-animated for minimal luxury feel */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 9999;
+    background-image: var(--grain);
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+  }
+
+  /* Unified heading scale system */
+  .heading-xs {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  .heading-sm {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  .heading-md {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(1.875rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  .heading-lg {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  .heading-xl {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  .heading-xxl {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    font-weight: 700;
+  }
+
+  /* Legacy classes for backward compatibility */
+  .section-heading {
+    @apply heading-xl;
+  }
+
+  .section-heading--contact {
+    @apply heading-lg;
+  }
+
+  .project-title {
+    @apply heading-lg;
+  }
+
+  /* Section label component base styles */
+  .section-label {
+    font-family: "Courier New", monospace;
+    font-size: 0.625rem;
+    /* 10px */
+    font-weight: 700;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    opacity: var(--opacity-strong);
+  }
+
+  .section-label--accent {
+    color: #ba9eff;
+    /* Primary color */
+    opacity: 1;
+  }
+
+  .magnetic-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s var(--ease-smooth);
+  }
+
+  /* Unified hover state for interactive elements */
+  .interactive-hover {
+    transition: all 0.3s var(--ease-smooth);
+  }
+
+  .interactive-hover:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+  }
+}
+
+@layer utilities {
+  .bg-grid-technical {
+    background-size: 50px 50px;
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  }
+
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center,
+        var(--tw-gradient-from),
+        var(--tw-gradient-to));
+  }
+
+  .text-reveal {
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+
+  .text-reveal span {
+    display: block;
+  }
+
+  .mix-blend-difference {
+    mix-blend-mode: difference;
+  }
+
+  .bg-vignette {
+    background: radial-gradient(circle at center,
+        transparent 0%,
+        rgba(0, 0, 0, 0.03) 100%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .bg-vignette {
+      background: radial-gradient(circle at center,
+          transparent 0%,
+          rgba(0, 0, 0, 0.4) 100%);
+    }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes infiniteScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-root,
+  #print-root * {
+    visibility: visible;
+  }
+
+  #print-root {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    display: block !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Screen reader only - hide visually but keep available to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Focus visible - show when focused via Tab key */
+  .sr-only:focus,
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+/* Scoped dashboard theme to keep homepage visuals unchanged. */
+.dashboard-shell {
+  --background: #0e0e0e;
+  --surface: #1a1a1a;
+  --surface-dim: #111111;
+  --surface-bright: #2a2a2a;
+  --on-surface: #ffffff;
+  --on-surface-variant: #a0a0a0;
+  --outline: rgba(255, 255, 255, 0.08);
+  --outline-variant: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-shell .glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dashboard-mode {
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+body.dashboard-mode::before {
+  display: none;
+  background-image: none;
+}
