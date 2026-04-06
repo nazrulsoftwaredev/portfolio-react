@@ -1,22 +1,23 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Search,
-  Filter,
   MoreHorizontal,
   Send,
   Paperclip,
   Smile,
   User,
-  Mail,
   Phone,
-  Globe,
-  ArrowUpRight,
   Plus,
-  Circle,
   Hash,
 } from "lucide-react";
 import { PremiumButton } from "../components/PremiumButton";
+import { PageHeader } from "../components/common";
+import {
+  dashboardContainerVariants,
+  dashboardItemVariants,
+} from "../constants/animationVariants";
+import { Button, Input } from "@/components/ui";
 
 const messages = [
   {
@@ -57,65 +58,45 @@ const messages = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
-
 export const Messages: React.FC = () => {
   return (
     <motion.div
-      variants={containerVariants}
-      initial="hidden"
+      variants={dashboardContainerVariants}
+      initial={false}
       animate="visible"
       className="h-[calc(100vh-12rem)] flex flex-col space-y-10"
     >
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-6"
-      >
-        <div>
-          <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight">
-            COMMUNICATIONS <br />
-            INTERFACE
-          </h2>
-          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
-            SESSION: <span className="text-emerald-400">ENCRYPTED</span>
-          </p>
-        </div>
-        <PremiumButton variant="primary" icon={Plus}>
-          NEW PROTOCOL
-        </PremiumButton>
+      <motion.div variants={dashboardItemVariants}>
+        <PageHeader
+          title={
+            <>
+              COMMUNICATIONS <br />
+              INTERFACE
+            </>
+          }
+          subtitle={
+            <>
+              SESSION: <span className="text-emerald-400">ENCRYPTED</span>
+            </>
+          }
+          actions={
+            <PremiumButton variant="primary" icon={Plus}>
+              NEW PROTOCOL
+            </PremiumButton>
+          }
+        />
       </motion.div>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0">
         {/* Message List */}
         <motion.div
-          variants={itemVariants}
+          variants={dashboardItemVariants}
           className="lg:col-span-4 premium-card !p-0 flex flex-col overflow-hidden"
         >
           <div className="p-6 border-b border-white/5 space-y-6">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-accent-primary transition-colors" />
-              <input
+              <Input
                 type="text"
                 placeholder="SEARCH TRANSMISSIONS..."
                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-accent-primary/20 focus:border-accent-primary/50 transition-all uppercase placeholder:text-on-surface-variant/40"
@@ -123,16 +104,19 @@ export const Messages: React.FC = () => {
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
               {["ALL", "UNREAD", "ARCHIVED", "DRAFTS"].map((tab, idx) => (
-                <button
+                <Button
                   key={tab}
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap tracking-[0.15em] transition-all border ${
                     idx === 0
                       ? "bg-accent-primary text-black border-accent-primary"
-                      : "text-on-surface-variant hover:text-white hover:bg-white/5 border-transparent"
+                      : "text-on-surface-variant hover:text-white hover:bg-white/5 border-transparent bg-transparent"
                   }`}
                 >
                   {tab}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -179,7 +163,7 @@ export const Messages: React.FC = () => {
 
         {/* Chat Window */}
         <motion.div
-          variants={itemVariants}
+          variants={dashboardItemVariants}
           className="lg:col-span-8 premium-card !p-0 flex flex-col overflow-hidden"
         >
           <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
@@ -197,7 +181,7 @@ export const Messages: React.FC = () => {
                 </div>
               </div>
               <div>
-                <h4 className="font-display font-black text-2xl text-white italic italic tracking-tight uppercase">
+                <h4 className="font-display font-black text-2xl text-white italic tracking-tight uppercase">
                   ACME CORP
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
@@ -212,12 +196,22 @@ export const Messages: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant border border-transparent hover:border-white/10 transition-all">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12 rounded-2xl text-on-surface-variant border border-transparent hover:border-white/10 hover:bg-white/5"
+              >
                 <Phone className="w-5 h-5" />
-              </button>
-              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant border border-transparent hover:border-white/10 transition-all">
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12 rounded-2xl text-on-surface-variant border border-transparent hover:border-white/10 hover:bg-white/5"
+              >
                 <MoreHorizontal className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -267,17 +261,27 @@ export const Messages: React.FC = () => {
 
           <div className="p-6 border-t border-white/5 bg-white/[0.01]">
             <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[2rem] p-3 focus-within:border-accent-primary/40 focus-within:ring-4 focus-within:ring-accent-primary/5 transition-all">
-              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant transition-all">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12 rounded-2xl text-on-surface-variant hover:bg-white/5"
+              >
                 <Paperclip className="w-5 h-5" />
-              </button>
-              <input
+              </Button>
+              <Input
                 type="text"
                 placeholder="TYPE NEW PROTOCOL..."
                 className="flex-1 bg-transparent border-none outline-none text-[10px] font-black tracking-widest py-2 px-2 text-white placeholder:text-on-surface-variant/40"
               />
-              <button className="p-3 rounded-2xl hover:bg-white/5 text-on-surface-variant transition-all">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12 rounded-2xl text-on-surface-variant hover:bg-white/5"
+              >
                 <Smile className="w-5 h-5" />
-              </button>
+              </Button>
               <PremiumButton
                 variant="primary"
                 size="sm"

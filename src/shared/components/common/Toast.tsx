@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Toast Notification Component
@@ -8,12 +8,13 @@ import { motion, AnimatePresence } from 'framer-motion';
  */
 export const Toast = ({
   isOpen,
-  message = '',
-  type = 'info', // 'info', 'success', 'error', 'warning'
+  message = "",
+  type = "info", // 'info', 'success', 'error', 'warning'
   duration = 4000, // auto-close in ms, 0 = no auto-close
   onClose,
   action,
-  actionLabel = 'Undo',
+  actionLabel = "Undo",
+  inline = false,
 }) => {
   useEffect(() => {
     if (!isOpen) return;
@@ -26,24 +27,24 @@ export const Toast = ({
 
   const typeConfig = {
     info: {
-      bg: 'bg-blue-500/90',
-      icon: '💡',
-      accent: 'bg-blue-600',
+      bg: "bg-blue-500/90",
+      icon: "💡",
+      accent: "bg-blue-600",
     },
     success: {
-      bg: 'bg-green-500/90',
-      icon: '✓',
-      accent: 'bg-green-600',
+      bg: "bg-green-500/90",
+      icon: "✓",
+      accent: "bg-green-600",
     },
     error: {
-      bg: 'bg-red-500/90',
-      icon: '✕',
-      accent: 'bg-red-600',
+      bg: "bg-red-500/90",
+      icon: "✕",
+      accent: "bg-red-600",
     },
     warning: {
-      bg: 'bg-amber-500/90',
-      icon: '⚠',
-      accent: 'bg-amber-600',
+      bg: "bg-amber-500/90",
+      icon: "⚠",
+      accent: "bg-amber-600",
     },
   };
 
@@ -56,14 +57,16 @@ export const Toast = ({
           initial={{ opacity: 0, y: 20, x: -20 }}
           animate={{ opacity: 1, y: 0, x: 0 }}
           exit={{ opacity: 0, y: 20, x: -20 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
           role="status"
           aria-live="polite"
           aria-atomic="true"
-          className={`fixed bottom-6 left-6 z-[1060] ${config.bg} text-white rounded-lg shadow-lg max-w-sm px-4 py-3 flex items-center gap-3 backdrop-blur-sm border border-white/10`}
+          className={`${inline ? "relative w-full" : "fixed bottom-6 left-6 z-[1060] max-w-sm"} ${config.bg} text-white rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 backdrop-blur-sm border border-white/10`}
         >
           {/* Icon */}
-          <span className={`text-lg flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full ${config.accent} bg-opacity-20`}>
+          <span
+            className={`text-lg flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full ${config.accent} bg-opacity-20`}
+          >
             {config.icon}
           </span>
 
@@ -95,9 +98,9 @@ export const Toast = ({
             <motion.div
               initial={{ scaleX: 1 }}
               animate={{ scaleX: 0 }}
-              transition={{ duration: duration / 1000, ease: 'linear' }}
+              transition={{ duration: duration / 1000, ease: "linear" }}
               className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 origin-left"
-              style={{ transformOrigin: 'left' }}
+              style={{ transformOrigin: "left" }}
             />
           )}
         </motion.div>
@@ -109,18 +112,20 @@ export const Toast = ({
 Toast.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   message: PropTypes.string,
-  type: PropTypes.oneOf(['info', 'success', 'error', 'warning']),
+  type: PropTypes.oneOf(["info", "success", "error", "warning"]),
   duration: PropTypes.number,
   onClose: PropTypes.func.isRequired,
   action: PropTypes.func,
   actionLabel: PropTypes.string,
+  inline: PropTypes.bool,
 };
 
 Toast.defaultProps = {
-  message: '',
-  type: 'info',
+  message: "",
+  type: "info",
   duration: 4000,
-  actionLabel: 'Undo',
+  actionLabel: "Undo",
+  inline: false,
 };
 
 export default Toast;

@@ -16,6 +16,12 @@ export interface SocialLink {
   icon: string;
 }
 
+export interface NavigationItem {
+  label: string;
+  href: string;
+  isRoute?: boolean;
+}
+
 export interface HeroContent {
   title?: string;
   subtitle?: string;
@@ -26,6 +32,7 @@ export interface HeroContent {
   email?: string;
   availability?: string;
   socialLinks?: SocialLink[];
+  navigation?: NavigationItem[];
 }
 
 export interface FocusItem {
@@ -65,6 +72,7 @@ export interface ProjectGalleryItem {
   title: string;
   desc: string;
   liveUrl: string;
+  status?: "Published" | "Draft" | string;
 }
 
 export interface PortfolioData {
@@ -181,6 +189,7 @@ export const PROJECT_GALLERY_ITEM_SHAPE = PropTypes.shape({
   title: PropTypes.string,
   desc: PropTypes.string,
   liveUrl: PropTypes.string,
+  status: PropTypes.string,
 });
 
 export const EXPERTISE_SHAPE = PropTypes.shape({
@@ -211,6 +220,13 @@ export const HEADER_DATA_SHAPE = PropTypes.shape({
       platform: PropTypes.string,
       url: PropTypes.string,
       icon: PropTypes.string,
+    }),
+  ),
+  navigation: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      href: PropTypes.string,
+      isRoute: PropTypes.bool,
     }),
   ),
 });

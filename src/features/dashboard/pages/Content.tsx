@@ -1,211 +1,575 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Edit3, 
-  Eye, 
-  Trash2, 
-  Plus, 
-  Layout, 
-  Image as ImageIcon, 
-  Type, 
-  Link as LinkIcon,
-  ChevronRight,
-  GripVertical,
-  Check,
-  CloudUpload,
-  Globe,
-  Monitor
-} from 'lucide-react';
-import { PremiumButton } from '../components/PremiumButton';
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Check, ChevronRight, Monitor } from "lucide-react";
+import type {
+  AboutContent,
+  Expertise,
+  FocusItem,
+  PortfolioData,
+  ProjectGalleryItem,
+  TechDomain,
+  Testimonial,
+} from "@/shared/types";
+import { PremiumButton } from "../components/PremiumButton";
+import { usePortfolioContent } from "@/features/portfolio/hooks/usePortfolioContent";
+import {
+  AboutSection,
+  ExpertiseTechSection,
+  MappingSection,
+  NavigationSection,
+  ProjectsSection,
+  SectionSwitcher,
+  SiteIdentitySection,
+  TestimonialsSection,
+} from "../components/Content";
+import { PageHeader } from "../components/common";
+import {
+  dashboardContainerVariants,
+  dashboardItemVariants,
+} from "../constants/animationVariants";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
-
-const ProjectCard = ({ title, category, image, status }: any) => (
-  <motion.div 
-    variants={itemVariants}
-    className="premium-card !p-0 overflow-hidden group border-white/5 hover:border-accent-primary/40 transition-all duration-500"
-  >
-    <div className="aspect-video relative overflow-hidden bg-surface">
-      <img 
-        src={image} 
-        alt={title} 
-        className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700" 
-        referrerPolicy="no-referrer" 
-      />
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center gap-6 backdrop-blur-[2px]">
-        <motion.button 
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="p-4 rounded-2xl bg-white text-black shadow-xl"
-        >
-          <Edit3 className="w-5 h-5" />
-        </motion.button>
-        <motion.button 
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="p-4 rounded-2xl bg-accent-primary text-black shadow-xl"
-        >
-          <Eye className="w-5 h-5" />
-        </motion.button>
-      </div>
-      <div className={`absolute top-5 right-5 px-4 py-1.5 rounded-full backdrop-blur-xl text-[9px] font-black uppercase tracking-[0.2em] border ${
-        status === 'Published' 
-          ? 'bg-emerald-500 text-white border-emerald-400/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]' 
-          : 'bg-white/10 text-white border-white/20'
-      }`}>
-        {status}
-      </div>
-    </div>
-    <div className="p-8 flex items-center justify-between bg-white/[0.01]">
-      <div className="space-y-1">
-        <h4 className="font-display font-black text-xl text-white italic tracking-tight uppercase">{title}</h4>
-        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">{category}</p>
-      </div>
-      <button className="p-3 rounded-xl hover:bg-red-500/10 text-on-surface-variant hover:text-red-500 transition-all border border-transparent hover:border-red-500/20 group">
-        <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-      </button>
-    </div>
-  </motion.div>
-);
+type SaveState = "saved" | "saving" | "error";
+type ContentSectionId =
+  | "identity"
+  | "navigation"
+  | "projects"
+  | "about"
+  | "expertise"
+  | "testimonials"
+  | "mapping";
 
 export const Content: React.FC = () => {
+  const { data, save, reset } = usePortfolioContent();
+  const [draft, setDraft] = useState<PortfolioData>(data);
+  const [saveState, setSaveState] = useState<SaveState>("saved");
+  const [activeSection, setActiveSection] =
+    useState<ContentSectionId>("identity");
+
+  const sourceSnapshot = useMemo(() => JSON.stringify(data), [data]);
+  const draftSnapshot = useMemo(() => JSON.stringify(draft), [draft]);
+
+  useEffect(() => {
+    setDraft(data);
+  }, [sourceSnapshot, data]);
+
+  useEffect(() => {
+    if (draftSnapshot === sourceSnapshot) {
+      setSaveState("saved");
+      return;
+    }
+
+    setSaveState("saving");
+    const timer = window.setTimeout(() => {
+      try {
+        save(draft);
+        setSaveState("saved");
+      } catch {
+        setSaveState("error");
+      }
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [draftSnapshot, sourceSnapshot, draft, save]);
+
+  const updateHeroField = (
+    field: keyof PortfolioData["hero"],
+    value: string,
+  ) => {
+    setDraft((previous) => ({
+      ...previous,
+      hero: {
+        ...previous.hero,
+        [field]: value,
+      },
+    }));
+  };
+
+  const updateAboutField = (field: keyof AboutContent, value: string) => {
+    setDraft((previous) => ({
+      ...previous,
+      about: {
+        ...previous.about,
+        [field]: value,
+      },
+    }));
+  };
+
+  const updateFocusItem = (
+    index: number,
+    field: keyof FocusItem,
+    value: string,
+  ) => {
+    setDraft((previous) => {
+      const focusItems = [...(previous.about.focusItems || [])];
+      focusItems[index] = {
+        ...focusItems[index],
+        [field]: value,
+      };
+
+      return {
+        ...previous,
+        about: {
+          ...previous.about,
+          focusItems,
+        },
+      };
+    });
+  };
+
+  const addFocusItem = () => {
+    setDraft((previous) => ({
+      ...previous,
+      about: {
+        ...previous.about,
+        focusItems: [
+          ...(previous.about.focusItems || []),
+          {
+            title: "New Focus",
+            description: "Describe this focus area",
+          },
+        ],
+      },
+    }));
+  };
+
+  const removeFocusItem = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      about: {
+        ...previous.about,
+        focusItems: (previous.about.focusItems || []).filter(
+          (_, itemIndex) => itemIndex !== index,
+        ),
+      },
+    }));
+  };
+
+  const updateNavigation = (
+    index: number,
+    field: "label" | "href" | "isRoute",
+    value: string | boolean,
+  ) => {
+    setDraft((previous) => {
+      const navigation = [...(previous.hero.navigation || [])];
+      navigation[index] = {
+        ...navigation[index],
+        [field]: value,
+      };
+
+      return {
+        ...previous,
+        hero: {
+          ...previous.hero,
+          navigation,
+        },
+      };
+    });
+  };
+
+  const moveNavigation = (index: number, direction: -1 | 1) => {
+    setDraft((previous) => {
+      const navigation = [...(previous.hero.navigation || [])];
+      const targetIndex = index + direction;
+
+      if (targetIndex < 0 || targetIndex >= navigation.length) {
+        return previous;
+      }
+
+      const current = navigation[index];
+      navigation[index] = navigation[targetIndex];
+      navigation[targetIndex] = current;
+
+      return {
+        ...previous,
+        hero: {
+          ...previous.hero,
+          navigation,
+        },
+      };
+    });
+  };
+
+  const addNavigation = () => {
+    setDraft((previous) => ({
+      ...previous,
+      hero: {
+        ...previous.hero,
+        navigation: [
+          ...(previous.hero.navigation || []),
+          {
+            label: "New Link",
+            href: "#section",
+            isRoute: false,
+          },
+        ],
+      },
+    }));
+  };
+
+  const removeNavigation = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      hero: {
+        ...previous.hero,
+        navigation: (previous.hero.navigation || []).filter(
+          (_, navIndex) => navIndex !== index,
+        ),
+      },
+    }));
+  };
+
+  const updateProject = (
+    index: number,
+    field: keyof ProjectGalleryItem,
+    value: string,
+  ) => {
+    setDraft((previous) => {
+      const projects = [...previous.projects];
+      projects[index] = {
+        ...projects[index],
+        [field]: value,
+      };
+
+      return {
+        ...previous,
+        projects,
+      };
+    });
+  };
+
+  const addProject = () => {
+    setDraft((previous) => ({
+      ...previous,
+      projects: [
+        ...previous.projects,
+        {
+          img: "https://picsum.photos/seed/new-project/800/600",
+          category: "New Category",
+          title: "New Project",
+          desc: "Project description",
+          liveUrl: "#",
+          status: "Draft",
+        },
+      ],
+    }));
+  };
+
+  const removeProject = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      projects: previous.projects.filter(
+        (_, projectIndex) => projectIndex !== index,
+      ),
+    }));
+  };
+
+  const updateExpertise = (
+    index: number,
+    field: keyof Expertise,
+    value: string,
+  ) => {
+    setDraft((previous) => {
+      const expertise = [...previous.expertise];
+      expertise[index] = {
+        ...expertise[index],
+        [field]: value,
+      };
+
+      return {
+        ...previous,
+        expertise,
+      };
+    });
+  };
+
+  const addExpertise = () => {
+    setDraft((previous) => ({
+      ...previous,
+      expertise: [
+        ...previous.expertise,
+        {
+          title: "New Expertise",
+          category: "Web",
+          description: "Describe this capability",
+        },
+      ],
+    }));
+  };
+
+  const removeExpertise = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      expertise: previous.expertise.filter(
+        (_, itemIndex) => itemIndex !== index,
+      ),
+    }));
+  };
+
+  const updateTechDomain = (
+    index: number,
+    field: keyof TechDomain,
+    value: string,
+  ) => {
+    setDraft((previous) => {
+      const techStack = [...previous.techStack];
+      techStack[index] = {
+        ...techStack[index],
+        [field]:
+          field === "items"
+            ? value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean)
+            : value,
+      };
+
+      return {
+        ...previous,
+        techStack,
+      };
+    });
+  };
+
+  const addTechDomain = () => {
+    setDraft((previous) => ({
+      ...previous,
+      techStack: [
+        ...previous.techStack,
+        {
+          category: "New Domain",
+          items: ["Skill"],
+        },
+      ],
+    }));
+  };
+
+  const removeTechDomain = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      techStack: previous.techStack.filter(
+        (_, itemIndex) => itemIndex !== index,
+      ),
+    }));
+  };
+
+  const updateTestimonial = (
+    index: number,
+    field: keyof Testimonial,
+    value: string,
+  ) => {
+    setDraft((previous) => {
+      const testimonials = [...previous.testimonials];
+      testimonials[index] = {
+        ...testimonials[index],
+        [field]: value,
+      };
+
+      return {
+        ...previous,
+        testimonials,
+      };
+    });
+  };
+
+  const addTestimonial = () => {
+    setDraft((previous) => ({
+      ...previous,
+      testimonials: [
+        ...previous.testimonials,
+        {
+          quote: "Write a testimonial",
+          author: "Author Name",
+          company: "Company",
+        },
+      ],
+    }));
+  };
+
+  const removeTestimonial = (index: number) => {
+    setDraft((previous) => ({
+      ...previous,
+      testimonials: previous.testimonials.filter(
+        (_, itemIndex) => itemIndex !== index,
+      ),
+    }));
+  };
+
+  const saveMessage =
+    saveState === "saving"
+      ? "SYNCING CONTENT..."
+      : saveState === "error"
+        ? "SAVE FAILED"
+        : "LIVE CONTENT READY";
+
+  const sections = useMemo(
+    () => [
+      { id: "identity", label: "Site Identity" },
+      {
+        id: "navigation",
+        label: "Navigation",
+        count: (draft.hero.navigation || []).length,
+      },
+      { id: "projects", label: "Projects", count: draft.projects.length },
+      {
+        id: "about",
+        label: "About",
+        count: (draft.about.focusItems || []).length,
+      },
+      {
+        id: "expertise",
+        label: "Expertise + Tech",
+        count: draft.expertise.length + draft.techStack.length,
+      },
+      {
+        id: "testimonials",
+        label: "Testimonials",
+        count: draft.testimonials.length,
+      },
+      { id: "mapping", label: "Field Mapping" },
+    ],
+    [draft],
+  );
+
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case "identity":
+        return (
+          <SiteIdentitySection
+            hero={draft.hero}
+            onUpdateHero={updateHeroField}
+          />
+        );
+      case "navigation":
+        return (
+          <NavigationSection
+            navigation={draft.hero.navigation}
+            onUpdate={updateNavigation}
+            onMove={moveNavigation}
+            onAdd={addNavigation}
+            onRemove={removeNavigation}
+          />
+        );
+      case "projects":
+        return (
+          <ProjectsSection
+            projects={draft.projects}
+            onUpdateProject={updateProject}
+            onAddProject={addProject}
+            onRemoveProject={removeProject}
+          />
+        );
+      case "about":
+        return (
+          <AboutSection
+            about={draft.about}
+            onUpdateAbout={updateAboutField}
+            onUpdateFocusItem={updateFocusItem}
+            onAddFocusItem={addFocusItem}
+            onRemoveFocusItem={removeFocusItem}
+          />
+        );
+      case "expertise":
+        return (
+          <ExpertiseTechSection
+            expertise={draft.expertise}
+            techStack={draft.techStack}
+            onUpdateExpertise={updateExpertise}
+            onAddExpertise={addExpertise}
+            onRemoveExpertise={removeExpertise}
+            onUpdateTechDomain={updateTechDomain}
+            onAddTechDomain={addTechDomain}
+            onRemoveTechDomain={removeTechDomain}
+          />
+        );
+      case "testimonials":
+        return (
+          <TestimonialsSection
+            testimonials={draft.testimonials}
+            onUpdateTestimonial={updateTestimonial}
+            onAddTestimonial={addTestimonial}
+            onRemoveTestimonial={removeTestimonial}
+          />
+        );
+      case "mapping":
+        return <MappingSection draft={draft} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
+    <motion.div
+      variants={dashboardContainerVariants}
+      initial={false}
       animate="visible"
-      className="space-y-12"
+      className="space-y-14"
     >
-      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight uppercase">
-            WEBSITE CONTENT <br />ARCHITECTURE
-          </h2>
-          <p className="text-on-surface-variant font-bold mt-2 text-sm uppercase tracking-[0.2em]">
-            DEPLOYMENT: <span className="text-accent-primary">READY</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <PremiumButton variant="outline" icon={Monitor}>
-            PREVIEW LIVE
-          </PremiumButton>
-          <PremiumButton variant="primary" icon={Check}>
-            PUBLISH SYNC
-          </PremiumButton>
-        </div>
+      <motion.div variants={dashboardItemVariants}>
+        <PageHeader
+          title={
+            <>
+              WEBSITE CONTENT <br />
+              ARCHITECTURE
+            </>
+          }
+          subtitle={
+            <>
+              DEPLOYMENT:{" "}
+              <span className="text-accent-primary">{saveMessage}</span>
+            </>
+          }
+          actions={
+            <>
+              <PremiumButton
+                variant="outline"
+                icon={Monitor}
+                type="button"
+                onClick={() => {
+                  window.open("/", "_blank");
+                }}
+              >
+                PREVIEW LIVE
+              </PremiumButton>
+              <PremiumButton
+                variant="primary"
+                icon={Check}
+                type="button"
+                onClick={() => {
+                  save(draft);
+                  setSaveState("saved");
+                }}
+              >
+                PUBLISH SYNC
+              </PremiumButton>
+              <PremiumButton
+                variant="secondary"
+                icon={ChevronRight}
+                type="button"
+                onClick={() => {
+                  reset();
+                  setSaveState("saved");
+                }}
+              >
+                RESET
+              </PremiumButton>
+            </>
+          }
+        />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-4 space-y-10">
-          <motion.div variants={itemVariants} className="premium-card space-y-8">
-            <h3 className="text-xl font-display font-black flex items-center gap-4 text-white italic uppercase tracking-tight">
-              <div className="p-2 rounded-xl bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
-                <Layout className="w-5 h-5" />
-              </div>
-              Site Identity
-            </h3>
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em]">Site Title</label>
-                <input 
-                  type="text" 
-                  defaultValue="THE CURATOR PROTOCOL" 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-xs font-black tracking-widest text-white focus:ring-4 focus:ring-accent-primary/5 focus:border-accent-primary/50 outline-none transition-all uppercase" 
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em]">Digital Asset Logo</label>
-                <div className="w-full h-40 rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 hover:border-accent-primary/50 hover:bg-accent-primary/[0.02] cursor-pointer transition-all group">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                    <CloudUpload className="w-8 h-8 text-on-surface-variant group-hover:text-accent-primary" />
-                  </div>
-                  <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">DRAG ASSET OR BROWSE</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+      <motion.div variants={dashboardItemVariants}>
+        <SectionSwitcher
+          sections={sections}
+          activeSection={activeSection}
+          onChange={(sectionId) =>
+            setActiveSection(sectionId as ContentSectionId)
+          }
+        />
+      </motion.div>
 
-          <motion.div variants={itemVariants} className="premium-card space-y-8">
-            <h3 className="text-xl font-display font-black flex items-center gap-4 text-white italic uppercase tracking-tight">
-              <div className="p-2 rounded-xl bg-accent-secondary/10 text-accent-secondary border border-accent-secondary/20">
-                <Type className="w-5 h-5" />
-              </div>
-              Navigation Log
-            </h3>
-            <div className="space-y-3">
-              {['HOME', 'WORK', 'ABOUT', 'CONTACT'].map((item) => (
-                <motion.div 
-                  key={item} 
-                  whileHover={{ x: 5 }}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10 group cursor-move hover:border-accent-secondary/40 transition-all"
-                >
-                  <GripVertical className="w-4 h-4 text-on-surface-variant/40 group-hover:text-accent-secondary transition-colors" />
-                  <span className="flex-1 text-[11px] font-black text-white tracking-[0.2em]">{item}</span>
-                  <Edit3 className="w-4 h-4 text-on-surface-variant hover:text-white cursor-pointer transition-colors" />
-                </motion.div>
-              ))}
-              <motion.button 
-                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 rounded-2xl border border-dashed border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant hover:text-accent-secondary hover:border-accent-secondary/40 transition-all flex items-center justify-center gap-3"
-              >
-                <Plus className="w-4 h-4" />
-                NEW NODE
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="lg:col-span-8 space-y-10">
-          <motion.div variants={itemVariants} className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-display font-black text-white italic uppercase tracking-tight">Portfolio Index</h3>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1">MASTER ARCHIVE DATA</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-                <button className="px-5 py-2.5 rounded-xl bg-accent-primary text-black text-[10px] font-black uppercase tracking-widest transition-all">GRID</button>
-                <button className="px-5 py-2.5 rounded-xl text-on-surface-variant hover:text-white text-[10px] font-black uppercase tracking-widest transition-all">LIST</button>
-              </div>
-              <PremiumButton variant="primary" icon={Plus} size="sm" className="!h-10 !w-10 !rounded-xl !p-0">
-                <span className="sr-only">ADD</span>
-              </PremiumButton>
-            </div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              { title: 'Neon Genesis', category: 'Branding & Identity', image: 'https://picsum.photos/seed/neon/800/600', status: 'Published' },
-              { title: 'Aether Flow', category: 'Web Design', image: 'https://picsum.photos/seed/aether/800/600', status: 'Draft' },
-              { title: 'Cyber UI', category: 'Motion Graphics', image: 'https://picsum.photos/seed/cyber/800/600', status: 'Published' },
-              { title: 'Minimalist', category: 'Photography', image: 'https://picsum.photos/seed/minimal/800/600', status: 'Published' },
-            ].map((project, i) => (
-              <ProjectCard key={i} {...project} />
-            ))}
-          </div>
-        </div>
-      </div>
+      <motion.div variants={dashboardItemVariants} className="pt-1">
+        {renderActiveSection()}
+      </motion.div>
     </motion.div>
   );
 };

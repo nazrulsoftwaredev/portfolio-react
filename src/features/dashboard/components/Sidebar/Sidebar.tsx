@@ -101,7 +101,11 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                   ${isOpen ? "px-3" : "justify-center"}`}
                 >
                   {/* ICON */}
-                  <div className="flex items-center justify-center w-10 h-10">
+                  <div
+                    className={`flex items-center justify-center w-10 h-10 transition-opacity duration-200 ${
+                      isOpen ? "" : "group-hover:opacity-0"
+                    }`}
+                  >
                     <item.icon
                       className={`w-5 h-5 transition-all ${
                         isActive
@@ -111,22 +115,17 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                     />
                   </div>
 
-                  {/* LABEL */}
-                  {isOpen && (
-                    <span className="ml-2 text-sm font-medium text-white">
+                  {!isOpen && (
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[11px] font-semibold text-cyan-100 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 whitespace-nowrap">
                       {item.label}
                     </span>
                   )}
 
-                  {/* TOOLTIP (collapsed mode) */}
-                  {!isOpen && (
-                    <div
-                      className="absolute left-full ml-3 px-2 py-1 rounded-md
-                                    bg-[#090b10] text-xs text-white opacity-0
-                                    group-hover:opacity-100 transition pointer-events-none whitespace-nowrap"
-                    >
+                  {/* LABEL */}
+                  {isOpen && (
+                    <span className="ml-2 text-sm font-medium text-white transition-all duration-200 group-hover:text-cyan-100 group-hover:translate-x-0.5">
                       {item.label}
-                    </div>
+                    </span>
                   )}
                 </div>
               </div>

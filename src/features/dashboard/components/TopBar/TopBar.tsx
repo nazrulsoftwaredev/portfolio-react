@@ -12,6 +12,7 @@ import {
   Edit,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui";
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -91,7 +92,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Search className="w-4 h-4 text-white/40 group-focus-within:text-white" />
           </div>
 
-          <input
+          <Input
             placeholder="Search..."
             className="w-full pl-11 pr-14 py-3 rounded-2xl
                        bg-white/5 border border-white/10

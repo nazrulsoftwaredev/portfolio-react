@@ -1,0 +1,68 @@
+import type { Client, ClientStatus } from "./types";
+
+export const STORAGE_KEY = "dashboard-clients-v1";
+
+export const STATUS_ORDER: ClientStatus[] = ["Active", "On Hold", "Inactive"];
+
+export const INITIAL_CLIENTS: Client[] = [
+  {
+    id: "1",
+    name: "Acme Corp",
+    industry: "Technology",
+    status: "Active",
+    value: 45000,
+    growth: 12,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=acme",
+    email: "hello@acmecorp.com",
+    phone: "+1-555-0101",
+    website: "https://acmecorp.com",
+  },
+  {
+    id: "2",
+    name: "Global Tech",
+    industry: "Finance",
+    status: "On Hold",
+    value: 12200,
+    growth: -5,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=global",
+    email: "ops@globaltech.io",
+    phone: "+1-555-0102",
+    website: "https://globaltech.io",
+  },
+  {
+    id: "3",
+    name: "Studio X",
+    industry: "Design",
+    status: "Active",
+    value: 8800,
+    growth: 8,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=studio",
+    email: "team@studiox.design",
+    phone: "+1-555-0103",
+    website: "https://studiox.design",
+  },
+  {
+    id: "4",
+    name: "Future Labs",
+    industry: "R&D",
+    status: "Active",
+    value: 62000,
+    growth: 25,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=future",
+    email: "contact@futurelabs.ai",
+    phone: "+1-555-0104",
+    website: "https://futurelabs.ai",
+  },
+  {
+    id: "5",
+    name: "Eco World",
+    industry: "Environment",
+    status: "Inactive",
+    value: 2500,
+    growth: 0,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=eco",
+    email: "hello@ecoworld.org",
+    phone: "+1-555-0105",
+    website: "https://ecoworld.org",
+  },
+];

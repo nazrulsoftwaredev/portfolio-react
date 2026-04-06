@@ -8,7 +8,7 @@ import { Footer } from "../components/Footer/Footer";
 import { CustomCursor } from "../components/CustomCursor";
 import { SkipLink } from "@/shared/components";
 import { Hero } from "../components/Hero/Hero";
-import { portfolioData } from "../constants/portfolioData";
+import { usePortfolioContent } from "../hooks/usePortfolioContent";
 
 // Lazy load sections below the fold
 const About = lazy(() =>
@@ -60,6 +60,7 @@ const SectionErrorFallback: React.FC<SectionErrorFallbackProps> = ({
 
 export const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const { data: portfolioData } = usePortfolioContent();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1200);

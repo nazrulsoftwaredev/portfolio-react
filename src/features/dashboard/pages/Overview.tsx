@@ -1,21 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  TrendingUp,
   Users,
   FileText,
   Zap,
   ArrowUpRight,
   ArrowDownRight,
-  MoreHorizontal,
   Plus,
   ArrowRight,
   MessageCircle,
-  CheckCircle2,
-  AlertCircle,
   DollarSign,
-  Eye,
-  Calendar,
 } from "lucide-react";
 import {
   AreaChart,
@@ -27,12 +21,37 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { PremiumButton } from "../components/PremiumButton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui";
+import {
+  dashboardContainerVariants,
+  dashboardItemVariants,
+} from "../constants/animationVariants";
 
 type RevenuePoint = {
   label: string;
   revenue: number;
   invoices: number;
 };
+
+type ActivityType = "invoice" | "client" | "message";
+
+interface ActivityItem {
+  type: ActivityType;
+  label: string;
+  amount?: string;
+  client?: string;
+  industry?: string;
+  preview?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  textColor: string;
+}
 
 type RevenueRange =
   | "THIS_WEEK"
@@ -82,28 +101,52 @@ const revenueSeriesByRange: Record<RevenueRange, RevenuePoint[]> = {
   ],
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
+const recentActivities: ActivityItem[] = [
+  {
+    type: "invoice",
+    label: "INV-2024-001",
+    client: "Acme Corp",
+    amount: "+$4,500",
+    icon: FileText,
+    color: "bg-emerald-500/10",
+    textColor: "text-emerald-400",
   },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-    },
+  {
+    type: "client",
+    label: "New Client: Global Tech",
+    industry: "Finance",
+    amount: "$12.2K",
+    icon: Users,
+    color: "bg-blue-500/10",
+    textColor: "text-blue-400",
   },
-};
+  {
+    type: "invoice",
+    label: "INV-2024-002",
+    client: "Studio X",
+    amount: "+$2,800",
+    icon: FileText,
+    color: "bg-purple-500/10",
+    textColor: "text-purple-400",
+  },
+  {
+    type: "message",
+    label: "New message from Future Labs",
+    preview: "Partnership proposal",
+    icon: MessageCircle,
+    color: "bg-amber-500/10",
+    textColor: "text-amber-400",
+  },
+  {
+    type: "invoice",
+    label: "INV-2024-003",
+    client: "Eco World",
+    amount: "+$1,500",
+    icon: FileText,
+    color: "bg-emerald-500/10",
+    textColor: "text-emerald-400",
+  },
+];
 
 interface StatCardProps {
   icon: any;
@@ -123,7 +166,7 @@ const StatCard = ({
   bgGradient,
 }: StatCardProps) => (
   <motion.div
-    variants={itemVariants}
+    variants={dashboardItemVariants}
     className="premium-card group relative overflow-hidden"
   >
     {/* Background Aura */}
@@ -178,6 +221,15 @@ const StatCard = ({
 export const Overview: React.FC = () => {
   const [selectedRange, setSelectedRange] =
     React.useState<RevenueRange>("THIS_WEEK");
+  const [selectedStat, setSelectedStat] = React.useState<
+    "revenue" | "invoices" | "ticket"
+  >("revenue");
+  const [activityFilter, setActivityFilter] = React.useState<
+    "ALL" | ActivityType
+  >("ALL");
+  const [selectedPoint, setSelectedPoint] = React.useState<RevenuePoint | null>(
+    null,
+  );
 
   const selectedRevenueData = React.useMemo(
     () => revenueSeriesByRange[selectedRange],
@@ -207,17 +259,63 @@ export const Overview: React.FC = () => {
     return `$${value.toLocaleString()}`;
   }, []);
 
+  const formatCompactCurrency = React.useCallback(
+    (value: number) => {
+      if (value >= 1000) {
+        return `$${(value / 1000).toFixed(1)}K`;
+      }
+
+      return formatCurrency(value);
+    },
+    [formatCurrency],
+  );
+
+  const topRevenuePoint = React.useMemo(() => {
+    return selectedRevenueData.reduce((top, point) =>
+      point.revenue > top.revenue ? point : top,
+    );
+  }, [selectedRevenueData]);
+
+  const filteredActivities = React.useMemo(() => {
+    if (activityFilter === "ALL") {
+      return recentActivities;
+    }
+
+    return recentActivities.filter((item) => item.type === activityFilter);
+  }, [activityFilter]);
+
+  React.useEffect(() => {
+    setSelectedPoint(
+      selectedRevenueData[selectedRevenueData.length - 1] ?? null,
+    );
+  }, [selectedRevenueData]);
+
+  const statInsight = React.useMemo(() => {
+    if (selectedStat === "revenue") {
+      return `Strongest period: ${topRevenuePoint.label} at ${formatCurrency(topRevenuePoint.revenue)}.`;
+    }
+
+    if (selectedStat === "invoices") {
+      return `Total invoices in current view: ${chartSummary.totalInvoices}. Keep throughput above this baseline.`;
+    }
+
+    return `Average ticket value is ${formatCurrency(Math.round(chartSummary.averageTicket))} for the selected range.`;
+  }, [
+    chartSummary.averageTicket,
+    chartSummary.totalInvoices,
+    formatCurrency,
+    selectedStat,
+    topRevenuePoint.label,
+    topRevenuePoint.revenue,
+  ]);
+
   return (
     <motion.div
-      variants={containerVariants}
-      initial="hidden"
+      variants={dashboardContainerVariants}
       animate="visible"
       className="space-y-10"
     >
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-6"
-      >
+      <motion.div variants={dashboardItemVariants}>
         <div>
           <h2 className="text-4xl font-display font-black tracking-tighter text-gradient leading-tight">
             BUSINESS <br />
@@ -275,7 +373,7 @@ export const Overview: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <motion.div
-          variants={itemVariants}
+          variants={dashboardItemVariants}
           className="lg:col-span-2 premium-card space-y-8"
         >
           <div className="flex items-center justify-between">
@@ -287,51 +385,93 @@ export const Overview: React.FC = () => {
                 Revenue and invoice trends by selected period
               </p>
             </div>
-            <select
+            <Select
               value={selectedRange}
-              onChange={(event) =>
-                setSelectedRange(event.target.value as RevenueRange)
-              }
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-all cursor-pointer"
+              onValueChange={(value) => setSelectedRange(value as RevenueRange)}
             >
-              {rangeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 h-auto text-xs font-bold text-white focus:ring-2 focus:ring-accent-primary/20 transition-all cursor-pointer">
+                <SelectValue placeholder="Select range" />
+              </SelectTrigger>
+              <SelectContent className="bg-surface border-white/10 text-white">
+                {rangeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <button
+              type="button"
+              onClick={() => setSelectedStat("revenue")}
+              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+                selectedStat === "revenue"
+                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
+                  : "border-white/10 hover:border-white/20"
+              }`}
+            >
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
                 Period Revenue
               </p>
               <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
                 {formatCurrency(chartSummary.totalRevenue)}
               </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedStat("invoices")}
+              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+                selectedStat === "invoices"
+                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
+                  : "border-white/10 hover:border-white/20"
+              }`}
+            >
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
                 Total Invoices
               </p>
               <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
                 {chartSummary.totalInvoices}
               </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedStat("ticket")}
+              className={`rounded-2xl border bg-white/[0.03] p-4 text-left transition-all ${
+                selectedStat === "ticket"
+                  ? "border-cyan-300/40 ring-1 ring-cyan-300/30"
+                  : "border-white/10 hover:border-white/20"
+              }`}
+            >
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
                 Avg Ticket
               </p>
               <p className="mt-2 text-xl font-display font-black text-white tabular-nums">
                 {formatCurrency(Math.round(chartSummary.averageTicket))}
               </p>
-            </div>
+            </button>
+          </div>
+
+          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/5 px-4 py-3">
+            <p className="text-xs text-cyan-100 font-semibold tracking-wide">
+              {statInsight}
+            </p>
           </div>
 
           <div className="h-[350px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={selectedRevenueData}>
+              <AreaChart
+                data={selectedRevenueData}
+                onClick={(state: any) => {
+                  if (!state.activePayload?.length) {
+                    return;
+                  }
+
+                  const point = state.activePayload[0].payload as RevenuePoint;
+                  setSelectedPoint(point);
+                }}
+              >
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#acc7ff" stopOpacity={0.3} />
@@ -361,14 +501,14 @@ export const Overview: React.FC = () => {
                     strokeWidth: 1,
                     strokeDasharray: "4 4",
                   }}
-                  formatter={(value: number, name: string) => {
+                  formatter={(value: any, name: any) => {
                     if (name === "revenue") {
-                      return [formatCurrency(value), "Revenue"];
+                      return [formatCurrency(Number(value || 0)), "Revenue"];
                     }
 
                     return [value, "Invoices"];
                   }}
-                  labelFormatter={(label: string) => `Period: ${label}`}
+                  labelFormatter={(label: any) => `Period: ${label}`}
                   contentStyle={{
                     backgroundColor: "#111",
                     border: "1px solid rgba(255,255,255,0.1)",
@@ -396,14 +536,43 @@ export const Overview: React.FC = () => {
                   strokeWidth={4}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
+                  activeDot={{
+                    r: 6,
+                    stroke: "#acc7ff",
+                    strokeWidth: 2,
+                    fill: "#0d111b",
+                  }}
                   animationDuration={2000}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
+
+          {selectedPoint && (
+            <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">
+                Selected: {selectedPoint.label}
+              </p>
+              <p className="text-sm font-semibold text-white">
+                Revenue: {formatCurrency(selectedPoint.revenue)}
+              </p>
+              <p className="text-sm font-semibold text-white/90">
+                Invoices: {selectedPoint.invoices}
+              </p>
+              <p className="text-sm font-semibold text-cyan-200">
+                Ticket:{" "}
+                {formatCompactCurrency(
+                  selectedPoint.revenue / selectedPoint.invoices,
+                )}
+              </p>
+            </div>
+          )}
         </motion.div>
 
-        <motion.div variants={itemVariants} className="premium-card space-y-6">
+        <motion.div
+          variants={dashboardItemVariants}
+          className="premium-card space-y-6"
+        >
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-display font-black tracking-tight text-white italic">
               RECENT ACTIVITY
@@ -414,53 +583,41 @@ export const Overview: React.FC = () => {
             </button>
           </div>
 
-          <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
             {[
+              { value: "ALL", label: `All (${recentActivities.length})` },
               {
-                type: "invoice",
-                label: "INV-2024-001",
-                client: "Acme Corp",
-                amount: "+$4,500",
-                icon: FileText,
-                color: "bg-emerald-500/10",
-                textColor: "text-emerald-400",
+                value: "invoice",
+                label: `Invoices (${recentActivities.filter((item) => item.type === "invoice").length})`,
               },
               {
-                type: "client",
-                label: "New Client: Global Tech",
-                industry: "Finance",
-                amount: "$12.2K",
-                icon: Users,
-                color: "bg-blue-500/10",
-                textColor: "text-blue-400",
+                value: "client",
+                label: `Clients (${recentActivities.filter((item) => item.type === "client").length})`,
               },
               {
-                type: "invoice",
-                label: "INV-2024-002",
-                client: "Studio X",
-                amount: "+$2,800",
-                icon: FileText,
-                color: "bg-purple-500/10",
-                textColor: "text-purple-400",
+                value: "message",
+                label: `Messages (${recentActivities.filter((item) => item.type === "message").length})`,
               },
-              {
-                type: "message",
-                label: "New message from Future Labs",
-                preview: "Partnership proposal",
-                icon: MessageCircle,
-                color: "bg-amber-500/10",
-                textColor: "text-amber-400",
-              },
-              {
-                type: "invoice",
-                label: "INV-2024-003",
-                client: "Eco World",
-                amount: "+$1,500",
-                icon: FileText,
-                color: "bg-emerald-500/10",
-                textColor: "text-emerald-400",
-              },
-            ].map((activity, i) => (
+            ].map((filter) => (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() =>
+                  setActivityFilter(filter.value as "ALL" | ActivityType)
+                }
+                className={`rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
+                  activityFilter === filter.value
+                    ? "bg-cyan-400/15 text-cyan-100 border border-cyan-300/30"
+                    : "bg-white/5 text-white/65 border border-white/10 hover:bg-white/10"
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-5">
+            {filteredActivities.map((activity, i) => (
               <motion.div
                 key={i}
                 whileHover={{ x: 5 }}
@@ -489,7 +646,7 @@ export const Overview: React.FC = () => {
       </div>
 
       <motion.div
-        variants={itemVariants}
+        variants={dashboardItemVariants}
         className="premium-card !p-0 overflow-hidden"
       >
         <div className="p-8 flex items-center justify-between border-b border-white/5">

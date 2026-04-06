@@ -5,6 +5,14 @@ export const portfolioData: PortfolioData = {
     name: "MD Nazrul Islam",
     email: "hello@mdnazrul.com",
     availability: "BASED IN DHAKA - AVAILABLE WORLDWIDE",
+    navigation: [
+      { label: "About", href: "#about" },
+      { label: "Work", href: "#work" },
+      { label: "Expertise", href: "#expertise" },
+      { label: "Tech Stack", href: "#tech-stack" },
+      { label: "Contact", href: "#contact" },
+      { label: "Dashboard", href: "/dashboard", isRoute: true },
+    ],
   },
   about: {
     scrubText:
@@ -81,6 +89,7 @@ export const portfolioData: PortfolioData = {
       title: "FlowBoard",
       desc: "A focused analytics dashboard experience designed for clarity, speed, and confident decision making.",
       liveUrl: "#",
+      status: "Published",
     },
     {
       img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop",
@@ -88,6 +97,7 @@ export const portfolioData: PortfolioData = {
       title: "LedgerView",
       desc: "A clean finance interface that simplifies complex datasets through strong hierarchy and motion.",
       liveUrl: "#",
+      status: "Draft",
     },
     {
       img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2672&auto=format&fit=crop",
@@ -95,6 +105,7 @@ export const portfolioData: PortfolioData = {
       title: "Northline Studio",
       desc: "A storytelling-first website system balancing typography, animation, and conversion-focused UX.",
       liveUrl: "#",
+      status: "Published",
     },
   ],
 };
