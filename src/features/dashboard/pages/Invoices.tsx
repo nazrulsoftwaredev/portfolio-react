@@ -66,17 +66,17 @@ const invoices = [
 
 const summaryCards = [
   {
-    label: "TOTAL COLLECTED",
+    label: "Total collected",
     value: "$124,500.00",
     tone: "bg-emerald-500/5 border-emerald-500/20 text-emerald-400",
   },
   {
-    label: "OUTSTANDING",
+    label: "Outstanding",
     value: "$18,200.00",
     tone: "bg-amber-500/5 border-amber-500/20 text-amber-400",
   },
   {
-    label: "OVERDUE",
+    label: "Overdue",
     value: "$4,800.00",
     tone: "bg-red-500/5 border-red-500/20 text-red-400",
   },
@@ -89,13 +89,13 @@ export const Invoices: React.FC = () => {
         <PageHeader
           title={
             <>
-              INVOICE <br />
-              OPERATIONS
+              Invoice <br />
+              operations
             </>
           }
           subtitle={
             <>
-              BILLING CHANNEL: <span className="text-emerald-600">LIVE</span>
+              Billing channel: <span className="text-emerald-600">Live</span>
             </>
           }
           actions={
@@ -114,8 +114,8 @@ export const Invoices: React.FC = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="SEARCH INVOICES..."
-                className="w-full bg-background border border-border rounded-2xl py-3 pl-12 pr-4 text-[10px] font-semibold tracking-[0.15em] text-foreground uppercase placeholder:text-muted-foreground"
+                placeholder="Search invoices"
+                className="w-full bg-background border border-border rounded-xl pl-11 pr-4"
               />
             </div>
 
@@ -130,7 +130,7 @@ export const Invoices: React.FC = () => {
           <div className="overflow-x-auto">
             <Table className="w-full text-left">
               <TableHeader>
-                <TableRow className="text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.2em] bg-muted/30 hover:bg-muted/30">
+                <TableRow className="text-muted-foreground text-xs font-medium bg-muted/30 hover:bg-muted/30">
                   <TableHead className="px-8 py-4 text-muted-foreground">
                     Invoice ID
                   </TableHead>
@@ -171,10 +171,10 @@ export const Invoices: React.FC = () => {
                     <TableCell className="px-8 py-6 text-sm font-semibold text-foreground">
                       {invoice.client}
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <TableCell className="px-8 py-6 text-xs font-medium text-muted-foreground">
                       {invoice.date}
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <TableCell className="px-8 py-6 text-xs font-medium text-muted-foreground">
                       {invoice.dueDate}
                     </TableCell>
                     <TableCell className="px-8 py-6 font-display font-semibold text-base text-foreground tabular-nums">
@@ -221,7 +221,7 @@ export const Invoices: React.FC = () => {
         <div className="lg:col-span-1 space-y-8">
           <div>
             <PanelCard
-              title="FINANCIAL SUMMARY"
+              title="Financial summary"
               subtitle="Real-time invoice metrics"
             >
               {summaryCards.map((card) => (
@@ -230,9 +230,7 @@ export const Invoices: React.FC = () => {
                   className={`flex items-center justify-between p-4 rounded-2xl border ${card.tone}`}
                 >
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em]">
-                      {card.label}
-                    </p>
+                    <p className="text-xs font-medium">{card.label}</p>
                     <h4 className="text-2xl font-display font-semibold mt-1 text-foreground">
                       {card.value}
                     </h4>
@@ -244,7 +242,7 @@ export const Invoices: React.FC = () => {
           </div>
 
           <div>
-            <PanelCard title="RECENT ACTIVITY" subtitle="Latest payment events">
+            <PanelCard title="Recent activity" subtitle="Latest payment events">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center shrink-0">
@@ -256,8 +254,8 @@ export const Invoices: React.FC = () => {
                       <span className="text-primary">#INV-2024-005</span> was
                       paid by Eco World
                     </p>
-                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em] mt-1">
-                      2 HOURS AGO
+                    <p className="text-xs text-muted-foreground font-medium mt-1">
+                      2 hours ago
                     </p>
                   </div>
                 </div>

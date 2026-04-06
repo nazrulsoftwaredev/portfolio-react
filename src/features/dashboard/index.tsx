@@ -1,14 +1,29 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
-import { Overview } from "./pages/Overview";
-import { Content } from "./pages/Content";
-import { Clients } from "./pages/Clients";
-import { Invoices } from "./pages/Invoices";
-import { Analytics } from "./pages/Analytics";
-import { Pipeline } from "./pages/Pipeline";
-import { Messages } from "./pages/Messages";
 import { Login } from "./pages/Login";
+
+const Overview = React.lazy(() =>
+  import("./pages/Overview").then((mod) => ({ default: mod.Overview })),
+);
+const Content = React.lazy(() =>
+  import("./pages/Content").then((mod) => ({ default: mod.Content })),
+);
+const Clients = React.lazy(() =>
+  import("./pages/Clients").then((mod) => ({ default: mod.Clients })),
+);
+const Invoices = React.lazy(() =>
+  import("./pages/Invoices").then((mod) => ({ default: mod.Invoices })),
+);
+const Analytics = React.lazy(() =>
+  import("./pages/Analytics").then((mod) => ({ default: mod.Analytics })),
+);
+const Pipeline = React.lazy(() =>
+  import("./pages/Pipeline").then((mod) => ({ default: mod.Pipeline })),
+);
+const Messages = React.lazy(() =>
+  import("./pages/Messages").then((mod) => ({ default: mod.Messages })),
+);
 
 /**
  * Dashboard Feature Component
@@ -31,18 +46,26 @@ export const DashboardFeature: React.FC = () => {
 
   return (
     <div className="dashboard-shell min-h-screen bg-background text-foreground">
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Overview />} />
-          <Route path="content" element={<Content />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="invoices" element={<Invoices />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="pipeline" element={<Pipeline />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="*" element={<Navigate to="." replace />} />
-        </Route>
-      </Routes>
+      <React.Suspense
+        fallback={
+          <div className="p-8 text-sm text-muted-foreground">
+            Loading dashboard...
+          </div>
+        }
+      >
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<Overview />} />
+            <Route path="content" element={<Content />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="invoices" element={<Invoices />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="pipeline" element={<Pipeline />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="*" element={<Navigate to="." replace />} />
+          </Route>
+        </Routes>
+      </React.Suspense>
     </div>
   );
 };

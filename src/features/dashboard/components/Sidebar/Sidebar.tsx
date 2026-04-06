@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -27,7 +27,11 @@ interface SidebarProps {
   className?: string;
 }
 
-export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
+export const Sidebar = memo(function Sidebar({
+  isOpen,
+  onClose,
+  className,
+}: SidebarProps) {
   const handleNavClick = useCallback(() => {
     if (window.innerWidth < 768) onClose();
   }, [onClose]);
@@ -35,13 +39,11 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
   return (
     <aside
       className={`relative h-full flex flex-col rounded-3xl border border-border
-                 bg-card/90 backdrop-blur-xl
-                 shadow-lg overflow-hidden
+                 bg-card
+                 shadow-sm overflow-hidden
                  transition-[width] duration-300 ease-out ${className ?? ""}`}
-      style={{ width: isOpen ? 280 : 96 }}
+      style={{ width: isOpen ? 264 : 88 }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-
       {/* HEADER */}
       <div
         className={`p-4 flex items-center ${isOpen ? "" : "justify-center"}`}
@@ -61,7 +63,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
           {/* TITLE */}
           {isOpen && (
             <div className="ml-3">
-              <h1 className="text-sm font-semibold tracking-wide text-foreground">
+              <h1 className="text-sm font-semibold text-foreground">
                 Dashboard
               </h1>
               <p className="text-xs text-muted-foreground">Control center</p>
@@ -86,13 +88,13 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                 {isActive && (
                   <div
                     className="absolute inset-0 rounded-2xl
-                               bg-primary/10
-                               border border-primary/20"
+                               bg-muted
+                               border border-border"
                   />
                 )}
 
                 {/* HOVER BG */}
-                <div className="absolute inset-0 rounded-2xl bg-transparent group-hover:bg-muted/50 transition-colors" />
+                <div className="absolute inset-0 rounded-2xl bg-transparent group-hover:bg-muted/60 transition-colors" />
 
                 {/* CONTENT */}
                 <div
@@ -106,7 +108,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
                     }`}
                   >
                     <item.icon
-                      className={`w-5 h-5 transition-all ${
+                      className={`w-5 h-5 transition-colors ${
                         isActive ? "text-primary" : "text-muted-foreground"
                       }`}
                     />
@@ -120,7 +122,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
 
                   {/* LABEL */}
                   {isOpen && (
-                    <span className="ml-2 text-sm font-medium text-foreground transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5">
+                    <span className="ml-2 text-sm font-medium text-foreground transition-all duration-200 group-hover:text-foreground group-hover:translate-x-0.5">
                       {item.label}
                     </span>
                   )}
@@ -150,4 +152,6 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, className }) => {
       </div>
     </aside>
   );
-};
+});
+
+Sidebar.displayName = "Sidebar";

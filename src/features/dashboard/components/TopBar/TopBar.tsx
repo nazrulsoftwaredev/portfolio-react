@@ -62,18 +62,18 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-30 h-20 px-5 md:px-6 flex items-center justify-between gap-4
-                 border-b border-border bg-card/90 backdrop-blur-xl"
+      className="sticky top-0 z-30 h-16 px-5 md:px-6 flex items-center justify-between gap-4
+                 border-b border-border bg-card"
     >
       {/* LEFT */}
       <div className="flex items-center gap-4 w-full max-w-2xl">
         {/* SIDEBAR TOGGLE */}
         <motion.button
           type="button"
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onToggleSidebar}
-          className="p-3 rounded-2xl bg-muted/40 border border-border hover:bg-muted transition"
+          className="p-2.5 rounded-xl bg-muted/40 border border-border hover:bg-muted transition"
         >
           {isSidebarOpen ? (
             <PanelLeftClose className="w-5 h-5" />
@@ -94,10 +94,10 @@ export const TopBar: React.FC<TopBarProps> = ({
 
           <Input
             placeholder="Search..."
-            className="w-full pl-11 pr-14 py-3 rounded-2xl
-                       bg-background border border-border
-                       text-sm outline-none text-foreground
-                       focus:ring-2 focus:ring-ring/40
+            className="w-full pl-10 pr-12 h-11 rounded-xl
+                       bg-background border border-input
+                       text-sm text-foreground placeholder:text-muted-foreground/70
+                       focus:ring-2 focus:ring-ring/30
                        transition-all"
           />
 
@@ -113,13 +113,13 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="relative">
           <motion.button
             type="button"
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => {
               setShowNotifications(!showNotifications);
               setShowProfile(false);
             }}
-            className="p-3 rounded-2xl bg-muted/40 border border-border hover:bg-muted transition relative"
+            className="p-2.5 rounded-xl bg-muted/40 border border-border hover:bg-muted transition relative"
           >
             <Bell className="w-5 h-5" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
@@ -145,8 +145,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={spring}
                   className="absolute right-0 mt-3 w-80 rounded-2xl
-                             bg-popover/95 backdrop-blur-xl
-                             border border-border shadow-2xl z-50 overflow-hidden"
+                             bg-popover
+                             border border-border shadow-lg z-50 overflow-hidden"
                 >
                   <div className="p-4 border-b border-border text-sm font-semibold">
                     Notifications
@@ -177,12 +177,12 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* PROFILE */}
         <div className="relative">
           <motion.div
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             onClick={() => {
               setShowProfile(!showProfile);
               setShowNotifications(false);
             }}
-            className="w-11 h-11 rounded-2xl overflow-hidden cursor-pointer border border-border"
+            className="w-10 h-10 rounded-xl overflow-hidden cursor-pointer border border-border"
           >
             <img
               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nazrul"
@@ -210,8 +210,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={spring}
                   className="absolute right-0 mt-3 w-60 rounded-2xl
-                             bg-popover/95 backdrop-blur-xl
-                             border border-border shadow-2xl z-50 overflow-hidden"
+                             bg-popover
+                             border border-border shadow-lg z-50 overflow-hidden"
                 >
                   <div className="p-4 border-b border-border">
                     <p className="text-sm font-semibold">Nazrul Islam</p>

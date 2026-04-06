@@ -22,19 +22,14 @@ export const Layout: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-120px] left-[-60px] h-[420px] w-[420px] rounded-full bg-primary/10 blur-[110px]" />
-        <div className="absolute bottom-[-130px] right-[-30px] h-[420px] w-[420px] rounded-full bg-secondary/10 blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 p-4 md:p-5">
-        <div className="h-[calc(100vh-2rem)] md:h-[calc(100vh-2.5rem)] flex gap-4">
+    <div className="relative min-h-screen bg-background text-foreground">
+      <div className="relative z-10 p-4 md:p-6">
+        <div className="h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] flex gap-4">
           <div className="hidden md:block">
             <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
           </div>
 
-          <div className="min-w-0 flex-1 rounded-3xl border border-border bg-card/80 backdrop-blur-xl shadow-lg overflow-hidden flex flex-col">
+          <div className="min-w-0 flex-1 rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col">
             <TopBar
               onToggleSidebar={toggleSidebar}
               isSidebarOpen={isSidebarOpen}
@@ -57,7 +52,7 @@ export const Layout: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeSidebar}
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/40 md:hidden"
             />
 
             <motion.div

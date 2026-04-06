@@ -48,20 +48,20 @@ export const Clients: React.FC = () => {
         <PageHeader
           title={
             <>
-              CLIENT RELATIONS <br />
-              MANAGEMENT
+              Client relations <br />
+              management
             </>
           }
           subtitle={
             <>
-              DATABASE STATUS:{" "}
-              <span className="text-emerald-600">LIVE ACTIVE</span>
+              Database status:{" "}
+              <span className="text-emerald-600">Live active</span>
             </>
           }
           actions={
             <Button className="gap-2" type="button" onClick={openCreateDialog}>
               <Plus className="w-4 h-4" />
-              INITIATE CLIENT
+              Add client
             </Button>
           }
         />
@@ -114,7 +114,7 @@ export const Clients: React.FC = () => {
         />
 
         <div className="px-8 py-5 border-t border-border bg-muted/20 flex items-center justify-between gap-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-xs font-medium text-muted-foreground">
             Page {pagination.currentPage} / {pagination.totalPages} - Total{" "}
             {pagination.totalItems}
           </p>
@@ -126,7 +126,7 @@ export const Clients: React.FC = () => {
               disabled={pagination.currentPage === 1}
               variant="outline"
               size="sm"
-              className="rounded-lg text-xs font-semibold uppercase tracking-wider"
+              className="rounded-lg text-xs font-semibold"
             >
               Prev
             </Button>
@@ -140,7 +140,7 @@ export const Clients: React.FC = () => {
                   onClick={() => goToPage(page)}
                   variant="outline"
                   size="sm"
-                  className={`rounded-lg border text-xs font-semibold uppercase tracking-wider ${
+                  className={`rounded-lg border text-xs font-semibold ${
                     pagination.currentPage === page
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border text-foreground bg-transparent"
@@ -157,7 +157,7 @@ export const Clients: React.FC = () => {
               disabled={pagination.currentPage === pagination.totalPages}
               variant="outline"
               size="sm"
-              className="rounded-lg text-xs font-semibold uppercase tracking-wider"
+              className="rounded-lg text-xs font-semibold"
             >
               Next
             </Button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, ChevronRight, Monitor } from "lucide-react";
 import type {
   AboutContent,
@@ -14,7 +14,6 @@ import { usePortfolioContent } from "@/features/portfolio/hooks/usePortfolioCont
 import {
   AboutSection,
   ExpertiseTechSection,
-  MappingSection,
   NavigationSection,
   ProjectsSection,
   SectionSwitcher,
@@ -30,25 +29,32 @@ type ContentSectionId =
   | "projects"
   | "about"
   | "expertise"
-  | "testimonials"
-  | "mapping";
+  | "testimonials";
 
 export const Content: React.FC = () => {
   const { data, save, reset } = usePortfolioContent();
   const [draft, setDraft] = useState<PortfolioData>(data);
   const [saveState, setSaveState] = useState<SaveState>("saved");
+  const [isDirty, setIsDirty] = useState(false);
   const [activeSection, setActiveSection] =
     useState<ContentSectionId>("identity");
 
-  const sourceSnapshot = useMemo(() => JSON.stringify(data), [data]);
-  const draftSnapshot = useMemo(() => JSON.stringify(draft), [draft]);
+  const updateDraft = useCallback(
+    (updater: (previous: PortfolioData) => PortfolioData) => {
+      setDraft((previous) => updater(previous));
+      setIsDirty(true);
+    },
+    [],
+  );
 
   useEffect(() => {
     setDraft(data);
-  }, [sourceSnapshot, data]);
+    setSaveState("saved");
+    setIsDirty(false);
+  }, [data]);
 
   useEffect(() => {
-    if (draftSnapshot === sourceSnapshot) {
+    if (!isDirty) {
       setSaveState("saved");
       return;
     }
@@ -58,19 +64,20 @@ export const Content: React.FC = () => {
       try {
         save(draft);
         setSaveState("saved");
+        setIsDirty(false);
       } catch {
         setSaveState("error");
       }
     }, 400);
 
     return () => window.clearTimeout(timer);
-  }, [draftSnapshot, sourceSnapshot, draft, save]);
+  }, [draft, isDirty, save]);
 
   const updateHeroField = (
     field: keyof PortfolioData["hero"],
     value: string,
   ) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       hero: {
         ...previous.hero,
@@ -80,7 +87,7 @@ export const Content: React.FC = () => {
   };
 
   const updateAboutField = (field: keyof AboutContent, value: string) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       about: {
         ...previous.about,
@@ -94,7 +101,7 @@ export const Content: React.FC = () => {
     field: keyof FocusItem,
     value: string,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const focusItems = [...(previous.about.focusItems || [])];
       focusItems[index] = {
         ...focusItems[index],
@@ -112,7 +119,7 @@ export const Content: React.FC = () => {
   };
 
   const addFocusItem = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       about: {
         ...previous.about,
@@ -128,7 +135,7 @@ export const Content: React.FC = () => {
   };
 
   const removeFocusItem = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       about: {
         ...previous.about,
@@ -144,7 +151,7 @@ export const Content: React.FC = () => {
     field: "label" | "href" | "isRoute",
     value: string | boolean,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const navigation = [...(previous.hero.navigation || [])];
       navigation[index] = {
         ...navigation[index],
@@ -162,7 +169,7 @@ export const Content: React.FC = () => {
   };
 
   const moveNavigation = (index: number, direction: -1 | 1) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const navigation = [...(previous.hero.navigation || [])];
       const targetIndex = index + direction;
 
@@ -185,7 +192,7 @@ export const Content: React.FC = () => {
   };
 
   const addNavigation = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       hero: {
         ...previous.hero,
@@ -202,7 +209,7 @@ export const Content: React.FC = () => {
   };
 
   const removeNavigation = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       hero: {
         ...previous.hero,
@@ -218,7 +225,7 @@ export const Content: React.FC = () => {
     field: keyof ProjectGalleryItem,
     value: string,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const projects = [...previous.projects];
       projects[index] = {
         ...projects[index],
@@ -233,7 +240,7 @@ export const Content: React.FC = () => {
   };
 
   const addProject = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       projects: [
         ...previous.projects,
@@ -250,7 +257,7 @@ export const Content: React.FC = () => {
   };
 
   const removeProject = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       projects: previous.projects.filter(
         (_, projectIndex) => projectIndex !== index,
@@ -263,7 +270,7 @@ export const Content: React.FC = () => {
     field: keyof Expertise,
     value: string,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const expertise = [...previous.expertise];
       expertise[index] = {
         ...expertise[index],
@@ -278,7 +285,7 @@ export const Content: React.FC = () => {
   };
 
   const addExpertise = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       expertise: [
         ...previous.expertise,
@@ -292,7 +299,7 @@ export const Content: React.FC = () => {
   };
 
   const removeExpertise = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       expertise: previous.expertise.filter(
         (_, itemIndex) => itemIndex !== index,
@@ -305,7 +312,7 @@ export const Content: React.FC = () => {
     field: keyof TechDomain,
     value: string,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const techStack = [...previous.techStack];
       techStack[index] = {
         ...techStack[index],
@@ -326,7 +333,7 @@ export const Content: React.FC = () => {
   };
 
   const addTechDomain = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       techStack: [
         ...previous.techStack,
@@ -339,7 +346,7 @@ export const Content: React.FC = () => {
   };
 
   const removeTechDomain = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       techStack: previous.techStack.filter(
         (_, itemIndex) => itemIndex !== index,
@@ -352,7 +359,7 @@ export const Content: React.FC = () => {
     field: keyof Testimonial,
     value: string,
   ) => {
-    setDraft((previous) => {
+    updateDraft((previous) => {
       const testimonials = [...previous.testimonials];
       testimonials[index] = {
         ...testimonials[index],
@@ -367,7 +374,7 @@ export const Content: React.FC = () => {
   };
 
   const addTestimonial = () => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       testimonials: [
         ...previous.testimonials,
@@ -381,7 +388,7 @@ export const Content: React.FC = () => {
   };
 
   const removeTestimonial = (index: number) => {
-    setDraft((previous) => ({
+    updateDraft((previous) => ({
       ...previous,
       testimonials: previous.testimonials.filter(
         (_, itemIndex) => itemIndex !== index,
@@ -420,7 +427,6 @@ export const Content: React.FC = () => {
         label: "Testimonials",
         count: draft.testimonials.length,
       },
-      { id: "mapping", label: "Field Mapping" },
     ],
     [draft],
   );
@@ -485,8 +491,6 @@ export const Content: React.FC = () => {
             onRemoveTestimonial={removeTestimonial}
           />
         );
-      case "mapping":
-        return <MappingSection draft={draft} />;
       default:
         return null;
     }
@@ -496,16 +500,24 @@ export const Content: React.FC = () => {
     <div className="space-y-14">
       <div>
         <PageHeader
+          className="gap-6"
           title={
             <>
-              WEBSITE CONTENT <br />
-              ARCHITECTURE
+              Website content <br />
+              architecture
             </>
           }
+          titleClassName="text-3xl md:text-4xl"
           subtitle={
-            <>
-              DEPLOYMENT: <span className="text-primary">{saveMessage}</span>
-            </>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                {saveMessage}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
+                Content ops
+              </span>
+            </div>
           }
           actions={
             <>
@@ -526,6 +538,7 @@ export const Content: React.FC = () => {
                 onClick={() => {
                   save(draft);
                   setSaveState("saved");
+                  setIsDirty(false);
                 }}
               >
                 <Check className="w-4 h-4" />
@@ -538,6 +551,7 @@ export const Content: React.FC = () => {
                 onClick={() => {
                   reset();
                   setSaveState("saved");
+                  setIsDirty(false);
                 }}
               >
                 <ChevronRight className="w-4 h-4" />

@@ -12,7 +12,7 @@ import { PageHeader } from "../components/common";
 
 const pipelineData = [
   {
-    title: "LEADS",
+    title: "Leads",
     count: 3,
     indicatorClass: "bg-primary",
     items: [
@@ -43,7 +43,7 @@ const pipelineData = [
     ],
   },
   {
-    title: "PROPOSAL",
+    title: "Proposal",
     count: 2,
     indicatorClass: "bg-secondary",
     items: [
@@ -66,7 +66,7 @@ const pipelineData = [
     ],
   },
   {
-    title: "ACTIVE",
+    title: "Active",
     count: 2,
     indicatorClass: "bg-emerald-500",
     items: [
@@ -89,7 +89,7 @@ const pipelineData = [
     ],
   },
   {
-    title: "COMPLETED",
+    title: "Completed",
     count: 5,
     indicatorClass: "bg-purple-500",
     items: [
@@ -113,7 +113,7 @@ const PipelineCard = ({ client, project, value, date, priority }: any) => (
 
     <div className="flex items-center justify-between mb-4">
       <div
-        className={`px-2 py-0.5 rounded-lg text-[9px] font-semibold uppercase tracking-[0.2em] border ${
+        className={`px-2 py-0.5 rounded-lg text-[11px] font-medium border ${
           priority === "High"
             ? "bg-red-500/10 text-red-600 border-red-500/20"
             : priority === "Medium"
@@ -121,7 +121,7 @@ const PipelineCard = ({ client, project, value, date, priority }: any) => (
               : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
         }`}
       >
-        {priority} PRIORITY
+        {priority} priority
       </div>
       <button className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
         <MoreHorizontal className="w-4 h-4" />
@@ -129,16 +129,14 @@ const PipelineCard = ({ client, project, value, date, priority }: any) => (
     </div>
 
     <div className="space-y-1">
-      <h4 className="font-display font-semibold text-xl text-foreground tracking-tight uppercase">
+      <h4 className="font-display font-semibold text-lg text-foreground tracking-tight">
         {client}
       </h4>
-      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
-        {project}
-      </p>
+      <p className="text-xs font-medium text-muted-foreground">{project}</p>
     </div>
 
     <div className="flex items-center justify-between pt-5 mt-5 border-t border-border">
-      <div className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <Calendar className="w-3.5 h-3.5 text-primary" />
         {date}
       </div>
@@ -156,25 +154,25 @@ export const Pipeline: React.FC = () => {
         <PageHeader
           title={
             <>
-              PROJECT <br />
-              PIPELINE
+              Project <br />
+              pipeline
             </>
           }
           subtitle={
             <>
-              FLOW STATUS: <span className="text-emerald-600">OPTIMAL</span>
+              Flow status: <span className="text-emerald-600">Optimal</span>
             </>
           }
           actions={
             <>
-              <div className="flex bg-muted/30 p-1 rounded-2xl border border-border">
-                <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-[10px] font-semibold uppercase tracking-widest">
+              <div className="flex bg-muted/30 p-1 rounded-xl border border-border">
+                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold">
                   <Layout className="w-3.5 h-3.5" />
-                  BOARD
+                  Board
                 </button>
-                <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-muted-foreground text-[10px] font-semibold uppercase tracking-widest">
+                <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground text-xs font-semibold">
                   <ListIcon className="w-3.5 h-3.5" />
-                  LIST
+                  List
                 </button>
               </div>
               <Button className="gap-2">
@@ -197,7 +195,7 @@ export const Pipeline: React.FC = () => {
                 <div
                   className={`w-2 h-6 rounded-full ${column.indicatorClass}`}
                 />
-                <h3 className="font-display font-semibold text-xl text-foreground tracking-tight uppercase">
+                <h3 className="font-display font-semibold text-xl text-foreground tracking-tight">
                   {column.title}
                 </h3>
                 <span className="px-2.5 py-0.5 rounded-lg bg-muted text-foreground text-[10px] font-semibold tabular-nums border border-border">
@@ -214,9 +212,9 @@ export const Pipeline: React.FC = () => {
                 <PipelineCard key={item.id} {...item} />
               ))}
 
-              <button className="w-full py-6 rounded-2xl border border-dashed border-border text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground flex items-center justify-center gap-3">
+              <button className="w-full py-5 rounded-2xl border border-dashed border-border text-xs font-medium text-muted-foreground flex items-center justify-center gap-3">
                 <Plus className="w-4 h-4" />
-                INITIATE NEW ITEM
+                Add new item
               </button>
             </div>
           </div>

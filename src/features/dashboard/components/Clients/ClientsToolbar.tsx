@@ -32,15 +32,15 @@ export const ClientsToolbar: React.FC<ClientsToolbarProps> = ({
   onExport,
   onReset,
 }) => (
-  <div className="p-8 border-b border-border flex flex-col xl:flex-row items-center justify-between gap-8 bg-muted/20">
+  <div className="p-6 border-b border-border flex flex-col xl:flex-row items-center justify-between gap-6 bg-muted/20">
     <div className="relative w-full xl:w-2/5 group">
-      <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
       <Input
         type="text"
-        placeholder="SEARCH CLIENT DATABASE..."
+        placeholder="Search clients"
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        className="w-full bg-background border-border rounded-2xl h-auto py-4 pl-14 pr-6 text-[11px] font-semibold tracking-widest text-foreground uppercase placeholder:text-muted-foreground"
+        className="w-full bg-background border-border rounded-xl pl-11 pr-4"
       />
     </div>
 
@@ -52,14 +52,14 @@ export const ClientsToolbar: React.FC<ClientsToolbarProps> = ({
         onClick={onCycleStatusFilter}
       >
         <Filter className="w-4 h-4" />
-        {statusFilter === "All" ? "FILTERS" : statusFilter}
+        {statusFilter === "All" ? "Filters" : statusFilter}
       </Button>
 
       <Select
         value={sortBy}
         onValueChange={(value) => onSortChange(value as SortOption)}
       >
-        <SelectTrigger className="bg-background text-foreground border-border rounded-2xl px-4 py-3 h-auto text-[10px] font-semibold uppercase tracking-widest">
+        <SelectTrigger className="bg-background text-foreground border-border rounded-xl px-4">
           <SelectValue placeholder="Sort" />
         </SelectTrigger>
         <SelectContent className="bg-popover border-border text-foreground">

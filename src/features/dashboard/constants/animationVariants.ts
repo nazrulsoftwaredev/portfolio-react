@@ -5,20 +5,19 @@ export const dashboardContainerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.04,
     },
   },
 };
 
 export const dashboardItemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 8, opacity: 0 },
   visible: {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
+      type: "tween",
+      duration: 0.2,
     },
   },
 };

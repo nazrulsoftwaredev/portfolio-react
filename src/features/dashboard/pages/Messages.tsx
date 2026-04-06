@@ -59,19 +59,19 @@ export const Messages: React.FC = () => {
         <PageHeader
           title={
             <>
-              COMMUNICATIONS <br />
-              INTERFACE
+              Communications <br />
+              interface
             </>
           }
           subtitle={
             <>
-              SESSION: <span className="text-emerald-600">ENCRYPTED</span>
+              Session: <span className="text-emerald-600">Encrypted</span>
             </>
           }
           actions={
             <Button className="gap-2">
               <Plus className="w-4 h-4" />
-              New Protocol
+              New message
             </Button>
           }
         />
@@ -85,18 +85,18 @@ export const Messages: React.FC = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="SEARCH TRANSMISSIONS..."
-                className="w-full bg-background border border-border rounded-2xl py-3 pl-12 pr-4 text-[10px] font-semibold tracking-widest text-foreground uppercase placeholder:text-muted-foreground"
+                placeholder="Search messages"
+                className="w-full bg-background border border-border rounded-xl pl-11 pr-4"
               />
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-              {["ALL", "UNREAD", "ARCHIVED", "DRAFTS"].map((tab, idx) => (
+              {["All", "Unread", "Archived", "Drafts"].map((tab, idx) => (
                 <Button
                   key={tab}
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`px-4 py-2 rounded-xl text-[10px] font-semibold whitespace-nowrap tracking-[0.15em] border ${
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border ${
                     idx === 0
                       ? "bg-primary text-primary-foreground border-primary"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/40 border-transparent bg-transparent"
@@ -117,7 +117,7 @@ export const Messages: React.FC = () => {
                 {msg.unread && (
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
                 )}
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-2xl bg-muted border border-border shrink-0 overflow-hidden">
                     <img
                       src={msg.avatar}
@@ -127,17 +127,17 @@ export const Messages: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="font-display font-semibold text-foreground text-base truncate uppercase tracking-tight">
+                      <p className="font-display font-semibold text-foreground text-base truncate">
                         {msg.sender}
                       </p>
-                      <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
+                      <p className="text-xs text-muted-foreground font-medium">
                         {msg.time}
                       </p>
                     </div>
-                    <p className="text-xs font-semibold text-primary truncate mb-1 uppercase tracking-wider">
+                    <p className="text-sm font-semibold text-primary truncate mb-1">
                       {msg.subject}
                     </p>
-                    <p className="text-[10px] text-muted-foreground truncate font-medium">
+                    <p className="text-xs text-muted-foreground truncate font-medium">
                       {msg.preview}
                     </p>
                   </div>
@@ -164,16 +164,16 @@ export const Messages: React.FC = () => {
                 </div>
               </div>
               <div>
-                <h4 className="font-display font-semibold text-2xl text-foreground tracking-tight uppercase">
-                  ACME CORP
+                <h4 className="font-display font-semibold text-xl text-foreground tracking-tight">
+                  Acme Corp
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
-                  <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-[0.2em]">
-                    DIRECT LINK ACTIVE
+                  <p className="text-xs text-emerald-600 font-medium">
+                    Direct link active
                   </p>
                   <Hash className="w-3 h-3 text-muted-foreground" />
-                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
-                    PROJECT_NEON
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Project neon
                   </p>
                 </div>
               </div>
@@ -198,10 +198,10 @@ export const Messages: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10 bg-[radial-gradient(circle_at_top_right,rgba(172,199,255,0.03),transparent_40%)]">
+          <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10 bg-muted/10">
             <div className="flex flex-col items-center gap-4">
-              <div className="px-5 py-1.5 rounded-full bg-muted border border-border text-[9px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                TRANS MISSION LOG: MARCH 24
+              <div className="px-4 py-1.5 rounded-full bg-muted border border-border text-xs font-medium text-muted-foreground">
+                Transmission log: March 24
               </div>
             </div>
 
@@ -219,8 +219,8 @@ export const Messages: React.FC = () => {
                   the Neon Genesis project. The client is really excited to see
                   the progress!
                 </div>
-                <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest pl-2">
-                  10:24 AM / RECEIVED
+                <p className="text-xs text-muted-foreground font-medium pl-2">
+                  10:24 AM · Received
                 </p>
               </div>
             </div>
@@ -235,8 +235,8 @@ export const Messages: React.FC = () => {
                   system. I'll have the full presentation ready for you by the
                   end of the day. Stay tuned.
                 </div>
-                <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest pr-2">
-                  10:32 AM / TRANSMITTED
+                <p className="text-xs text-muted-foreground font-medium pr-2">
+                  10:32 AM · Sent
                 </p>
               </div>
             </div>
@@ -254,8 +254,8 @@ export const Messages: React.FC = () => {
               </Button>
               <Input
                 type="text"
-                placeholder="TYPE NEW PROTOCOL..."
-                className="flex-1 bg-transparent border-none outline-none text-[10px] font-semibold tracking-widest py-2 px-2 text-foreground placeholder:text-muted-foreground"
+                placeholder="Type a message"
+                className="flex-1 bg-transparent border-none outline-none text-sm py-2 px-2 text-foreground placeholder:text-muted-foreground"
               />
               <Button
                 type="button"

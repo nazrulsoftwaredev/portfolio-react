@@ -3,6 +3,7 @@ import { GripVertical, Plus, Trash2, Type } from "lucide-react";
 import type { PortfolioData } from "@/shared/types";
 import { Button, Checkbox, Input } from "@/components/ui";
 import { EditorLabel, IconTitle } from "./shared";
+import { PanelCard } from "../common";
 
 interface NavigationSectionProps {
   navigation: PortfolioData["hero"]["navigation"];
@@ -24,15 +25,20 @@ export const NavigationSection: React.FC<NavigationSectionProps> = ({
   onRemove,
 }) => {
   return (
-    <div className="premium-card space-y-8">
-      <IconTitle
-        icon={
-          <div className="p-2 rounded-xl bg-secondary/10 text-secondary-foreground border border-border">
-            <Type className="w-5 h-5" />
-          </div>
-        }
-        title="Navigation Log"
-      />
+    <PanelCard
+      className="p-6"
+      contentClassName="space-y-8"
+      title={
+        <IconTitle
+          icon={
+            <div className="p-2 rounded-xl bg-secondary/10 text-secondary-foreground border border-border">
+              <Type className="w-5 h-5" />
+            </div>
+          }
+          title="Navigation Log"
+        />
+      }
+    >
       <div className="space-y-3">
         {(navigation || []).map((item, index) => (
           <div
@@ -46,7 +52,7 @@ export const NavigationSection: React.FC<NavigationSectionProps> = ({
                 onChange={(event) =>
                   onUpdate(index, "label", event.target.value)
                 }
-                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-[10px] font-semibold tracking-[0.2em] text-foreground"
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
               />
               <Button
                 type="button"
@@ -75,9 +81,9 @@ export const NavigationSection: React.FC<NavigationSectionProps> = ({
                 onChange={(event) =>
                   onUpdate(index, "href", event.target.value)
                 }
-                className="bg-background border border-border rounded-xl px-3 py-2 text-[10px] font-semibold tracking-[0.1em] text-foreground"
+                className="bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
               />
-              <label className="flex items-center gap-2 text-[10px] uppercase text-muted-foreground font-semibold">
+              <label className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                 <Checkbox
                   checked={Boolean(item.isRoute)}
                   onCheckedChange={(value) =>
@@ -107,13 +113,13 @@ export const NavigationSection: React.FC<NavigationSectionProps> = ({
             variant="outline"
             size="sm"
             onClick={onAdd}
-            className="rounded-xl border-dashed px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em]"
+            className="rounded-xl border-dashed px-4 py-2 text-xs font-semibold"
           >
             <Plus className="w-4 h-4" />
             New Node
           </Button>
         </div>
       </div>
-    </div>
+    </PanelCard>
   );
 };

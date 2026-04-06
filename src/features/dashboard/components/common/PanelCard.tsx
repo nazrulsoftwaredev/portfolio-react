@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 interface PanelCardProps {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
+  actions?: React.ReactNode;
   className?: string;
+  headerClassName?: string;
   contentClassName?: string;
   children: React.ReactNode;
 }
@@ -12,24 +14,43 @@ interface PanelCardProps {
 export const PanelCard: React.FC<PanelCardProps> = ({
   title,
   subtitle,
+  actions,
   className = "",
-  contentClassName = "space-y-6",
+  headerClassName = "",
+  contentClassName = "space-y-5",
   children,
 }) => {
+  const titleContent = title ? (
+    typeof title === "string" ? (
+      <CardTitle className="text-lg font-display font-semibold tracking-tight text-foreground">
+        {title}
+      </CardTitle>
+    ) : (
+      title
+    )
+  ) : null;
+
+  const subtitleContent = subtitle ? (
+    typeof subtitle === "string" ? (
+      <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+    ) : (
+      <div className="mt-1 text-xs text-muted-foreground">{subtitle}</div>
+    )
+  ) : null;
+
   return (
     <Card className={`premium-card ${className}`}>
-      {(title || subtitle) && (
-        <CardHeader className="mb-0 p-0 pb-6">
-          {title ? (
-            <CardTitle className="text-xl font-display font-semibold tracking-tight text-foreground uppercase">
-              {title}
-            </CardTitle>
-          ) : null}
-          {subtitle ? (
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
-              {subtitle}
-            </p>
-          ) : null}
+      {(title || subtitle || actions) && (
+        <CardHeader className={`mb-0 p-0 pb-4 ${headerClassName}`}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              {titleContent}
+              {subtitleContent}
+            </div>
+            {actions ? (
+              <div className="flex items-center gap-2">{actions}</div>
+            ) : null}
+          </div>
         </CardHeader>
       )}
       <CardContent className={`p-0 ${contentClassName}`}>

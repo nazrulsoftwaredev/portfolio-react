@@ -48,11 +48,11 @@ const PopularRoute = ({ route, views, growth }: any) => (
         <Globe className="w-6 h-6" />
       </div>
       <div>
-        <p className="font-semibold text-sm tracking-tight text-foreground uppercase">
+        <p className="font-semibold text-sm tracking-tight text-foreground">
           {route}
         </p>
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">
-          {views} UNIQUE NODES
+        <p className="text-xs text-muted-foreground mt-1">
+          {views} unique nodes
         </p>
       </div>
     </div>
@@ -80,13 +80,13 @@ export const Analytics: React.FC = () => {
         <PageHeader
           title={
             <>
-              DATA ANALYTICS <br />
-              INFRASTRUCTURE
+              Data analytics <br />
+              infrastructure
             </>
           }
           subtitle={
             <>
-              PERIOD: <span className="text-primary">ACTIVE SPRINT</span>
+              Period: <span className="text-primary">Active sprint</span>
             </>
           }
           actions={
@@ -109,23 +109,23 @@ export const Analytics: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
-                TRAFFIC FLOW
+                Traffic flow
               </h3>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Cross-platform node activity
               </p>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-primary"></div>
-                <span className="text-[10px] text-foreground font-semibold uppercase tracking-widest">
-                  DESKTOP
+                <span className="text-xs text-foreground font-medium">
+                  Desktop
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-secondary"></div>
-                <span className="text-[10px] text-foreground font-semibold uppercase tracking-widest">
-                  MOBILE
+                <span className="text-xs text-foreground font-medium">
+                  Mobile
                 </span>
               </div>
             </div>
@@ -206,9 +206,9 @@ export const Analytics: React.FC = () => {
         <div className="premium-card space-y-10 flex flex-col">
           <div>
             <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
-              DEVICE RATIO
+              Device ratio
             </h3>
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Platform segmentation
             </p>
           </div>
@@ -244,8 +244,8 @@ export const Analytics: React.FC = () => {
               <p className="text-4xl font-display font-semibold text-foreground">
                 100%
               </p>
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em]">
-                TOTAL NODES
+              <p className="text-xs text-muted-foreground font-medium">
+                Total nodes
               </p>
             </div>
           </div>
@@ -261,7 +261,7 @@ export const Analytics: React.FC = () => {
                     className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                     style={{ backgroundColor: device.color }}
                   ></div>
-                  <span className="text-xs font-semibold text-foreground uppercase tracking-widest">
+                  <span className="text-xs font-medium text-foreground">
                     {device.name}
                   </span>
                 </div>
@@ -279,9 +279,9 @@ export const Analytics: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
-                POPULAR ROUTES
+                Popular routes
               </h3>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 High-traffic access points
               </p>
             </div>
@@ -315,9 +315,9 @@ export const Analytics: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
-                AUDIENCE GROWTH
+                Audience growth
               </h3>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Expansion metrics
               </p>
             </div>

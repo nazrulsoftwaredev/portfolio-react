@@ -3,6 +3,7 @@ import { Image as ImageIcon, Trash2 } from "lucide-react";
 import type { AboutContent, FocusItem, PortfolioData } from "@/shared/types";
 import { Input, Textarea } from "@/components/ui";
 import { EditorLabel, IconTitle } from "./shared";
+import { PanelCard } from "../common";
 
 interface AboutSectionProps {
   about: PortfolioData["about"];
@@ -24,16 +25,20 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   onRemoveFocusItem,
 }) => {
   return (
-    <div className="premium-card space-y-8">
-      <IconTitle
-        icon={
-          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-            <ImageIcon className="w-5 h-5" />
-          </div>
-        }
-        title="About Section"
-      />
-
+    <PanelCard
+      className="p-6"
+      contentClassName="space-y-8"
+      title={
+        <IconTitle
+          icon={
+            <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+              <ImageIcon className="w-5 h-5" />
+            </div>
+          }
+          title="About Section"
+        />
+      }
+    >
       <div className="space-y-4">
         <div className="space-y-3">
           <EditorLabel>Scrub Text</EditorLabel>
@@ -41,7 +46,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             rows={2}
             value={about.scrubText || ""}
             onChange={(event) => onUpdateAbout("scrubText", event.target.value)}
-            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-xs font-semibold tracking-wide text-foreground resize-none"
+            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-sm text-foreground resize-none"
           />
         </div>
         <div className="space-y-3">
@@ -50,7 +55,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             rows={3}
             value={about.bioText || ""}
             onChange={(event) => onUpdateAbout("bioText", event.target.value)}
-            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-xs font-semibold tracking-wide text-foreground resize-none"
+            className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-sm text-foreground resize-none"
           />
         </div>
 
@@ -60,7 +65,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             <button
               type="button"
               onClick={onAddFocusItem}
-              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
+              className="text-xs text-primary font-semibold"
             >
               Add Item
             </button>
@@ -76,7 +81,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                   onChange={(event) =>
                     onUpdateFocusItem(index, "title", event.target.value)
                   }
-                  className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
+                  className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
                 />
                 <button
                   type="button"
@@ -93,12 +98,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                 onChange={(event) =>
                   onUpdateFocusItem(index, "description", event.target.value)
                 }
-                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground resize-none"
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground resize-none"
               />
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </PanelCard>
   );
 };

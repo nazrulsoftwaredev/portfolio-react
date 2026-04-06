@@ -1,5 +1,6 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { PanelCard } from "../common";
 
 export interface ContentSectionOption {
   id: string;
@@ -19,7 +20,7 @@ export const SectionSwitcher: React.FC<SectionSwitcherProps> = ({
   onChange,
 }) => {
   return (
-    <div className="premium-card space-y-5">
+    <PanelCard className="p-6" contentClassName="space-y-5">
       <Tabs value={activeSection} onValueChange={onChange}>
         <TabsList className="h-auto w-full flex flex-wrap items-center gap-4 bg-transparent p-0">
           {sections.map((section) => {
@@ -28,7 +29,7 @@ export const SectionSwitcher: React.FC<SectionSwitcherProps> = ({
               <TabsTrigger
                 key={section.id}
                 value={section.id}
-                className={`rounded-xl border px-5 py-3.5 text-xs md:text-sm font-semibold uppercase tracking-[0.14em] ${
+                className={`rounded-xl border px-5 py-3 text-xs md:text-sm font-semibold ${
                   isActive
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background text-foreground"
@@ -45,9 +46,9 @@ export const SectionSwitcher: React.FC<SectionSwitcherProps> = ({
           })}
         </TabsList>
       </Tabs>
-      <p className="text-xs md:text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <p className="text-xs md:text-sm font-medium text-muted-foreground">
         Edit one section at a time from the tabs above.
       </p>
-    </div>
+    </PanelCard>
   );
 };

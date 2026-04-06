@@ -30,11 +30,9 @@ export const ClientsStatItem: React.FC<ClientsStatItemProps> = ({
         {trend}
       </div>
     </div>
-    <div className="mt-6">
-      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em]">
-        {label}
-      </p>
-      <h3 className="text-3xl font-display font-semibold text-foreground mt-1 tracking-tight">
+    <div className="mt-5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <h3 className="text-2xl font-display font-semibold text-foreground mt-1 tracking-tight">
         {value}
       </h3>
     </div>

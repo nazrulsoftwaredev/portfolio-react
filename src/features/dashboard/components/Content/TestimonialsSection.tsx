@@ -3,6 +3,7 @@ import { Globe, Trash2 } from "lucide-react";
 import type { PortfolioData, Testimonial } from "@/shared/types";
 import { Input, Textarea } from "@/components/ui";
 import { EditorLabel, IconTitle } from "./shared";
+import { PanelCard } from "../common";
 
 interface TestimonialsSectionProps {
   testimonials: PortfolioData["testimonials"];
@@ -22,23 +23,27 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   onRemoveTestimonial,
 }) => {
   return (
-    <div className="premium-card space-y-8">
-      <IconTitle
-        icon={
-          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-            <Globe className="w-5 h-5" />
-          </div>
-        }
-        title="Testimonials"
-      />
-
+    <PanelCard
+      className="p-6"
+      contentClassName="space-y-8"
+      title={
+        <IconTitle
+          icon={
+            <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+              <Globe className="w-5 h-5" />
+            </div>
+          }
+          title="Testimonials"
+        />
+      }
+    >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <EditorLabel>Client Voices</EditorLabel>
           <button
             type="button"
             onClick={onAddTestimonial}
-            className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
+            className="text-xs text-primary font-semibold"
           >
             Add Quote
           </button>
@@ -54,7 +59,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               onChange={(event) =>
                 onUpdateTestimonial(index, "quote", event.target.value)
               }
-              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground resize-none"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground resize-none"
             />
             <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
               <Input
@@ -62,14 +67,14 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 onChange={(event) =>
                   onUpdateTestimonial(index, "author", event.target.value)
                 }
-                className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
+                className="bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
               />
               <Input
                 value={item.company}
                 onChange={(event) =>
                   onUpdateTestimonial(index, "company", event.target.value)
                 }
-                className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground"
+                className="bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
               />
               <button
                 type="button"
@@ -83,6 +88,6 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           </div>
         ))}
       </div>
-    </div>
+    </PanelCard>
   );
 };

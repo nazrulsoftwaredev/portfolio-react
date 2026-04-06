@@ -3,6 +3,7 @@ import { Trash2, Type } from "lucide-react";
 import type { Expertise, PortfolioData, TechDomain } from "@/shared/types";
 import { Input, Textarea } from "@/components/ui";
 import { EditorLabel, IconTitle } from "./shared";
+import { PanelCard } from "../common";
 
 interface ExpertiseTechSectionProps {
   expertise: PortfolioData["expertise"];
@@ -34,19 +35,23 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
   onRemoveTechDomain,
 }) => {
   const fieldClassName =
-    "bg-background border border-border rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none";
+    "bg-background border border-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none";
 
   return (
-    <div className="premium-card space-y-8">
-      <IconTitle
-        icon={
-          <div className="p-2 rounded-xl bg-secondary/10 text-secondary-foreground border border-border">
-            <Type className="w-5 h-5" />
-          </div>
-        }
-        title="Expertise + Tech"
-      />
-
+    <PanelCard
+      className="p-6"
+      contentClassName="space-y-8"
+      title={
+        <IconTitle
+          icon={
+            <div className="p-2 rounded-xl bg-secondary/10 text-secondary-foreground border border-border">
+              <Type className="w-5 h-5" />
+            </div>
+          }
+          title="Expertise + Tech"
+        />
+      }
+    >
       <div className="space-y-6">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -54,7 +59,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
             <button
               type="button"
               onClick={onAddExpertise}
-              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
+              className="text-xs text-primary font-semibold"
             >
               Add Expertise
             </button>
@@ -108,7 +113,7 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
             <button
               type="button"
               onClick={onAddTechDomain}
-              className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold"
+              className="text-xs text-primary font-semibold"
             >
               Add Domain
             </button>
@@ -142,13 +147,13 @@ export const ExpertiseTechSection: React.FC<ExpertiseTechSectionProps> = ({
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+              <p className="text-xs text-muted-foreground">
                 Separate tools with commas
               </p>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </PanelCard>
   );
 };

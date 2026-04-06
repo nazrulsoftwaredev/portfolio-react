@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import type { PortfolioData, ProjectGalleryItem } from "@/shared/types";
 import { Button, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { ProjectCard } from "./ProjectCard";
+import { PanelCard } from "../common";
 
 type ViewMode = "grid" | "list";
 
@@ -26,32 +27,22 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-display font-semibold text-foreground uppercase tracking-tight">
-            Portfolio Index
-          </h3>
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">
-            MASTER ARCHIVE DATA
-          </p>
-        </div>
+    <PanelCard
+      className="p-6"
+      contentClassName="space-y-8"
+      title="Portfolio Index"
+      subtitle="Master archive data"
+      actions={
         <div className="flex items-center gap-4">
           <Tabs
             value={viewMode}
             onValueChange={(value) => setViewMode(value as ViewMode)}
           >
             <TabsList className="bg-muted/40 border border-border rounded-2xl">
-              <TabsTrigger
-                value="grid"
-                className="text-[10px] uppercase tracking-widest"
-              >
+              <TabsTrigger value="grid" className="text-xs font-medium">
                 Grid
               </TabsTrigger>
-              <TabsTrigger
-                value="list"
-                className="text-[10px] uppercase tracking-widest"
-              >
+              <TabsTrigger value="list" className="text-xs font-medium">
                 List
               </TabsTrigger>
             </TabsList>
@@ -67,8 +58,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
             <span className="sr-only">Add</span>
           </Button>
         </div>
-      </div>
-
+      }
+    >
       <div
         className={
           viewMode === "grid"
@@ -86,6 +77,6 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
           />
         ))}
       </div>
-    </div>
+    </PanelCard>
   );
 };
