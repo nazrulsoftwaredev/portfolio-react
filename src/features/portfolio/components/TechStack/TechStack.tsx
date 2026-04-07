@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { motion, useInView } from "framer-motion";
 import { TECH_DOMAIN_SHAPE } from "@/shared/types";
@@ -19,6 +19,7 @@ const getTechLogo = (name) => {
     Kubernetes: "kubernetes",
     AWS: "amazonwebservices",
     Firebase: "firebase",
+    "Framer Motion": "framer",
   };
 
   if (name === "C#") {
@@ -30,9 +31,15 @@ const getTechLogo = (name) => {
 };
 
 const Tag = ({ tech }) => {
-  // Common technologies that have black logos and need inverting in dark mode
+  /**
+   * Avoid hover-toggling CSS filters on external SVGs (Simple Icons) because it
+   * can cause rasterization flicker in some browsers, especially for dark-mode
+   * inverted marks (e.g. Next.js). We keep the logo treatment stable and only
+   * animate opacity/transform.
+   */
   const naturallyDark = [
     "Next.js",
+    "Vite",
     "C#",
     "Java",
     "Node.js",
@@ -45,24 +52,22 @@ const Tag = ({ tech }) => {
   return (
     <motion.span
       whileHover={{
-        scale: 1.05,
+        scale: 1.03,
         backgroundColor: "var(--aura-1)",
         borderColor: "var(--primary)",
       }}
-      className="group/tag flex items-center gap-2 px-4 py-2 rounded-full border border-border/60 text-sm md:text-base font-medium tracking-tight whitespace-nowrap transition-all duration-300 backdrop-blur-sm cursor-default"
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className="group/tag flex items-center gap-2 px-4 py-2 rounded-full border border-border/60 text-sm md:text-base font-medium tracking-tight whitespace-nowrap transition-colors duration-300 backdrop-blur-sm cursor-default"
     >
       <img
         src={getTechLogo(tech)}
         alt={`${tech} logo`}
-        className={`w-4 h-4 md:w-5 md:h-5 object-contain grayscale opacity-40 group-hover/tag:grayscale-0 group-hover/tag:opacity-100 transition-all duration-500 
-          ${isDarkTech ? "dark:brightness-0 dark:invert group-hover/tag:dark:brightness-0 group-hover/tag:dark:invert" : "dark:brightness-100 dark:invert-0"}
-        `}
-        style={
-          isDarkTech
-            ? { filter: "var(--logo-filter, grayscale(1) opacity(0.4))" }
-            : {}
-        }
-        onError={(e) => (e.target.style.display = "none")}
+        className={`w-4 h-4 md:w-5 md:h-5 object-contain opacity-50 group-hover/tag:opacity-100 transition-[opacity,transform] duration-300 will-change-transform ${
+          isDarkTech ? "dark:brightness-0 dark:invert" : "dark:invert-0"
+        }`}
+        onError={(e) => (e.currentTarget.style.display = "none")}
+        loading="lazy"
+        decoding="async"
       />
       <span className="group-hover/tag:text-primary transition-colors duration-300">
         {tech}
@@ -74,6 +79,13 @@ const Tag = ({ tech }) => {
 const DomainCard = ({ title, techs, index }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (isInView) {
+      setHasAnimated(true);
+    }
+  }, [isInView]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -98,31 +110,56 @@ const DomainCard = ({ title, techs, index }) => {
       ref={ref}
       variants={containerVariants}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      className="group relative border-b border-border/40 py-12 md:py-20 first:border-t"
+      animate={hasAnimated ? "visible" : "hidden"}
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 260, damping: 26 }}
+      className="group relative rounded-3xl border border-border/40 bg-surface/20 backdrop-blur-xl p-7 md:p-10 overflow-hidden"
     >
-      <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-12">
-        <div className="max-w-xl">
-          <h3 className="text-5xl md:text-6xl font-serif italic tracking-tighter leading-none mb-6 group-hover:text-primary transition-colors duration-500">
-            {title}
-          </h3>
-          <p className="text-on-surface-variant font-light text-lg opacity-40 group-hover:opacity-80 transition-opacity duration-500">
-            Spearheading complex architectures and refined user experiences in
-            the {title.toLowerCase()} ecosystem.
-          </p>
+      <div className="absolute inset-0 bg-gradient-to-br from-foreground/[0.05] to-transparent pointer-events-none opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/10 blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-aura-1/10 blur-[90px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col gap-8">
+        <div className="flex items-start justify-between gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-bold tracking-[0.45em] uppercase opacity-30">
+                0{index + 1}
+              </span>
+              <div className="w-10 h-px bg-border/60" />
+              <span className="text-[10px] font-bold tracking-[0.45em] uppercase opacity-30">
+                Software Domain
+              </span>
+            </div>
+            <h3 className="text-3xl md:text-4xl font-heading tracking-tight leading-none group-hover:text-primary transition-colors duration-500">
+              {title}
+            </h3>
+            <p className="text-on-surface-variant font-light text-base md:text-lg opacity-55 leading-relaxed max-w-xl">
+              Purpose-built tooling with strong fundamentals: maintainability,
+              performance, and crisp interfaces.
+            </p>
+          </div>
+
+          <div className="hidden md:flex flex-col items-end gap-3 pt-2">
+            <span className="text-[10px] font-bold tracking-[0.45em] uppercase opacity-25">
+              {techs.length} Tools
+            </span>
+            <div className="w-14 h-14 rounded-full border border-border/40 bg-background/20 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
+              <span className="text-xl font-serif italic text-primary">↗</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 md:max-w-md justify-start md:justify-end">
-          {techs.map((tech, i) => (
-            <motion.div key={i} variants={tagVariants}>
+        <div className="flex flex-wrap gap-3">
+          {techs.map((tech) => (
+            <motion.div key={tech} variants={tagVariants}>
               <Tag tech={tech} />
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Aura hover glow */}
-      <div className="absolute inset-x-0 -bottom-[1px] h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-1000" />
+      <div className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center" />
     </motion.div>
   );
 };
@@ -142,13 +179,18 @@ export const TechStack = ({ data = [] }) => {
           },
         ];
 
+  const headline = useMemo(() => {
+    const count = domains.reduce((acc, d) => acc + (d?.items?.length || 0), 0);
+    return { count };
+  }, [domains]);
+
   return (
     <section
       className="py-24 md:py-32 px-6 md:px-12 bg-background relative overflow-hidden"
       id="tech-stack"
     >
       <div className="max-w-7xl mx-auto">
-        <header className="mb-20 md:mb-32">
+        <header className="mb-14 md:mb-20">
           <motion.span
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 0.4, x: 0 }}
@@ -157,15 +199,28 @@ export const TechStack = ({ data = [] }) => {
           >
             Software Domains
           </motion.span>
-          <h2 className="text-5xl md:text-7xl font-heading leading-[0.9] tracking-tight">
-            Specialized in <br /> Modern Verticals.
-          </h2>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="space-y-6">
+              <h2 className="text-5xl md:text-7xl font-heading leading-[0.9] tracking-tight">
+                Clean stacks. <br /> Real delivery.
+              </h2>
+              <p className="text-on-surface-variant text-lg font-light tracking-wide leading-relaxed opacity-55 max-w-2xl">
+                A curated set of tools across domains — selected for speed,
+                stability, and maintainable product evolution.
+              </p>
+            </div>
+            <div className="hidden lg:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.45em] opacity-30">
+              <span>{domains.length} Domains</span>
+              <div className="w-12 h-px bg-border/60" />
+              <span>{headline.count} Tools</span>
+            </div>
+          </div>
         </header>
 
-        <div className="flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {domains.map((domain, index) => (
             <DomainCard
-              key={index}
+              key={domain.category}
               title={domain.category}
               techs={domain.items}
               index={index}
@@ -175,11 +230,11 @@ export const TechStack = ({ data = [] }) => {
       </div>
 
       {/* Background Decor */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full h-px bg-gradient-to-r from-transparent via-border/10 to-transparent pointer-events-none" />
+      <div className="absolute -top-40 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border/10 to-transparent pointer-events-none" />
     </section>
   );
 };
-
 TechStack.propTypes = {
   data: PropTypes.arrayOf(TECH_DOMAIN_SHAPE),
 };
@@ -187,3 +242,4 @@ TechStack.propTypes = {
 TechStack.defaultProps = {
   data: [],
 };
+

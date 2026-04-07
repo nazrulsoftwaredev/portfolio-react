@@ -25,7 +25,7 @@ const ProjectCard = ({ project, index }) => {
       <div
         className={`absolute top-0 ${isEven ? "right-0" : "left-0"} select-none pointer-events-none opacity-[0.03] group-hover/card:opacity-[0.08] transition-opacity duration-1000`}
       >
-        <span className="text-[15rem] md:text-[25rem] font-heading font-black leading-none">
+        <span className="text-[clamp(9rem,28vw,15rem)] md:text-[25rem] font-heading font-black leading-none">
           0{index + 1}
         </span>
       </div>
@@ -58,7 +58,7 @@ const ProjectCard = ({ project, index }) => {
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="bg-background/20 backdrop-blur-3xl px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-white/5"
+            className="bg-background/20 backdrop-blur-3xl px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-border/40"
           >
             {project.category}
           </motion.span>
@@ -71,10 +71,10 @@ const ProjectCard = ({ project, index }) => {
         className="w-full md:w-[32%] flex flex-col justify-center relative z-10"
       >
         <div className="relative">
-          <span className="text-[10px] font-bold tracking-[0.6em] uppercase opacity-30 mb-8 block group-hover/card:opacity-100 group-hover/card:text-primary transition-all duration-700">
+          <span className="text-[10px] font-bold tracking-[0.6em] uppercase opacity-30 mb-8 block group-hover/card:opacity-100 group-hover/card:text-primary transition-[color,opacity] duration-700">
             CASE STUDY // 0{index + 1}
           </span>
-          <h3 className="text-[clamp(2.5rem,6vw,5.5rem)] font-heading leading-[0.85] tracking-tight mb-10 group-hover/card:pl-3 transition-all duration-1000">
+          <h3 className="text-[clamp(2.5rem,6vw,5.5rem)] font-heading leading-[0.85] tracking-tight mb-10 group-hover/card:pl-3 transition-[padding,color] duration-1000">
             {project.title}
           </h3>
           <p className="text-on-surface-variant text-xl font-light leading-relaxed mb-16 max-w-sm opacity-60 group-hover/card:opacity-100 transition-opacity duration-700">
@@ -147,7 +147,7 @@ export const ProjectsGallery = ({ data = [] }) => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Polished Section Header */}
-        <div className="mb-48 flex flex-col md:flex-row md:items-end justify-between gap-16">
+        <div className="mb-24 md:mb-48 flex flex-col md:flex-row md:items-end justify-between gap-16">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -188,7 +188,7 @@ export const ProjectsGallery = ({ data = [] }) => {
         {/* Project List */}
         <div className="flex flex-col">
           {projects.map((project, i) => (
-            <ProjectCard key={i} project={project} index={i} />
+            <ProjectCard key={project.title} project={project} index={i} />
           ))}
         </div>
       </div>
@@ -198,7 +198,6 @@ export const ProjectsGallery = ({ data = [] }) => {
     </section>
   );
 };
-
 ProjectsGallery.propTypes = {
   data: PropTypes.arrayOf(PROJECT_GALLERY_ITEM_SHAPE),
 };
@@ -206,3 +205,4 @@ ProjectsGallery.propTypes = {
 ProjectsGallery.defaultProps = {
   data: [],
 };
+

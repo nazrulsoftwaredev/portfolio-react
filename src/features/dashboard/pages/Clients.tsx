@@ -1,5 +1,6 @@
 import React from "react";
 import { Briefcase, Plus, ShieldCheck, Target, Users } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui";
 import { Toast } from "@/shared/components";
 import { PageHeader } from "../components/common";
@@ -175,17 +176,19 @@ export const Clients: React.FC = () => {
       />
 
       <div className="fixed bottom-6 left-6 z-[1060] flex max-w-sm flex-col gap-3">
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            isOpen
-            message={toast.message}
-            type={toast.type}
-            onClose={() => dismissToast(toast.id)}
-            action={undefined}
-            inline
-          />
-        ))}
+        <AnimatePresence initial={false}>
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              isOpen
+              message={toast.message}
+              type={toast.type}
+              onClose={() => dismissToast(toast.id)}
+              action={undefined}
+              inline
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

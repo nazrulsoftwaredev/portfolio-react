@@ -27,7 +27,6 @@ const spring = {
 
 const workspaceLabels: Record<string, string> = {
   "/dashboard": "Overview",
-  "/dashboard/content": "Content",
   "/dashboard/clients": "Clients",
   "/dashboard/invoices": "Invoices",
   "/dashboard/analytics": "Analytics",
@@ -116,7 +115,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              setShowNotifications(!showNotifications);
+              setShowNotifications((prev) => !prev);
               setShowProfile(false);
             }}
             className="p-2.5 rounded-xl bg-muted/40 border border-border hover:bg-muted transition relative"
@@ -125,7 +124,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
           </motion.button>
 
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {showNotifications && (
               <>
                 {/* OVERLAY */}
@@ -139,7 +138,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
                 {/* DROPDOWN */}
                 <motion.div
-                  layoutId="dropdown"
+                  layout
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -179,7 +178,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <motion.div
             whileHover={{ scale: 1.02 }}
             onClick={() => {
-              setShowProfile(!showProfile);
+              setShowProfile((prev) => !prev);
               setShowNotifications(false);
             }}
             className="w-10 h-10 rounded-xl overflow-hidden cursor-pointer border border-border"
@@ -191,7 +190,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             />
           </motion.div>
 
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {showProfile && (
               <>
                 {/* OVERLAY */}
@@ -205,6 +204,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
                 {/* MENU */}
                 <motion.div
+                  layout
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}

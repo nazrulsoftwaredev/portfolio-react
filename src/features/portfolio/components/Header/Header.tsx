@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import PropTypes from "prop-types";
 import {
   motion,
@@ -6,26 +6,46 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { HEADER_DATA_SHAPE } from "@/shared/types";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
 
 const HeaderComponent = ({ loading, data }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
+  const hiddenRef = useRef(false);
 
   // Hide header on scroll down, show on scroll up
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious();
-    if (latest > previous && latest > 150) {
-      setHidden(true);
-    } else {
-      setHidden(false);
+    const previous = lastScrollY.current;
+    lastScrollY.current = latest;
+
+    const delta = latest - previous;
+    const shouldBeScrolled = latest > 50;
+
+    const hideThreshold = 160;
+    const showThreshold = 80;
+    const minDelta = 6;
+
+    let nextHidden = hiddenRef.current;
+    if (latest > hideThreshold && delta > minDelta) {
+      nextHidden = true;
+    } else if (latest < showThreshold || delta < -minDelta) {
+      nextHidden = false;
     }
-    setScrolled(latest > 50);
+
+    if (nextHidden !== hiddenRef.current) {
+      hiddenRef.current = nextHidden;
+      setHidden(nextHidden);
+    }
+
+    setScrolled((prev) => (prev !== shouldBeScrolled ? shouldBeScrolled : prev));
   });
 
   // Close menu on Escape key
@@ -52,6 +72,21 @@ const HeaderComponent = ({ loading, data }) => {
         ]
   ).map((item, index) => ({ ...item, num: `0${index + 1}` }));
 
+  const handleSectionNavigation = (href, closeMenu = false) => {
+    if (!href?.startsWith("#")) return;
+
+    if (closeMenu) {
+      setIsMenuOpen(false);
+    }
+
+    if (location.pathname !== "/") {
+      navigate(`/${href}`);
+      return;
+    }
+
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <>
       <motion.header
@@ -61,7 +96,7 @@ const HeaderComponent = ({ loading, data }) => {
         }}
         animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 w-full z-[100] px-8 md:px-16 py-10 flex justify-between items-center transition-all duration-700 pointer-events-none ${scrolled ? "backdrop-blur-2xl bg-background/40 py-6 border-b border-white/5" : ""}`}
+        className={`fixed top-0 w-full z-[100] px-8 md:px-16 py-10 flex justify-between items-center pointer-events-none transition-[background-color,backdrop-filter,padding,border-color] duration-700 ${scrolled ? "backdrop-blur-2xl bg-background/40 py-6 border-b border-border/40" : ""}`}
       >
         <div
           className="flex items-center gap-12 pointer-events-auto cursor-pointer group"
@@ -100,9 +135,7 @@ const HeaderComponent = ({ loading, data }) => {
                   href={link.href}
                   onClick={(e) => {
                     e.preventDefault();
-                    document
-                      .querySelector(link.href)
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    handleSectionNavigation(link.href);
                   }}
                   data-cursor="hover"
                   className="text-[11px] font-black tracking-[0.2em] uppercase px-5 py-2 hover:text-primary transition-all duration-500"
@@ -112,19 +145,15 @@ const HeaderComponent = ({ loading, data }) => {
               )}
             </Magnetic>
           ))}
-          <div className="w-16 h-px bg-white/10 mx-6" />
+          <div className="w-16 h-px bg-border/60 mx-6" />
           <Magnetic>
-            <button
-              onClick={() =>
-                document
-                  .querySelector("#contact")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-              className="text-[10px] font-black uppercase tracking-[0.25em] px-10 py-4 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all duration-700"
+            <Link
+              to="/start-project"
+              className="text-[10px] font-black uppercase tracking-[0.25em] px-10 py-4 rounded-full border border-border/50 hover:bg-foreground hover:text-background transition-all duration-700"
               data-cursor="hover"
             >
               Start Project
-            </button>
+            </Link>
           </Magnetic>
         </nav>
 
@@ -146,7 +175,7 @@ const HeaderComponent = ({ loading, data }) => {
         </button>
       </motion.header>
 
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {isMenuOpen && (
           <motion.div
             id="mobile-menu"
@@ -203,14 +232,7 @@ const HeaderComponent = ({ loading, data }) => {
                         href={link.href}
                         onClick={(e) => {
                           e.preventDefault();
-                          setIsMenuOpen(false);
-                          setTimeout(
-                            () =>
-                              document
-                                .querySelector(link.href)
-                                ?.scrollIntoView({ behavior: "smooth" }),
-                            600,
-                          );
+                          handleSectionNavigation(link.href, true);
                         }}
                         className="group py-6 border-b border-border/40 flex items-end justify-between hover:pl-6 transition-all duration-700"
                       >
@@ -233,13 +255,28 @@ const HeaderComponent = ({ loading, data }) => {
                   Connect
                 </span>
                 <div className="flex gap-10">
-                  {["Instagram", "Dribbble", "LinkedIn"].map((s) => (
+                  {[
+                    {
+                      label: "GitHub",
+                      href: "https://github.com/nazrulsoftwaredev",
+                    },
+                    {
+                      label: "LinkedIn",
+                      href: "https://www.linkedin.com/in/nazrulsoftwaredev/",
+                    },
+                    {
+                      label: "Facebook",
+                      href: "https://www.facebook.com/nazrulilam3144/",
+                    },
+                  ].map((social) => (
                     <a
-                      key={s}
-                      href="#"
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-lg font-serif italic hover:text-primary transition-colors"
                     >
-                      {s}
+                      {social.label}
                     </a>
                   ))}
                 </div>

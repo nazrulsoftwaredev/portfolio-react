@@ -41,7 +41,7 @@ export const AccessibleInput = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-white/80"
+          className="block text-sm font-medium text-foreground/80"
         >
           {label}
           {required && (
@@ -64,11 +64,11 @@ export const AccessibleInput = ({
         aria-required={required}
         aria-invalid={!!error}
         aria-describedby={ariaDescribedBy || undefined}
-        className={`w-full bg-black/50 border rounded-xl px-4 py-3 outline-none transition-all
+        className={`w-full bg-card/60 text-foreground border rounded-xl px-4 py-3 outline-none transition-all placeholder:text-muted-foreground/70
           ${
             error
               ? 'border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20'
-              : 'border-white/10 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
+              : 'border-border/40 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}`}
@@ -88,7 +88,7 @@ export const AccessibleInput = ({
       {hint && (
         <div
           id={hintId}
-          className="text-xs text-white/50 mt-1"
+          className="text-xs text-muted-foreground mt-1"
         >
           {hint}
         </div>
@@ -145,7 +145,7 @@ export const AccessibleSelect = ({
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-sm font-medium text-white/80"
+          className="block text-sm font-medium text-foreground/80"
         >
           {label}
           {required && (
@@ -166,11 +166,11 @@ export const AccessibleSelect = ({
         aria-required={required}
         aria-invalid={!!error}
         aria-describedby={ariaDescribedBy || undefined}
-        className={`w-full bg-black/50 border rounded-xl px-4 py-3 outline-none transition-all
+        className={`w-full bg-card/60 text-foreground border rounded-xl px-4 py-3 outline-none transition-all
           ${
             error
               ? 'border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20'
-              : 'border-white/10 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
+              : 'border-border/40 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}`}
@@ -196,7 +196,7 @@ export const AccessibleSelect = ({
       {hint && (
         <div
           id={hintId}
-          className="text-xs text-white/50 mt-1"
+          className="text-xs text-muted-foreground mt-1"
         >
           {hint}
         </div>
@@ -261,7 +261,7 @@ export const AccessibleTextarea = ({
       {label && (
         <label
           htmlFor={textareaId}
-          className="block text-sm font-medium text-white/80"
+          className="block text-sm font-medium text-foreground/80"
         >
           {label}
           {required && (
@@ -284,11 +284,11 @@ export const AccessibleTextarea = ({
         aria-required={required}
         aria-invalid={!!error}
         aria-describedby={ariaDescribedBy || undefined}
-        className={`w-full bg-black/50 border rounded-xl px-4 py-3 outline-none transition-all resize-none
+        className={`w-full bg-card/60 text-foreground border rounded-xl px-4 py-3 outline-none transition-all resize-none placeholder:text-muted-foreground/70
           ${
             error
               ? 'border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20'
-              : 'border-white/10 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
+              : 'border-border/40 focus:border-primary focus:ring-2 focus:ring-cyan-400/20'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}`}
@@ -308,7 +308,7 @@ export const AccessibleTextarea = ({
       {hint && (
         <div
           id={hintId}
-          className="text-xs text-white/50 mt-1"
+          className="text-xs text-muted-foreground mt-1"
         >
           {hint}
         </div>

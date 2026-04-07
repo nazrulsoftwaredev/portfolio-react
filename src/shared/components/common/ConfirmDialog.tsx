@@ -81,7 +81,7 @@ export const ConfirmDialog = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onCancel}
-            className="fixed inset-0 bg-black/50 z-[1040]"
+            className="fixed inset-0 bg-foreground/50 z-[1040]"
             aria-hidden="true"
           />
 

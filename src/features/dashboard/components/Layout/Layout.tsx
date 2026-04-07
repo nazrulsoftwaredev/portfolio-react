@@ -52,7 +52,7 @@ export const Layout: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeSidebar}
-              className="fixed inset-0 z-40 bg-black/40 md:hidden"
+              className="fixed inset-0 z-40 bg-foreground/40 md:hidden"
             />
 
             <motion.div

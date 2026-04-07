@@ -10,7 +10,35 @@ import type {
   AnalyticsData,
   DashboardUser,
 } from "./types";
-import { DASHBOARD_API_ENDPOINTS } from "./endpoints";
+
+const MOCK_USER: DashboardUser = {
+  id: "demo-user",
+  email: "demo@curator.local",
+  name: "Demo User",
+  role: "admin",
+};
+
+const MOCK_ANALYTICS: AnalyticsData = {
+  metrics: [
+    { label: "Revenue", value: "$128,400", change: 12, trend: "up" },
+    { label: "Clients", value: 43, change: 6, trend: "up" },
+    { label: "Retention", value: "94%", change: 2, trend: "up" },
+    { label: "Churn", value: "3.1%", change: -1, trend: "down" },
+  ],
+  chartData: [
+    { month: "Jan", value: 62 },
+    { month: "Feb", value: 71 },
+    { month: "Mar", value: 76 },
+    { month: "Apr", value: 84 },
+    { month: "May", value: 88 },
+    { month: "Jun", value: 93 },
+  ],
+};
+
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 export const useDashboardAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -27,21 +55,29 @@ export const useDashboardAuth = () => {
       setError(null);
 
       try {
-        const response = await fetch(DASHBOARD_API_ENDPOINTS.auth.login, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        });
+        await wait(250);
 
-        if (!response.ok) {
-          throw new Error(`Authentication failed: ${response.status}`);
+        if (!credentials.email.trim() || !credentials.password.trim()) {
+          throw new Error("Please enter both email and password");
         }
 
+        const user = {
+          ...MOCK_USER,
+          email: credentials.email,
+          name: credentials.email.split("@")[0] || MOCK_USER.name,
+        };
         const result: DashboardApiResponse<{
           token: string;
           user: DashboardUser;
-        }> = await response.json();
-        setUser(result.data.user);
+        }> = {
+          status: "success",
+          message: "UI-only login successful",
+          data: {
+            token: "ui-only-token",
+            user,
+          },
+        };
+        setUser(user);
         return result;
       } catch (err) {
         const errorMessage =
@@ -71,13 +107,8 @@ export const useDashboardAnalytics = () => {
     setError(null);
 
     try {
-      const response = await fetch(DASHBOARD_API_ENDPOINTS.analytics.overview);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
+      await wait(250);
+      return MOCK_ANALYTICS;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch analytics";

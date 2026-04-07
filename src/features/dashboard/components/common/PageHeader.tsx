@@ -29,11 +29,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <div
-      className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${className}`}
+      className={`flex flex-col xl:flex-row xl:items-end justify-between gap-4 ${className}`}
     >
-      <div>
+      <div className="max-w-2xl">
         <h2
-          className={`text-2xl md:text-3xl font-display font-semibold tracking-tight text-foreground leading-tight ${titleClassName}`}
+          className={`text-2xl sm:text-3xl font-display font-semibold tracking-tight text-foreground leading-tight ${titleClassName}`}
         >
           {title}
         </h2>
@@ -41,7 +41,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       </div>
 
       {actions ? (
-        <div className="flex items-center gap-3">{actions}</div>
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 xl:justify-end">
+          {actions}
+        </div>
       ) : null}
     </div>
   );

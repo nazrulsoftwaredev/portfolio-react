@@ -8,7 +8,6 @@ export interface StatCardProps {
   value: string | number;
   trend?: string;
   trendPositive?: boolean;
-  bgGradient: string;
   onClick?: () => void;
 }
 
@@ -19,11 +18,10 @@ export const OverviewStatCard = React.memo(
     value,
     trend,
     trendPositive = true,
-    bgGradient,
     onClick,
   }: StatCardProps) => (
     <div
-      className={`premium-card relative overflow-hidden p-6 transition duration-300 hover:-translate-y-1 hover:shadow-lg ${
+      className={`premium-card min-h-[176px] p-5 md:p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
         onClick ? "cursor-pointer" : ""
       }`}
       onClick={onClick}
@@ -41,17 +39,14 @@ export const OverviewStatCard = React.memo(
       tabIndex={onClick ? 0 : undefined}
       aria-label={onClick ? `${label} details` : undefined}
     >
-      <div
-        className={`absolute -right-3 -top-3 h-16 w-16 rounded-full opacity-15 ${bgGradient}`}
-      />
-      <div className="flex items-center justify-between">
-        <div className="p-3 rounded-2xl bg-muted/70 border border-border/70 text-foreground">
-          <Icon className="w-6 h-6" />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/40 text-foreground">
+          <Icon className="w-5 h-5" />
         </div>
         {trend && (
           <Badge
             variant="outline"
-            className={`gap-1.5 px-2.5 py-1 text-[10px] font-semibold tracking-wider border ${
+            className={`h-7 gap-1.5 px-2.5 text-[11px] font-semibold border ${
               trendPositive
                 ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                 : "bg-red-500/10 text-red-600 border-red-500/20"
@@ -67,18 +62,19 @@ export const OverviewStatCard = React.memo(
         )}
       </div>
 
-      <div className="mt-5">
-        <p className="text-muted-foreground text-xs font-medium">{label}</p>
-        <h3 className="text-2xl font-display font-semibold mt-2 text-foreground tabular-nums">
+      <div className="mt-5 space-y-1.5">
+        <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+          {label}
+        </p>
+        <h3 className="text-2xl md:text-[28px] font-display font-semibold text-foreground tabular-nums leading-tight">
           {value}
         </h3>
+        <p className="text-xs text-muted-foreground">
+          Compared to previous period
+        </p>
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        <div className="flex-1 h-1 bg-muted/60 rounded-full overflow-hidden">
-          <div className="h-full w-[70%] bg-gradient-to-r from-primary/70 via-secondary/60 to-primary/40" />
-        </div>
-      </div>
+      <div className="mt-4 h-px w-full bg-border/70" />
     </div>
   ),
 );

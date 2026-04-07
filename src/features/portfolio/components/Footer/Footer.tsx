@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { SocialLink } from "@/shared/components/common/SocialLink";
 import { FOOTER_DATA_SHAPE } from "@/shared/types";
-import { Globe, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const FooterComponent = ({ data = {} }) => {
   const currentYear = new Date().getFullYear();
@@ -12,40 +12,38 @@ const FooterComponent = ({ data = {} }) => {
   const socials = [
     {
       label: "LinkedIn",
-      href: "#",
+      href: "https://www.linkedin.com/in/nazrulsoftwaredev/",
       iconName: "linkedin",
     },
     {
       label: "GitHub",
-      href: "#",
+      href: "https://github.com/nazrulsoftwaredev",
       iconName: "github",
     },
     {
       label: "Facebook",
-      href: "#",
+      href: "https://www.facebook.com/nazrulilam3144/",
       iconName: "facebook",
-    },
-    {
-      label: "Instagram",
-      href: "#",
-      iconName: "instagram",
-    },
-    {
-      label: "X (Twitter)",
-      href: "#",
-      iconName: "x",
     },
   ];
 
-  return (
-    <footer className="pt-32 pb-16 px-8 md:px-16 bg-background relative overflow-hidden">
-      {/* Decorative Aura */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+  const quickLinks = [
+    { label: "About", href: "#about" },
+    { label: "Work", href: "#work" },
+    { label: "Expertise", href: "#expertise" },
+    { label: "Tech Stack", href: "#tech-stack" },
+    { label: "Contact", href: "#contact" },
+  ];
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-32">
+  return (
+    <footer className="pt-24 md:pt-28 pb-14 px-8 md:px-16 bg-background relative overflow-hidden">
+      {/* Decorative Aura */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
+
+      <div className="max-w-7xl mx-auto flex flex-col gap-16 md:gap-20">
         {/* Top Section: Editorial Connect */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-16">
-          <div className="max-w-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-start">
+          <div className="lg:col-span-5">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 0.3, x: 0 }}
@@ -53,7 +51,7 @@ const FooterComponent = ({ data = {} }) => {
             >
               Let's Connect — {currentYear}
             </motion.div>
-            <h3 className="heading-xxl font-heading tracking-tighter leading-[0.85] mb-10">
+            <h3 className="heading-xxl font-heading tracking-tighter leading-[0.85] mb-8">
               Building{" "}
               <span className="font-serif italic font-normal text-primary tracking-tight">
                 digital experiences
@@ -67,29 +65,73 @@ const FooterComponent = ({ data = {} }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-16 gap-y-8">
-            {socials.map((social) => (
-              <SocialLink
-                key={social.label}
-                href={social.href}
-                label={social.label}
-                iconName={social.iconName}
-                iconClassName="w-3.5 h-3.5"
-                magneticIntensity={null}
-                className="group flex flex-col gap-3 text-[11px] font-black uppercase tracking-[0.3em] hover:text-primary transition-all duration-500"
-                iconWrapperClassName="opacity-30 group-hover:opacity-100 transition-all duration-700 bg-white/5 w-12 h-12 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-black"
-              />
-            ))}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <div className="text-[10px] font-bold tracking-[0.4em] uppercase opacity-30">
+                Quick Links
+              </div>
+              <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                {quickLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document
+                        .querySelector(link.href)
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-[11px] font-black uppercase tracking-[0.25em] opacity-50 hover:opacity-100 hover:text-primary transition-all duration-500"
+                    data-cursor="hover"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+              <div className="pt-6 border-t border-border/40">
+                <Link
+                  to="/start-project"
+                  className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.25em] opacity-60 hover:opacity-100 hover:text-primary transition-all duration-500"
+                  data-cursor="hover"
+                >
+                  Start Project
+                  <span className="w-10 h-10 rounded-full bg-card/40 border border-border/40 flex items-center justify-center">
+                    ↗
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="text-[10px] font-bold tracking-[0.4em] uppercase opacity-30">
+                Social
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-8">
+                {socials.map((social) => (
+                  <SocialLink
+                    key={social.label}
+                    href={social.href}
+                    label={social.label}
+                    iconName={social.iconName}
+                    openInNewTab
+                    iconClassName="w-3.5 h-3.5"
+                    magneticIntensity={null}
+                    className="group flex flex-col gap-3 text-[11px] font-black uppercase tracking-[0.3em] hover:text-primary transition-all duration-500"
+                    iconWrapperClassName="opacity-30 group-hover:opacity-100 transition-all duration-700 bg-card/40 w-12 h-12 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar: Auto Year & Credit */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-10 pt-16 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.4em] opacity-40">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-10 pt-12 border-t border-border/40 text-[10px] font-black uppercase tracking-[0.4em] opacity-40">
           <div className="flex items-center gap-8">
             <span className="hover:opacity-100 transition-opacity cursor-default">
               © {currentYear} // {name}
             </span>
-            <div className="w-12 h-px bg-white/20" />
+            <div className="w-12 h-px bg-border/60" />
             <span className="italic font-serif normal-case tracking-normal">
               Digital Architect
             </span>

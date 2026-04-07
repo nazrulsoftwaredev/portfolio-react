@@ -73,7 +73,7 @@ export const Home: React.FC = () => {
         root
         options={{ lerp: 0.05, duration: 1.5, smoothTouch: true }}
       >
-        <div className="bg-background min-h-screen text-on-surface selection:bg-primary/30 selection:text-white relative z-0">
+        <div className="bg-background min-h-screen text-on-surface selection:bg-primary/30 relative z-0">
           <SkipLink targetId="main-content" />
           <CustomCursor />
           {loading && <Preloader onComplete={() => setLoading(false)} />}

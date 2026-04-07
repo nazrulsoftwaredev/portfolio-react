@@ -1,4 +1,4 @@
-import { INITIAL_CLIENTS, STATUS_ORDER } from "./constants";
+import { STATUS_ORDER } from "./constants";
 import type {
   Client,
   ClientStatus,
@@ -25,24 +25,6 @@ export const nextStatus = (status: ClientStatus): ClientStatus => {
   const currentIndex = STATUS_ORDER.indexOf(status);
   const nextIndex = (currentIndex + 1) % STATUS_ORDER.length;
   return STATUS_ORDER[nextIndex];
-};
-
-export const readStoredClients = (storageKey: string): Client[] => {
-  if (typeof window === "undefined") {
-    return INITIAL_CLIENTS;
-  }
-
-  try {
-    const stored = window.localStorage.getItem(storageKey);
-    if (!stored) {
-      return INITIAL_CLIENTS;
-    }
-
-    const parsed = JSON.parse(stored) as Client[];
-    return parsed.length > 0 ? parsed : INITIAL_CLIENTS;
-  } catch {
-    return INITIAL_CLIENTS;
-  }
 };
 
 export const validateClient = (client: Client): ClientValidationErrors => {

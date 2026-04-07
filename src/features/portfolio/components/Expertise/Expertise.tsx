@@ -76,7 +76,7 @@ export const Expertise = ({ data = [] }) => {
     >
       {/* Technical Background Grid Integration */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-grid-technical opacity-[0.03]" />
+        <div className="absolute inset-0 bg-grid-technical-fade opacity-[0.03]" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         
         {/* Decorative Scanners */}
@@ -89,7 +89,7 @@ export const Expertise = ({ data = [] }) => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Block - Cinematic & Technical */}
-        <div className="flex flex-col mb-40 gap-12">
+        <div className="flex flex-col mb-20 md:mb-40 gap-12">
           <div className="flex items-center gap-6 overflow-hidden">
             <div className="h-[2px] w-24 bg-primary/20" />
             <motion.span 
@@ -145,7 +145,7 @@ export const Expertise = ({ data = [] }) => {
         <div className="w-full relative border-t border-border/10">
            {items.map((item, idx) => (
              <ExpertItem 
-               key={idx} 
+               key={item.title} 
                item={item} 
                idx={idx} 
              />

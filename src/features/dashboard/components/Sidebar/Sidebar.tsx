@@ -2,7 +2,6 @@ import { memo, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  Globe,
   Users,
   FileText,
   BarChart3,
@@ -13,7 +12,6 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: "Overview", path: "/dashboard" },
-  { icon: Globe, label: "Content", path: "/dashboard/content" },
   { icon: Users, label: "Clients", path: "/dashboard/clients" },
   { icon: FileText, label: "Invoices", path: "/dashboard/invoices" },
   { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },

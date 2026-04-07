@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import PropTypes from 'prop-types';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ABOUT_CONTENT_SHAPE } from "@/shared/types";
@@ -96,7 +96,7 @@ export const About = ({ data = {} }) => {
           <div className="space-y-12">
             {focusItems.map((item, idx) => (
               <motion.div
-                key={idx}
+                key={item.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -105,7 +105,7 @@ export const About = ({ data = {} }) => {
                 <div className="group border-t border-border/20 pt-10">
                   <div className="flex items-center gap-6 mb-6">
                     <span className="text-[10px] font-serif italic opacity-30 group-hover:opacity-100 transition-opacity">0{idx + 1}</span>
-                    <h4 className="font-heading text-xl md:text-2xl tracking-tight leading-none group-hover:pl-2 transition-all">
+                    <h4 className="font-heading text-xl md:text-2xl tracking-tight leading-none group-hover:pl-2 transition-[padding] duration-500">
                       {item.title}
                     </h4>
                   </div>
@@ -135,7 +135,6 @@ export const About = ({ data = {} }) => {
     </section>
   );
 };
-
 About.propTypes = {
   data: ABOUT_CONTENT_SHAPE,
 };
@@ -143,3 +142,4 @@ About.propTypes = {
 About.defaultProps = {
   data: {},
 };
+

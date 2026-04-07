@@ -44,12 +44,12 @@ export const RecentActivityCard = ({
 
   return (
     <PanelCard
-      className="p-6"
-      contentClassName="space-y-6"
+      className="p-5 md:p-6"
+      contentClassName="space-y-5"
       title="Recent activity"
       actions={
         <button
-          className="text-primary text-xs font-semibold flex items-center gap-1"
+          className="text-primary text-xs font-semibold flex items-center gap-1.5 rounded-lg px-2 py-1 hover:bg-primary/10"
           type="button"
           onClick={onViewAll}
         >
@@ -72,10 +72,10 @@ export const RecentActivityCard = ({
                 setActivityFilter(filter.value as "ALL" | ActivityType)
               }
               aria-pressed={activityFilter === filter.value}
-              className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-full min-h-9 px-3 py-1.5 text-xs font-semibold transition-colors ${
                 activityFilter === filter.value
-                  ? "bg-primary/10 text-primary border border-primary/20"
-                  : "bg-muted/40 text-muted-foreground border border-border"
+                  ? "bg-primary text-primary-foreground border border-primary"
+                  : "bg-muted/40 text-muted-foreground border border-border hover:bg-muted/70"
               }`}
             >
               {label}
@@ -84,26 +84,26 @@ export const RecentActivityCard = ({
         })}
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-3 md:space-y-3.5">
         {filteredActivities.map((activity, i) => (
           <button
             key={`${activity.label}-${i}`}
             type="button"
             onClick={() => onActivityClick?.(activity.type, activity.label)}
-            className="w-full text-left flex items-center gap-4 p-2 rounded-2xl border border-transparent transition hover:border-border/80 hover:bg-muted/40"
+            className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-border/70 bg-background transition-colors hover:bg-muted/30"
           >
-            <div className={`p-3 rounded-xl ${activity.color}`}>
+            <div className={`p-2.5 rounded-lg ${activity.color}`}>
               <activity.icon className={`w-5 h-5 ${activity.textColor}`} />
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-sm text-foreground tracking-tight">
+              <p className="font-semibold text-sm text-foreground">
                 {activity.label}
               </p>
-              <p className="text-xs font-medium text-muted-foreground mt-0.5">
+              <p className="text-xs font-medium text-muted-foreground mt-1">
                 {activity.client || activity.industry || activity.preview}
               </p>
             </div>
-            <p className="text-sm font-semibold text-emerald-600">
+            <p className="text-xs sm:text-sm font-semibold text-emerald-600">
               {activity.amount}
             </p>
           </button>

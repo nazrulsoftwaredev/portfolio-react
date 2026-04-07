@@ -16,7 +16,7 @@ export const Testimonials = ({ data = [] }) => {
       
       {/* Background Decorative Text */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.015]">
-        <span className="text-[20rem] md:text-[35rem] font-heading font-black tracking-tighter leading-none block">
+        <span className="text-[clamp(10rem,30vw,20rem)] md:text-[35rem] font-heading font-black tracking-tighter leading-none block">
           VOICES
         </span>
       </div>
@@ -60,7 +60,6 @@ export const Testimonials = ({ data = [] }) => {
     </section>
   );
 };
-
 Testimonials.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
@@ -74,3 +73,4 @@ Testimonials.propTypes = {
 Testimonials.defaultProps = {
   data: [],
 };
+

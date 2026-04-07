@@ -27,7 +27,7 @@ export const ClientDialog: React.FC<ClientDialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="absolute inset-0 bg-foreground/30" onClick={onClose} />
       <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-2xl p-8 space-y-6 shadow-lg">
         <div className="flex items-start justify-between gap-4">
           <div>

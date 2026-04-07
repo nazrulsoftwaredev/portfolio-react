@@ -8,7 +8,6 @@ const statCards = [
     value: "$28,550",
     trend: "+18.5%",
     trendPositive: true,
-    bgGradient: "bg-emerald-500/20",
   },
   {
     icon: Users,
@@ -16,7 +15,6 @@ const statCards = [
     value: "12",
     trend: "+3",
     trendPositive: true,
-    bgGradient: "bg-blue-500/20",
   },
   {
     icon: FileText,
@@ -24,7 +22,6 @@ const statCards = [
     value: "5",
     trend: "-2",
     trendPositive: false,
-    bgGradient: "bg-amber-500/20",
   },
   {
     icon: Zap,
@@ -32,7 +29,6 @@ const statCards = [
     value: "$142K",
     trend: "+25.2%",
     trendPositive: true,
-    bgGradient: "bg-purple-500/20",
   },
 ];
 
@@ -42,7 +38,7 @@ interface OverviewStatsGridProps {
 
 export const OverviewStatsGrid = ({ onStatClick }: OverviewStatsGridProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 md:gap-5 xl:gap-6">
       {statCards.map((card) => (
         <OverviewStatCard
           key={card.label}

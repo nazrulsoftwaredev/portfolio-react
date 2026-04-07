@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { INITIAL_CLIENTS, STORAGE_KEY } from "./constants";
+import { INITIAL_CLIENTS } from "./constants";
 import type {
   Client,
   ClientDialogMode,
@@ -14,7 +14,6 @@ import {
   formatCurrency,
   formatGrowth,
   nextStatus,
-  readStoredClients,
   validateClient,
 } from "./utils";
 
@@ -29,9 +28,7 @@ interface ToastState {
 const PAGE_SIZE = 5;
 
 export const useClientsManager = () => {
-  const [clients, setClients] = useState<Client[]>(() =>
-    readStoredClients(STORAGE_KEY),
-  );
+  const [clients, setClients] = useState<Client[]>(() => INITIAL_CLIENTS);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | ClientStatus>("All");
   const [sortBy, setSortBy] = useState<SortOption>("value-desc");
@@ -55,12 +52,6 @@ export const useClientsManager = () => {
   const dismissToast = (id: number) => {
     setToasts((previous) => previous.filter((toast) => toast.id !== id));
   };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-    }
-  }, [clients]);
 
   const filteredClients = useMemo(
     () => filterAndSortClients(clients, query, statusFilter, sortBy),

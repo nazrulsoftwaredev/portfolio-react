@@ -1,69 +1,119 @@
+import { PanelCard } from "../common";
 import { clientPortfolio } from "./overviewData";
 
 export const ClientPortfolioCard = () => {
   return (
-    <div className="premium-card !p-0 overflow-hidden">
-      <div className="p-8 flex items-center justify-between border-b border-border">
-        <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
-          Client portfolio
-        </h3>
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+    <PanelCard
+      className="p-5 md:p-6"
+      contentClassName="space-y-4"
+      title="Client portfolio"
+      subtitle="Active accounts, health status, and growth trend"
+      actions={
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:flex -space-x-3">
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-10 h-10 rounded-2xl border-4 border-background bg-muted overflow-hidden"
+                className="w-8 h-8 rounded-lg border-2 border-background bg-muted overflow-hidden"
               >
                 <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 123}`}
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 171}`}
                   alt="Client"
                   className="w-full h-full object-cover"
                 />
               </div>
             ))}
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-[10px] font-semibold text-primary">
-            +6
+          <div className="h-8 rounded-lg bg-muted border border-border px-2.5 text-[11px] font-semibold text-primary flex items-center">
+            +6 accounts
           </div>
         </div>
+      }
+    >
+      <div className="text-xs text-muted-foreground sm:hidden">
+        Mobile summary view
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
+      <div className="space-y-3 sm:hidden">
+        {clientPortfolio.map((client) => (
+          <article
+            key={client.name}
+            className="rounded-xl border border-border bg-background p-4 space-y-3"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs border border-primary/20">
+                  {client.name[0]}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {client.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{client.type}</p>
+                </div>
+              </div>
+              <span className="inline-flex min-h-7 items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                {client.status}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="rounded-lg bg-muted/40 px-3 py-2">
+                <p className="text-muted-foreground">Client Value</p>
+                <p className="mt-1 font-semibold text-foreground tabular-nums">
+                  {client.value}
+                </p>
+              </div>
+              <div className="rounded-lg bg-muted/40 px-3 py-2">
+                <p className="text-muted-foreground">Growth</p>
+                <p className="mt-1 font-semibold text-emerald-600">
+                  {client.growth}
+                </p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-border">
+        <table className="w-full min-w-[700px] text-left">
           <thead>
-            <tr className="text-muted-foreground text-xs font-medium bg-muted/30">
-              <th className="px-8 py-4">Client Name</th>
-              <th className="px-8 py-4">Industry</th>
-              <th className="px-8 py-4">Status</th>
-              <th className="px-8 py-4">Client Value</th>
-              <th className="px-8 py-4 text-right">Growth</th>
+            <tr className="text-muted-foreground text-xs font-semibold uppercase tracking-wide bg-muted/30">
+              <th className="px-4 md:px-5 py-3.5">Client Name</th>
+              <th className="px-4 md:px-5 py-3.5">Industry</th>
+              <th className="px-4 md:px-5 py-3.5">Status</th>
+              <th className="px-4 md:px-5 py-3.5">Client Value</th>
+              <th className="px-4 md:px-5 py-3.5 text-right">Growth</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {clientPortfolio.map((client) => (
-              <tr key={client.name} className="group hover:bg-muted/30">
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs border border-primary/20">
+              <tr
+                key={client.name}
+                className="group hover:bg-muted/20 transition-colors"
+              >
+                <td className="px-4 md:px-5 py-4 md:py-[18px]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs border border-primary/20">
                       {client.name[0]}
                     </div>
-                    <span className="font-semibold text-sm tracking-tight text-foreground">
+                    <span className="font-semibold text-sm text-foreground">
                       {client.name}
                     </span>
                   </div>
                 </td>
-                <td className="px-8 py-6 text-xs font-medium text-muted-foreground">
+                <td className="px-4 md:px-5 py-4 md:py-[18px] text-xs font-medium text-muted-foreground">
                   {client.type}
                 </td>
-                <td className="px-8 py-6">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                <td className="px-4 md:px-5 py-4 md:py-[18px]">
+                  <span className="inline-flex min-h-7 items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
                     {client.status}
                   </span>
                 </td>
-                <td className="px-8 py-6 font-display font-semibold text-sm text-foreground tabular-nums">
+                <td className="px-4 md:px-5 py-4 md:py-[18px] font-display font-semibold text-sm text-foreground tabular-nums">
                   {client.value}
                 </td>
-                <td className="px-8 py-6 text-right">
+                <td className="px-4 md:px-5 py-4 md:py-[18px] text-right">
                   <span className="text-emerald-600 font-semibold text-sm">
                     {client.growth}
                   </span>
@@ -73,6 +123,6 @@ export const ClientPortfolioCard = () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </PanelCard>
   );
 };

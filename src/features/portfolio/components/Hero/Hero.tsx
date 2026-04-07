@@ -23,7 +23,8 @@ const WordReveal = ({ text, delay = 0, className = "" }) => {
               type: "spring",
               stiffness: 80,
             }}
-            className="inline-block group-hover:text-primary group-hover:scale-110 transition-all duration-300"
+            whileHover={{ scale: 1.06 }}
+            className="inline-block group-hover:text-primary transition-colors duration-300"
             style={{ transformOrigin: "bottom center" }}
           >
             {word}
@@ -56,7 +57,7 @@ export const Hero = ({ loading, data = {} }) => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-28 md:pt-24 pb-24 md:pb-32"
+      className="relative min-h-screen flex items-start lg:items-center justify-center overflow-hidden bg-background pt-40 md:pt-48 lg:pt-36 pb-24 md:pb-32"
       id="home"
     >
       <div className="w-full max-w-7xl mx-auto px-6 md:px-12">

@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    color-scheme: light dark;
     --background: oklch(1 0 0);
     --surface: #f9f9f9;
     --surface-dim: #f2f2f2;
@@ -148,10 +149,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.04;
+    opacity: 0.028;
     pointer-events: none;
     z-index: 9999;
     background-image: var(--grain);
+    mix-blend-mode: soft-light;
+    filter: contrast(110%) brightness(105%);
   }
   .theme {
     --font-heading: var(--font-sans);
@@ -305,10 +308,40 @@
 
 @layer utilities {
   .bg-grid-technical {
-    background-size: 50px 50px;
+    background-size: 56px 56px;
     background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--border) 55%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--border) 55%, transparent) 1px,
+        transparent 1px
+      );
+  }
+
+  /* Softer grid: radial fade + lower perceived contrast. */
+  .bg-grid-technical-fade {
+    background-size: 56px 56px;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--border) 40%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--border) 40%, transparent) 1px,
+        transparent 1px
+      );
+    mask-image: radial-gradient(circle at 50% 40%, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(
+      circle at 50% 40%,
+      black 0%,
+      transparent 70%
+    );
   }
 
   .bg-radial-gradient {

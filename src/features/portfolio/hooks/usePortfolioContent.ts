@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { portfolioData as defaultPortfolioData } from "../constants/portfolioData";
 import type { PortfolioData } from "@/shared/types";
 
-const STORAGE_KEY = "portfolio-content-v1";
-
 type PortfolioDataUpdater =
   | PortfolioData
   | ((current: PortfolioData) => PortfolioData);
@@ -47,24 +45,8 @@ const normalizePortfolioData = (value: unknown): PortfolioData => {
   };
 };
 
-const readStoredPortfolioData = (): PortfolioData => {
-  if (typeof window === "undefined") {
-    return clonePortfolioData(defaultPortfolioData);
-  }
-
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      return clonePortfolioData(defaultPortfolioData);
-    }
-
-    return normalizePortfolioData(JSON.parse(saved));
-  } catch {
-    return clonePortfolioData(defaultPortfolioData);
-  }
-};
-
-let inMemoryPortfolioData: PortfolioData = readStoredPortfolioData();
+let inMemoryPortfolioData: PortfolioData =
+  clonePortfolioData(defaultPortfolioData);
 const subscribers = new Set<(data: PortfolioData) => void>();
 
 const notifySubscribers = (): void => {
@@ -74,14 +56,6 @@ const notifySubscribers = (): void => {
 
 const persistPortfolioData = (data: PortfolioData): void => {
   inMemoryPortfolioData = normalizePortfolioData(data);
-
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(inMemoryPortfolioData),
-    );
-  }
-
   notifySubscribers();
 };
 

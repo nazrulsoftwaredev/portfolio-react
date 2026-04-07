@@ -8,6 +8,12 @@ const PortfolioHome = lazy(() =>
   })),
 );
 
+const StartProjectPage = lazy(() =>
+  import("./pages/StartProject").then((module) => ({
+    default: module.StartProject,
+  })),
+);
+
 const LoadingFallback = () => <Skeleton className="w-full h-screen" />;
 
 /**
@@ -16,6 +22,14 @@ const LoadingFallback = () => <Skeleton className="w-full h-screen" />;
  */
 export const portfolioRoutes = (
   <Routes>
+    <Route
+      path="/start-project"
+      element={
+        <Suspense fallback={<LoadingFallback />}>
+          <StartProjectPage />
+        </Suspense>
+      }
+    />
     <Route
       path="/"
       element={

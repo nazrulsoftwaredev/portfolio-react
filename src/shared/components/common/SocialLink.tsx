@@ -1,43 +1,60 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
-import { SocialIcon } from './SocialIcon';
+import { SocialIcon } from "./SocialIcon";
 
-export const SocialLink = React.memo(({
-  href = '#',
-  label,
-  icon,
-  iconName,
-  iconClassName = '',
-  children,
-  className = '',
-  iconWrapperClassName = '',
-  labelClassName = '',
-  magneticIntensity = 0.4,
-}) => {
-  const content = (
-    <a
-      href={href}
-      data-cursor="hover"
-      className={className}
-    >
-      <span className={iconWrapperClassName}>
-        {icon || (iconName ? <SocialIcon name={iconName} className={iconClassName} title={label} /> : null)}
-      </span>
-      {children || <span className={labelClassName}>{label}</span>}
-    </a>
-  );
+export const SocialLink = React.memo(
+  ({
+    href = "#",
+    label,
+    icon,
+    iconName,
+    openInNewTab = false,
+    iconClassName = "",
+    children,
+    className = "",
+    iconWrapperClassName = "",
+    labelClassName = "",
+    magneticIntensity = 0.4,
+  }) => {
+    const content = (
+      <a
+        href={href}
+        target={openInNewTab ? "_blank" : undefined}
+        rel={openInNewTab ? "noopener noreferrer" : undefined}
+        data-cursor="hover"
+        className={className}
+      >
+        <span className={iconWrapperClassName}>
+          {icon ||
+            (iconName ? (
+              <SocialIcon
+                name={iconName}
+                className={iconClassName}
+                title={label}
+              />
+            ) : null)}
+        </span>
+        {children || <span className={labelClassName}>{label}</span>}
+      </a>
+    );
 
-  return magneticIntensity === null ? content : <Magnetic intensity={magneticIntensity}>{content}</Magnetic>;
-});
+    return magneticIntensity === null ? (
+      content
+    ) : (
+      <Magnetic intensity={magneticIntensity}>{content}</Magnetic>
+    );
+  },
+);
 
-SocialLink.displayName = 'SocialLink';
+SocialLink.displayName = "SocialLink";
 
 SocialLink.propTypes = {
   href: PropTypes.string,
   label: PropTypes.string,
   icon: PropTypes.node,
   iconName: PropTypes.string,
+  openInNewTab: PropTypes.bool,
   iconClassName: PropTypes.string,
   children: PropTypes.node,
   className: PropTypes.string,
@@ -47,10 +64,11 @@ SocialLink.propTypes = {
 };
 
 SocialLink.defaultProps = {
-  href: '#',
-  iconClassName: '',
-  className: '',
-  iconWrapperClassName: '',
-  labelClassName: '',
+  href: "#",
+  openInNewTab: false,
+  iconClassName: "",
+  className: "",
+  iconWrapperClassName: "",
+  labelClassName: "",
   magneticIntensity: 0.4,
 };

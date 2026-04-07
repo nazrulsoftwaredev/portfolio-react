@@ -41,8 +41,8 @@ export const PanelCard: React.FC<PanelCardProps> = ({
   return (
     <Card className={`premium-card ${className}`}>
       {(title || subtitle || actions) && (
-        <CardHeader className={`mb-0 p-0 pb-4 ${headerClassName}`}>
-          <div className="flex items-start justify-between gap-4">
+        <CardHeader className={`mb-0 p-0 pb-5 ${headerClassName}`}>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               {titleContent}
               {subtitleContent}

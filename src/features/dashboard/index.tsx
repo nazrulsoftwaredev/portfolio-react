@@ -6,9 +6,6 @@ import { Login } from "./pages/Login";
 const Overview = React.lazy(() =>
   import("./pages/Overview").then((mod) => ({ default: mod.Overview })),
 );
-const Content = React.lazy(() =>
-  import("./pages/Content").then((mod) => ({ default: mod.Content })),
-);
 const Clients = React.lazy(() =>
   import("./pages/Clients").then((mod) => ({ default: mod.Clients })),
 );
@@ -56,7 +53,6 @@ export const DashboardFeature: React.FC = () => {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Overview />} />
-            <Route path="content" element={<Content />} />
             <Route path="clients" element={<Clients />} />
             <Route path="invoices" element={<Invoices />} />
             <Route path="analytics" element={<Analytics />} />

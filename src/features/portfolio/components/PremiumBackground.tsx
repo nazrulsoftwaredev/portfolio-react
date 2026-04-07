@@ -11,6 +11,9 @@ export const PremiumBackground = () => {
 
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-background">
+      {/* Soft technical texture (faded grid) */}
+      <div className="absolute inset-0 bg-grid-technical-fade opacity-[0.035]" />
+
       {/* Aura Blobs - Optimized for Mobile */}
       <motion.div 
         style={{ y: y1 }}
@@ -44,6 +47,9 @@ export const PremiumBackground = () => {
 
       {/* Vignette Overlay */}
       <div className="absolute inset-0 bg-vignette opacity-100" />
+
+      {/* Subtle film wash to unify blobs + grid */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/0 to-background/10 opacity-80" />
     </div>
   );
 };

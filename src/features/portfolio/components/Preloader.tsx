@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Preloader = ({ onComplete }) => {
   const [index, setIndex] = useState(0);
   const words = ["Innovation", "Precision", "Artistry", "Minimalism", "Portfolio"];
+  const hasCompletedRef = useRef(false);
 
   useEffect(() => {
     if (index === words.length - 1) {
-      setTimeout(onComplete, 1000);
-      return;
+      if (hasCompletedRef.current) {
+        return;
+      }
+      const doneTimeout = setTimeout(() => {
+        if (hasCompletedRef.current) return;
+        hasCompletedRef.current = true;
+        onComplete();
+      }, 1000);
+      return () => clearTimeout(doneTimeout);
     }
     const timeout = setTimeout(() => {
       setIndex(prev => prev + 1);

@@ -5,70 +5,101 @@ import {
   RecentActivityCard,
   RevenueInsightsCard,
 } from "@/features/dashboard/components/Overview";
-import { Toast } from "@/shared/components";
-import { useOverviewActions } from "@/features/dashboard/components/Overview/useOverviewActions";
+import { motion, useReducedMotion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import type { ActivityType } from "@/features/dashboard/components/Overview/overviewData";
 
 export const Overview: React.FC = () => {
-  const { toasts, dismissToast, showToast, navigateTo } = useOverviewActions();
+  const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const handleNewInvoice = () => {
-    navigateTo("/dashboard/invoices", "Opening invoices", "info");
+    navigate("/dashboard/invoices");
   };
 
   const handleNewProject = () => {
-    navigateTo("/dashboard/pipeline", "Starting a new project", "info");
+    navigate("/dashboard/pipeline");
   };
 
   const handleViewAllActivity = () => {
-    navigateTo("/dashboard/messages", "Opening activity feed", "info");
+    navigate("/dashboard/messages");
   };
 
   const handleActivityClick = (type: ActivityType, label: string) => {
+    void label;
     if (type === "invoice") {
-      navigateTo("/dashboard/invoices", `Viewing ${label}`, "info");
+      navigate("/dashboard/invoices");
       return;
     }
 
     if (type === "client") {
-      navigateTo("/dashboard/clients", `Viewing ${label}`, "info");
+      navigate("/dashboard/clients");
       return;
     }
 
-    navigateTo("/dashboard/messages", `Opening ${label}`, "info");
+    navigate("/dashboard/messages");
   };
 
   const handleStatClick = (label: string) => {
-    showToast(`${label} selected`, "info");
+    if (label === "Monthly Revenue" || label === "Pending Invoices") {
+      navigate("/dashboard/invoices");
+      return;
+    }
+
+    if (label === "Active Clients") {
+      navigate("/dashboard/clients");
+      return;
+    }
+
+    navigate("/dashboard/pipeline");
   };
 
   return (
-    <div className="space-y-10">
-      <OverviewHeader
-        onNewInvoice={handleNewInvoice}
-        onNewProject={handleNewProject}
-      />
-      <OverviewStatsGrid onStatClick={handleStatClick} />
+    <motion.div
+      className="space-y-6 md:space-y-8 xl:space-y-10"
+      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+      animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05, ease: "easeOut" }}
+      >
+        <OverviewHeader
+          onNewInvoice={handleNewInvoice}
+          onNewProject={handleNewProject}
+        />
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+      >
+        <OverviewStatsGrid onStatClick={handleStatClick} />
+      </motion.div>
+
+      <motion.div
+        className="grid grid-cols-1 xl:grid-cols-3 gap-5 md:gap-6 xl:gap-7"
+        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}
+      >
         <RevenueInsightsCard />
         <RecentActivityCard
           onViewAll={handleViewAllActivity}
           onActivityClick={handleActivityClick}
         />
-      </div>
+      </motion.div>
 
-      <ClientPortfolioCard />
-
-      {toasts.map((toast) => (
-        <Toast
-          key={toast.id}
-          isOpen
-          message={toast.message}
-          type={toast.type}
-          onClose={() => dismissToast(toast.id)}
-        />
-      ))}
-    </div>
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.2, ease: "easeOut" }}
+      >
+        <ClientPortfolioCard />
+      </motion.div>
+    </motion.div>
   );
 };

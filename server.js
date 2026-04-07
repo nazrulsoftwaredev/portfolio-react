@@ -21,7 +21,7 @@ const contentTypes = {
   ".woff": "font/woff",
   ".woff2": "font/woff2",
   ".ttf": "font/ttf",
-  ".map": "application/json; charset=utf-8"
+  ".map": "application/json; charset=utf-8",
 };
 
 const sendFile = (res, filePath) => {
