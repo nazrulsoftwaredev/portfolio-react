@@ -1,47 +1,88 @@
-import React, { useRef, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import React, { useRef, useCallback, useEffect } from "react";
+import PropTypes from "prop-types";
+import { motion, useSpring } from "framer-motion";
+import { usePortfolioMotionSettings } from "../hooks/usePortfolioMotionSettings";
 
-export const Magnetic = ({ children, padding = 100, intensity = 0.35, cursor = "hover" }) => {
+export const Magnetic = ({
+  children,
+  intensity = 0.35,
+  cursor = "hover",
+}) => {
   const ref = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const pointerRef = useRef({ x: 0, y: 0 });
 
   const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
   const x = useSpring(0, springConfig);
   const y = useSpring(0, springConfig);
+  const safeIntensity = Math.min(intensity, 0.2);
 
-  const handleMouseMove = useCallback((e) => {
+  const refreshBounds = useCallback(() => {
     if (!ref.current) return;
-    const { clientX, clientY } = e;
-    const { width, height, left, top } = ref.current.getBoundingClientRect();
-    
-    // Center point
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
+    rectRef.current = ref.current.getBoundingClientRect();
+  }, []);
 
-    // Movement distance
-    const moveX = (clientX - centerX) * intensity;
-    const moveY = (clientY - centerY) * intensity;
+  useEffect(() => {
+    if (!shouldUseEnhancedMotion) return undefined;
+    const handleResize = () => {
+      refreshBounds();
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [refreshBounds, shouldUseEnhancedMotion]);
 
-    x.set(moveX);
-    y.set(moveY);
-  }, [intensity, x, y]);
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!shouldUseEnhancedMotion || !ref.current) return;
+      if (!rectRef.current) {
+        refreshBounds();
+      }
+      pointerRef.current.x = e.clientX;
+      pointerRef.current.y = e.clientY;
+
+      if (rafRef.current != null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        const bounds = rectRef.current;
+        if (!bounds) return;
+
+        const centerX = bounds.left + bounds.width / 2;
+        const centerY = bounds.top + bounds.height / 2;
+        const moveX = (pointerRef.current.x - centerX) * safeIntensity;
+        const moveY = (pointerRef.current.y - centerY) * safeIntensity;
+
+        x.set(moveX);
+        y.set(moveY);
+      });
+    },
+    [refreshBounds, safeIntensity, shouldUseEnhancedMotion, x, y],
+  );
 
   const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    rectRef.current = null;
     x.set(0);
     y.set(0);
   }, [x, y]);
 
-  const handleMouseEnter = () => setIsHovered(true);
+  if (!shouldUseEnhancedMotion) {
+    return <div data-cursor={cursor}>{children}</div>;
+  }
 
   return (
     <motion.div
       ref={ref}
+      onMouseEnter={refreshBounds}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ x, y, position: 'relative', display: 'inline-block' }}
+      style={{ x, y, position: "relative", display: "inline-block" }}
       data-cursor={cursor}
     >
       {children}
@@ -51,13 +92,11 @@ export const Magnetic = ({ children, padding = 100, intensity = 0.35, cursor = "
 
 Magnetic.propTypes = {
   children: PropTypes.node.isRequired,
-  padding: PropTypes.number,
   intensity: PropTypes.number,
   cursor: PropTypes.string,
 };
 
 Magnetic.defaultProps = {
-  padding: 100,
   intensity: 0.35,
-  cursor: 'hover',
+  cursor: "hover",
 };

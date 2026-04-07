@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import PropTypes from "prop-types";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
+interface PreloaderProps {
+  onComplete: () => void;
+  minDurationMs?: number;
+}
+
+export const Preloader = ({ onComplete, minDurationMs = 450 }: PreloaderProps) => {
   const shouldReduceMotion = useReducedMotion();
   const words = useMemo(
     () => ["Innovation", "Precision", "Artistry", "Minimalism", "Portfolio"],
@@ -13,6 +17,7 @@ export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
   const [progress, setProgress] = useState(0);
   const hasCompletedRef = useRef(false);
   const startedAtRef = useRef<number | null>(null);
+  const lastBucketRef = useRef(-1);
 
   useEffect(() => {
     startedAtRef.current = performance.now();
@@ -33,7 +38,11 @@ export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
       const startedAt = startedAtRef.current ?? performance.now();
       const elapsed = performance.now() - startedAt;
       const next = Math.min(1, elapsed / Math.max(300, minDurationMs));
-      setProgress(next);
+      const nextBucket = Math.floor(next * 100);
+      if (nextBucket !== lastBucketRef.current || next >= 1) {
+        lastBucketRef.current = nextBucket;
+        setProgress(next);
+      }
 
       if (next >= 1) {
         if (!hasCompletedRef.current) {
@@ -73,12 +82,11 @@ export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
       aria-live="polite"
       role="status"
     >
-      {/* Premium background treatment */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-grid-technical-fade opacity-[0.025]" />
         <div className="absolute inset-0 bg-vignette opacity-100" />
-        <div className="absolute -top-40 right-0 w-1/2 h-1/2 bg-primary/[0.03] blur-[160px]" />
-        <div className="absolute bottom-[-12rem] left-[-6rem] w-1/2 h-1/2 bg-aura-1 blur-[180px] opacity-20" />
+        <div className="absolute -top-32 right-0 w-1/2 h-1/2 bg-primary/[0.03] blur-[56px]" />
+        <div className="absolute bottom-[-10rem] left-[-4rem] w-1/2 h-1/2 bg-aura-1/10 blur-[56px] opacity-20" />
       </div>
 
       <div className="relative z-10 w-full max-w-3xl px-8">
@@ -91,9 +99,9 @@ export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  initial={{ y: 20, opacity: 0, filter: "blur(6px)" }}
-                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                  exit={{ y: -20, opacity: 0, filter: "blur(6px)" }}
+                  initial={{ y: 16, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -16, opacity: 0 }}
                   transition={{ duration: 0.45, ease: [0.215, 0.61, 0.355, 1] }}
                   className="text-4xl md:text-5xl font-serif italic tracking-tight truncate"
                 >
@@ -126,9 +134,4 @@ export const Preloader = ({ onComplete, minDurationMs = 1200 }) => {
       </div>
     </motion.div>
   );
-};
-
-Preloader.propTypes = {
-  onComplete: PropTypes.func.isRequired,
-  minDurationMs: PropTypes.number,
 };

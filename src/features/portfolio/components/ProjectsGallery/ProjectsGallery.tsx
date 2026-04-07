@@ -1,74 +1,70 @@
-import React, { useRef } from "react";
-import PropTypes from "prop-types";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
-import { PROJECT_GALLERY_ITEM_SHAPE } from "@/shared/types";
+import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
 
 const ProjectCard = ({ project, index }) => {
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Deep Parallax: Image and Text move in opposing directions slightly
-  const textY = useTransform(scrollYProgress, [0, 1], [100, -100]);
-  const imgY = useTransform(scrollYProgress, [0, 1], [-40, 40]);
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
   const isEven = index % 2 === 0;
 
   return (
-    <div
-      ref={containerRef}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
       className={`relative w-full mb-24 md:mb-32 flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} gap-12 lg:gap-32 items-center justify-between group/card`}
     >
-      {/* Background Project Number (Editorial) */}
       <div
-        className={`absolute top-0 ${isEven ? "right-0" : "left-0"} select-none pointer-events-none opacity-[0.03] group-hover/card:opacity-[0.08] transition-opacity duration-1000`}
+        className={`absolute top-0 ${isEven ? "right-0" : "left-0"} select-none pointer-events-none opacity-[0.03] group-hover/card:opacity-[0.06] transition-opacity duration-700`}
       >
         <span className="text-[clamp(9rem,28vw,15rem)] md:text-[25rem] font-heading font-black leading-none">
           0{index + 1}
         </span>
       </div>
 
-      {/* Project Image Container */}
       <div className="w-full md:w-[60%] overflow-hidden group rounded-[0.5rem] aspect-[16/10] bg-surface relative shadow-2xl">
-        {/* Project Specific Ambient Glow */}
         <div
-          className={`absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-[80px] -z-10`}
+          className={`absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[48px] -z-10`}
         />
 
         <motion.div
-          style={{ y: imgY }}
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={shouldUseEnhancedMotion ? { scale: 1.03 } : undefined}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full h-full"
         >
           <img
             src={project.img}
             alt={project.title}
+            width={1600}
+            height={1000}
+            sizes="(min-width: 768px) 60vw, 100vw"
+            fetchPriority="low"
             loading="lazy"
             decoding="async"
-            className="w-full h-[120%] object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-110 transition-all duration-1000 ease-out -translate-y-[10%]"
+            className="w-full h-full object-cover grayscale brightness-95 group-hover:grayscale-0 group-hover:brightness-105 transition-all duration-700 ease-out"
             data-cursor="view"
           />
         </motion.div>
 
-        {/* Editorial Pill */}
         <div className="absolute top-10 left-10 z-20">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="bg-background/20 backdrop-blur-3xl px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-border/40"
+            viewport={{ once: true }}
+            className="bg-background/75 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-border/40"
           >
             {project.category}
           </motion.span>
         </div>
       </div>
 
-      {/* Project Text Container */}
       <motion.div
-        style={{ y: textY }}
         className="w-full md:w-[32%] flex flex-col justify-center relative z-10"
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.55, delay: 0.08 }}
       >
         <div className="relative">
           <span className="text-[10px] font-bold tracking-[0.6em] uppercase opacity-30 mb-8 block group-hover/card:opacity-100 group-hover/card:text-primary transition-[color,opacity] duration-700">
@@ -104,7 +100,7 @@ const ProjectCard = ({ project, index }) => {
           </Magnetic>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -198,11 +194,3 @@ export const ProjectsGallery = ({ data = [] }) => {
     </section>
   );
 };
-ProjectsGallery.propTypes = {
-  data: PropTypes.arrayOf(PROJECT_GALLERY_ITEM_SHAPE),
-};
-
-ProjectsGallery.defaultProps = {
-  data: [],
-};
-

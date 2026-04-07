@@ -83,7 +83,7 @@ export const portfolioData: PortfolioData = {
   ],
   projects: [
     {
-      img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+      img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=75&w=1600&auto=format&fit=crop",
       category: "SaaS",
       title: "FlowBoard",
       desc: "A focused analytics dashboard experience designed for clarity, speed, and confident decision making.",
@@ -91,7 +91,7 @@ export const portfolioData: PortfolioData = {
       status: "Published",
     },
     {
-      img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop",
+      img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=75&w=1600&auto=format&fit=crop",
       category: "Fintech",
       title: "LedgerView",
       desc: "A clean finance interface that simplifies complex datasets through strong hierarchy and motion.",
@@ -99,7 +99,7 @@ export const portfolioData: PortfolioData = {
       status: "Draft",
     },
     {
-      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2672&auto=format&fit=crop",
+      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=75&w=1600&auto=format&fit=crop",
       category: "Portfolio",
       title: "Northline Studio",
       desc: "A storytelling-first website system balancing typography, animation, and conversion-focused UX.",

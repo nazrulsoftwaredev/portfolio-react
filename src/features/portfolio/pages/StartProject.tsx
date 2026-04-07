@@ -1,16 +1,20 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactLenis from "lenis/react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 import { ErrorBoundary, SkipLink, Toast } from "@/shared/components";
 import { SocialLink } from "@/shared/components/common/SocialLink";
 import { PremiumBackground } from "../components/PremiumBackground";
 import { Header } from "../components/Header/Header";
 import { Footer } from "../components/Footer/Footer";
-import { CustomCursor } from "../components/CustomCursor";
 import { Magnetic } from "../components/Magnetic";
 import { usePortfolioContent } from "../hooks/usePortfolioContent";
+import {
+  PortfolioMotionProvider,
+  usePortfolioMotionSettings,
+} from "../hooks/usePortfolioMotionSettings";
 
 type BudgetRange = "Under $1k" | "$1k–$5k" | "$5k–$15k" | "$15k+" | "Not sure";
 type Timeline = "ASAP" | "2–4 weeks" | "1–2 months" | "3+ months" | "Flexible";
@@ -35,8 +39,10 @@ const initialForm: FormState = {
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const StartProject: React.FC = () => {
+const StartProjectContent: React.FC = () => {
+  const location = useLocation();
   const { data: portfolioData } = usePortfolioContent();
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
   const [form, setForm] = useState<FormState>(initialForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<{
@@ -129,22 +135,37 @@ export const StartProject: React.FC = () => {
 
   const showError = (key: keyof FormState) => touched[key] && errors[key];
 
+  useEffect(() => {
+    if (location.pathname !== "/start-project") return;
+
+    // Ensure route transitions always land at the top of the form page.
+    window.scrollTo({ top: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [location.pathname]);
+
   return (
     <ErrorBoundary name="Start Project Page">
       <ReactLenis
         root
-        options={{ lerp: 0.05, duration: 1.5, smoothTouch: true }}
+        options={{
+          autoRaf: false,
+          smoothWheel: false,
+          smoothTouch: false,
+          syncTouch: false,
+          lerp: shouldUseEnhancedMotion ? 0.16 : 0.22,
+          duration: shouldUseEnhancedMotion ? 0.75 : 0.55,
+        }}
       >
         <div className="bg-background min-h-screen text-on-surface selection:bg-primary/30 relative z-0">
           <SkipLink targetId="main-content" />
-          <CustomCursor />
           <PremiumBackground />
 
           <Header loading={false} data={portfolioData.hero} />
 
           <main
             id="main-content"
-            className="relative z-10 w-full focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-background rounded-none"
+            className="relative z-10 w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-none"
             tabIndex={-1}
           >
             <section className="pt-40 md:pt-48 pb-24 md:pb-32 px-6 md:px-12 relative overflow-hidden">
@@ -211,7 +232,7 @@ export const StartProject: React.FC = () => {
                             iconName={social.iconName}
                             openInNewTab
                             iconClassName="w-4 h-4"
-                            magneticIntensity={0.35}
+                            magneticIntensity={null}
                             className="group flex items-center gap-3 px-5 py-3 rounded-full bg-surface/20 border border-border/40 hover:bg-surface/40 hover:border-primary/25 transition-colors"
                             iconWrapperClassName="opacity-50 group-hover:opacity-100 transition-opacity"
                             labelClassName="text-[11px] font-black uppercase tracking-[0.25em] opacity-70 group-hover:opacity-100 transition-opacity"
@@ -227,7 +248,7 @@ export const StartProject: React.FC = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.9, delay: 0.05 }}
                       onSubmit={onSubmit}
-                      className="relative rounded-3xl border border-border/40 bg-surface/20 backdrop-blur-xl p-6 md:p-10 overflow-hidden"
+                      className="relative rounded-3xl border border-border/40 bg-surface/20 p-6 md:p-10 overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-foreground/[0.05] to-transparent pointer-events-none" />
                       <div className="relative z-10">
@@ -406,7 +427,7 @@ export const StartProject: React.FC = () => {
                             message.
                           </div>
 
-                          <Magnetic intensity={0.18}>
+                          <Magnetic intensity={0.14}>
                             <button
                               type="submit"
                               data-cursor="hover"
@@ -432,8 +453,8 @@ export const StartProject: React.FC = () => {
                 </div>
               </div>
 
-              <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[150px] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-aura-1 blur-[150px] opacity-10 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[72px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-aura-1 blur-[72px] opacity-10 pointer-events-none" />
             </section>
           </main>
 
@@ -450,3 +471,9 @@ export const StartProject: React.FC = () => {
     </ErrorBoundary>
   );
 };
+
+export const StartProject: React.FC = () => (
+  <PortfolioMotionProvider>
+    <StartProjectContent />
+  </PortfolioMotionProvider>
+);

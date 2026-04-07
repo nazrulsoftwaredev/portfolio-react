@@ -1,21 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
-import { CONTACT_DATA_SHAPE } from "@/shared/types";
 import { SocialLink } from "@/shared/components/common/SocialLink";
 import { ArrowUpRight, Globe, Clock, MapPin } from "lucide-react";
 
 export const Contact = ({ data = {} }) => {
   const email = data.email || "hello@mdnazrul.com";
+  const formatDhakaTime = () =>
+    new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Dhaka",
+      hour12: true,
+      hour: "numeric",
+      minute: "numeric",
+    });
+  const [currentTime, setCurrentTime] = useState(formatDhakaTime);
 
-  // Real-time metadata (simulated)
-  const currentTime = new Date().toLocaleTimeString("en-US", {
-    timeZone: "Asia/Dhaka",
-    hour12: true,
-    hour: "numeric",
-    minute: "numeric",
-  });
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCurrentTime(formatDhakaTime());
+    }, 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   const socials = [
     {
@@ -42,13 +47,6 @@ export const Contact = ({ data = {} }) => {
     >
       {/* Technical Grid Background */}
       <div className="absolute inset-0 bg-grid-technical-fade opacity-[0.03] pointer-events-none" />
-
-      {/* Scanner animation */}
-      <motion.div
-        animate={{ y: ["0%", "100%"] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent z-10 opacity-20"
-      />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <header className="mb-14 md:mb-20">
@@ -165,7 +163,7 @@ export const Contact = ({ data = {} }) => {
             </div>
 
             {/* Technical Metadata Table */}
-            <div className="rounded-3xl border border-border/40 bg-surface/20 backdrop-blur-xl p-7 md:p-8">
+            <div className="rounded-3xl border border-border/40 bg-surface/20 p-7 md:p-8">
               <div className="flex items-center justify-between gap-6 mb-6">
                 <h4 className="text-[10px] font-bold tracking-[0.4em] uppercase text-muted-foreground/60">
                   Logistics
@@ -230,16 +228,9 @@ export const Contact = ({ data = {} }) => {
       </div>
 
       {/* Cinematic Overlays */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-aura-1 blur-[150px] opacity-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[80px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-aura-1 blur-[80px] opacity-10 pointer-events-none" />
     </section>
   );
-};
-Contact.propTypes = {
-  data: CONTACT_DATA_SHAPE,
-};
-
-Contact.defaultProps = {
-  data: {},
 };
 

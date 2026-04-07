@@ -1,157 +1,117 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, useSpring } from 'framer-motion';
+import { useEffect, useRef } from "react";
+import { motion, useSpring, useMotionValue, useAnimation } from "framer-motion";
+import { usePortfolioMotionSettings } from "../hooks/usePortfolioMotionSettings";
 
 export const CustomCursor = () => {
-  const [variant, setVariant] = useState('default');
-  const [hasMoved, setHasMoved] = useState(false);
-  const [clickPulse, setClickPulse] = useState(0);
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
 
-  // Configuration for ultra-smooth momentum
-  const mainConfig = { stiffness: 450, damping: 45, mass: 0.1 };
-  const trailConfig = { stiffness: 200, damping: 25, mass: 0.2 };
+  const controls = useAnimation();
 
-  const mouseX = useSpring(0, mainConfig);
-  const mouseY = useSpring(0, mainConfig);
-  const trailX = useSpring(0, trailConfig);
-  const trailY = useSpring(0, trailConfig);
+  const pointer = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+  const lastCursorTypeRef = useRef("default");
 
-  const handleMouseMove = useCallback((e) => {
-    if (!hasMoved) setHasMoved(true);
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-    trailX.set(e.clientX);
-    trailY.set(e.clientY);
-  }, []);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  const handleMouseDown = () => setClickPulse(prev => prev + 1);
+  const springConfig = { stiffness: 420, damping: 40, mass: 0.12 };
 
-  const handleMouseOver = useCallback((e) => {
-    const el = e.target.closest('[data-cursor]');
-    if (el) {
-      setVariant(el.getAttribute('data-cursor'));
-    } else {
-      setVariant('default');
-    }
-  }, []);
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  const trailX = useSpring(mouseX, { stiffness: 120, damping: 20 });
+  const trailY = useSpring(mouseY, { stiffness: 120, damping: 20 });
 
   useEffect(() => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice) return;
+    if (!shouldUseEnhancedMotion) return;
 
-    document.body.classList.add('has-custom-cursor');
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseover', handleMouseOver);
-    window.addEventListener('mousedown', handleMouseDown);
+    document.body.classList.add("has-custom-cursor");
+
+    const update = () => {
+      rafRef.current = null;
+      mouseX.set(pointer.current.x);
+      mouseY.set(pointer.current.y);
+    };
+
+    const handleMove = (e: MouseEvent) => {
+      pointer.current.x = e.clientX;
+      pointer.current.y = e.clientY;
+
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(update);
+      }
+    };
+
+    const handleHover = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (!target) return;
+
+      const type =
+        target.closest("[data-cursor]")?.getAttribute("data-cursor") ||
+        "default";
+
+      if (type === lastCursorTypeRef.current) return;
+      lastCursorTypeRef.current = type;
+      controls.start(type);
+    };
+
+    window.addEventListener("mousemove", handleMove, { passive: true });
+    window.addEventListener("mouseover", handleHover, { passive: true });
 
     return () => {
-      document.body.classList.remove('has-custom-cursor');
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseover', handleMouseOver);
-      window.removeEventListener('mousedown', handleMouseDown);
+      document.body.classList.remove("has-custom-cursor");
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseover", handleHover);
+
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleMouseMove, handleMouseOver]);
+  }, [shouldUseEnhancedMotion, mouseX, mouseY, controls]);
+
+  if (!shouldUseEnhancedMotion) return null;
 
   const variants = {
-    default: { 
-      width: 8, 
-      height: 8, 
-      backgroundColor: 'var(--on-surface)',
-      mixBlendMode: 'difference',
-      scale: 1,
+    default: { scale: 1, backgroundColor: "var(--on-surface)" },
+    hover: { scale: 2.5, backgroundColor: "var(--primary)" },
+    view: {
+      scale: 4,
+      backgroundColor: "transparent",
+      border: "1px solid var(--primary)",
     },
-    hover: { 
-      width: 80, 
-      height: 80, 
-      backgroundColor: 'var(--on-surface)',
-      mixBlendMode: 'difference',
-      scale: 1.2,
-    },
-    view: { 
-      width: 120, 
-      height: 120, 
-      backgroundColor: 'var(--on-surface)',
-      mixBlendMode: 'normal',
-      color: 'var(--background)',
-      scale: 1,
-    },
-    text: {
-      width: 2,
-      height: 24,
-      borderRadius: '2px',
-      backgroundColor: 'var(--on-surface)',
-      mixBlendMode: 'difference',
-      scale: 1,
-    }
+    text: { scale: 0.5, backgroundColor: "var(--primary)" },
   };
 
   return (
     <>
-      {/* Primary Dot (Main Interaction) */}
+      {/* MAIN DOT */}
       <motion.div
-        className="fixed top-0 left-0 rounded-full z-[10001] pointer-events-none flex items-center justify-center text-[10px] font-bold uppercase tracking-[0.2em] overflow-hidden backdrop-blur-[1px]"
+        className="fixed top-0 left-0 z-[10001] pointer-events-none rounded-full"
         style={{
-          x: mouseX,
-          y: mouseY,
+          x: smoothX,
+          y: smoothY,
           translateX: "-50%",
           translateY: "-50%",
-          opacity: hasMoved ? 1 : 0,          willChange: "transform",        }}
-        initial={false}
-        animate={variant}
+          width: 8,
+          height: 8,
+          willChange: "transform",
+        }}
+        animate={controls}
         variants={variants}
-        transition={{ type: 'spring', stiffness: 450, damping: 40 }}
-      >
-        <AnimatePresence mode="wait">
-          {variant === 'view' && (
-            <motion.span
-              key="view-text"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="font-heading"
-            >
-              PROJECT
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </motion.div>
+        transition={{ type: "spring", stiffness: 420, damping: 40 }}
+      />
 
-      {/* Trailing Ghost Ring (Atmospheric) */}
-      <motion.div 
-        className="fixed top-0 left-0 w-12 h-12 border border-on-surface/20 rounded-full z-[10000] pointer-events-none"
+      {/* TRAILING CURSOR */}
+      <motion.div
+        className="fixed top-0 left-0 z-[10000] pointer-events-none rounded-full border border-primary/40"
         style={{
           x: trailX,
           y: trailY,
           translateX: "-50%",
           translateY: "-50%",
-          opacity: hasMoved ? 0.3 : 0,
+          width: 32,
+          height: 32,
           willChange: "transform",
         }}
-        animate={{
-          scale: variant === 'hover' ? 2 : 1,
-        }}
-        transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       />
-
-      {/* Click Pulse Effect */}
-      <AnimatePresence>
-        {clickPulse > 0 && (
-          <motion.div
-            key={clickPulse}
-            initial={{ scale: 0, opacity: 0.5 }}
-            animate={{ scale: 4, opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="fixed top-0 left-0 w-8 h-8 border border-primary rounded-full z-[9999] pointer-events-none"
-            style={{
-              x: mouseX,
-              y: mouseY,
-              translateX: "-50%",
-              translateY: "-50%",
-            }}
-          />
-        )}
-      </AnimatePresence>
     </>
   );
 };

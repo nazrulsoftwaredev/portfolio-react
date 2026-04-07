@@ -79,12 +79,7 @@ export const Expertise = ({ data = [] }) => {
         <div className="absolute inset-0 bg-grid-technical-fade opacity-[0.03]" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         
-        {/* Decorative Scanners */}
-        <motion.div 
-          animate={{ y: ["0%", "100%"] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-x-0 top-0 h-[10vh] bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent opacity-50"
-        />
+        <div className="absolute inset-x-0 top-0 h-[10vh] bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent opacity-50" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -129,11 +124,7 @@ export const Expertise = ({ data = [] }) => {
                <div className="flex gap-4 pb-2">
                  {[1, 2, 3].map(i => (
                    <div key={i} className="h-1.5 w-10 bg-primary/10 rounded-full overflow-hidden">
-                     <motion.div 
-                      animate={{ x: ["-100%", "100%"] }}
-                      transition={{ duration: 2 + i, repeat: Infinity, ease: "easeInOut" }}
-                      className="h-full w-full bg-primary/30"
-                     />
+                     <div className="h-full w-full bg-primary/30 opacity-70" />
                    </div>
                  ))}
                </div>
@@ -154,7 +145,7 @@ export const Expertise = ({ data = [] }) => {
       </div>
 
       {/* Subtle Aura */}
-      <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-primary opacity-[0.015] blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-primary opacity-[0.015] blur-[96px] rounded-full pointer-events-none" />
     </section>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import PropTypes from "prop-types";
 import {
   motion,
   AnimatePresence,
@@ -8,10 +7,11 @@ import {
 } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { HEADER_DATA_SHAPE } from "@/shared/types";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
+import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
 
 const HeaderComponent = ({ loading, data }) => {
+  const { shouldUseEnhancedMotion, isDesktop } = usePortfolioMotionSettings();
   const location = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -21,17 +21,28 @@ const HeaderComponent = ({ loading, data }) => {
   const lastScrollY = useRef(0);
   const hiddenRef = useRef(false);
 
-  // Hide header on scroll down, show on scroll up
   useMotionValueEvent(scrollY, "change", (latest) => {
+    if (!shouldUseEnhancedMotion) {
+      const shouldBeScrolled = latest > 50;
+      if (hiddenRef.current) {
+        hiddenRef.current = false;
+        setHidden(false);
+      }
+      setScrolled((prev) => (prev !== shouldBeScrolled ? shouldBeScrolled : prev));
+      lastScrollY.current = latest;
+      return;
+    }
+
     const previous = lastScrollY.current;
     lastScrollY.current = latest;
 
     const delta = latest - previous;
+    if (Math.abs(delta) < 1) return;
     const shouldBeScrolled = latest > 50;
 
-    const hideThreshold = 160;
-    const showThreshold = 80;
-    const minDelta = 6;
+    const hideThreshold = isDesktop ? 160 : 112;
+    const showThreshold = isDesktop ? 80 : 56;
+    const minDelta = isDesktop ? 6 : 10;
 
     let nextHidden = hiddenRef.current;
     if (latest > hideThreshold && delta > minDelta) {
@@ -81,7 +92,7 @@ const HeaderComponent = ({ loading, data }) => {
     }
 
     if (location.pathname !== "/") {
-      navigate(`/${href}`);
+      navigate({ pathname: "/", hash: href });
       return;
     }
 
@@ -96,12 +107,18 @@ const HeaderComponent = ({ loading, data }) => {
           hidden: { y: -20, opacity: 0 },
         }}
         animate={hidden ? "hidden" : "visible"}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 w-full z-[100] px-8 md:px-16 py-10 flex justify-between items-center pointer-events-none transition-[background-color,backdrop-filter,padding,border-color] duration-700 ${scrolled ? "backdrop-blur-2xl bg-background/40 py-6 border-b border-border/40" : ""}`}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed top-0 w-full z-[100] px-6 md:px-12 py-8 md:py-10 flex justify-between items-center pointer-events-none transition-[background-color,padding,border-color] duration-500 ${scrolled ? `${shouldUseEnhancedMotion ? "bg-background/70" : "bg-background/90"} py-4 md:py-5 border-b border-border/40` : ""}`}
       >
         <div
           className="flex items-center gap-12 pointer-events-auto cursor-pointer group"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() => {
+            if (location.pathname !== "/") {
+              navigate("/");
+              return;
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           data-cursor="hover"
         >
           <div className="flex flex-col">
@@ -110,8 +127,8 @@ const HeaderComponent = ({ loading, data }) => {
             </span>
             <div className="flex items-center gap-2 mt-2 overflow-hidden h-3">
               <motion.span
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 4 }}
+                animate={shouldUseEnhancedMotion ? { y: 0 } : undefined}
+                transition={{ duration: 0.2 }}
                 className="text-[8px] uppercase tracking-[0.4em] opacity-30 font-black leading-none block"
               >
                 SOFTWARE DEVELOPER
@@ -159,7 +176,7 @@ const HeaderComponent = ({ loading, data }) => {
         </nav>
 
         <button
-          className="md:hidden pointer-events-auto p-2 rounded-xl border border-border bg-background/80 text-foreground backdrop-blur-md hover:bg-muted/60 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          className="md:hidden pointer-events-auto p-2 rounded-xl border border-border bg-background/90 text-foreground hover:bg-muted/60 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
           onClick={() => setIsMenuOpen(true)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -291,16 +308,6 @@ const HeaderComponent = ({ loading, data }) => {
       </AnimatePresence>
     </>
   );
-};
-
-HeaderComponent.propTypes = {
-  loading: PropTypes.bool,
-  data: HEADER_DATA_SHAPE,
-};
-
-HeaderComponent.defaultProps = {
-  loading: false,
-  data: {},
 };
 
 export const Header = React.memo(HeaderComponent);

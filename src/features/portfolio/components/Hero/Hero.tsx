@@ -1,10 +1,14 @@
-import React, { useRef } from "react";
-import PropTypes from "prop-types";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
-import { HERO_CONTENT_SHAPE } from "@/shared/types";
+import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
 
-const WordReveal = ({ text, delay = 0, className = "" }) => {
+const WordReveal = ({
+  text,
+  delay = 0,
+  className = "",
+  shouldUseEnhancedMotion,
+}) => {
   const words = text.split(" ");
   return (
     <div className={`flex flex-wrap py-2 ${className}`}>
@@ -14,33 +18,36 @@ const WordReveal = ({ text, delay = 0, className = "" }) => {
           className="relative overflow-hidden mr-[0.25em] px-1 pb-2 group inline-block perspective"
         >
           <motion.span
-            initial={{ y: "120%", opacity: 0, rotateZ: -10, scale: 0.8 }}
+            initial={
+              shouldUseEnhancedMotion
+                ? { y: "120%", opacity: 0, rotateZ: -6, scale: 0.95 }
+                : { opacity: 0, y: 12 }
+            }
             animate={{ y: 0, opacity: 1, rotateZ: 0, scale: 1 }}
             transition={{
-              delay: delay + i * 0.12,
-              duration: 1.3,
-              ease: [0.34, 1.56, 0.64, 1],
-              type: "spring",
-              stiffness: 80,
+              delay: delay + i * (shouldUseEnhancedMotion ? 0.08 : 0.04),
+              duration: shouldUseEnhancedMotion ? 0.9 : 0.5,
+              ease: [0.22, 1, 0.36, 1],
             }}
-            whileHover={{ scale: 1.06 }}
+            whileHover={shouldUseEnhancedMotion ? { scale: 1.03 } : undefined}
             className="inline-block group-hover:text-primary transition-colors duration-300"
             style={{ transformOrigin: "bottom center" }}
           >
             {word}
           </motion.span>
 
-          {/* Floating accent behind text */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: [0, 0.15, 0], scale: [0, 1, 1.5] }}
-            transition={{
-              delay: delay + i * 0.12 + 0.5,
-              duration: 1.2,
-              ease: "easeOut",
-            }}
-            className="absolute inset-0 bg-primary rounded-full blur-xl -z-10"
-          />
+          {shouldUseEnhancedMotion && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: [0, 0.1, 0], scale: [0.75, 1, 1.15] }}
+              transition={{
+                delay: delay + i * 0.08 + 0.35,
+                duration: 0.9,
+                ease: "easeOut",
+              }}
+              className="absolute inset-0 bg-primary/20 rounded-full blur-lg -z-10"
+            />
+          )}
         </span>
       ))}
     </div>
@@ -48,15 +55,10 @@ const WordReveal = ({ text, delay = 0, className = "" }) => {
 };
 
 export const Hero = ({ loading, data = {} }) => {
-  const containerRef = useRef(null);
-  const { scrollY } = useScroll();
-  const yParallax = useTransform(scrollY, [0, 500], [0, 150]);
-  // Extended range for mobile visibility: [0, 1000] ensures it doesn't fade too early
-  const opacityFade = useTransform(scrollY, [0, 1000], [1, 0]);
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
 
   return (
     <section
-      ref={containerRef}
       className="relative min-h-screen flex items-start lg:items-center justify-center overflow-hidden bg-background pt-40 md:pt-48 lg:pt-36 pb-24 md:pb-32"
       id="home"
     >
@@ -77,16 +79,24 @@ export const Hero = ({ loading, data = {} }) => {
               className="text-[clamp(2.5rem,11vw,9.5rem)] leading-[0.85] font-heading tracking-tight text-center lg:text-left flex flex-col"
               data-cursor="text"
             >
-              <WordReveal text="CRAFTING" delay={0.6} />
+              <WordReveal
+                text="CRAFTING"
+                delay={0.35}
+                shouldUseEnhancedMotion={shouldUseEnhancedMotion}
+              />
               <div className="flex flex-col lg:flex-row lg:items-end gap-x-6 gap-y-4">
-                <WordReveal text="UNIQUE" delay={0.8} />
+                <WordReveal
+                  text="UNIQUE"
+                  delay={0.48}
+                  shouldUseEnhancedMotion={shouldUseEnhancedMotion}
+                />
                 <motion.span
                   initial={{
                     opacity: 0,
-                    x: -40,
+                    x: shouldUseEnhancedMotion ? -24 : 0,
                     y: 20,
-                    rotateZ: -15,
-                    scale: 0.5,
+                    rotateZ: shouldUseEnhancedMotion ? -8 : 0,
+                    scale: shouldUseEnhancedMotion ? 0.8 : 1,
                   }}
                   animate={
                     !loading
@@ -94,14 +104,14 @@ export const Hero = ({ loading, data = {} }) => {
                       : {}
                   }
                   transition={{
-                    delay: 1.4,
-                    duration: 1.2,
-                    type: "spring",
-                    stiffness: 120,
-                    damping: 12,
+                    delay: 0.8,
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                   className="font-serif text-[0.6em] lowercase tracking-normal leading-none mb-[0.15em] lg:mb-[0.1em] group-hover:text-primary transition-colors duration-300"
-                  whileHover={{ scale: 1.15, rotateZ: 5 }}
+                  whileHover={
+                    shouldUseEnhancedMotion ? { scale: 1.06, rotateZ: 2 } : undefined
+                  }
                 >
                   experiences
                 </motion.span>
@@ -109,20 +119,19 @@ export const Hero = ({ loading, data = {} }) => {
             </h1>
           </div>
 
-          {/* Subtext & CTA - Offset */}
           <motion.div
-            style={{ y: yParallax, opacity: opacityFade }}
             className="lg:col-span-5 lg:col-start-1 order-2 lg:order-1 z-20 will-change-transform"
+            initial={{ opacity: 0, y: 20 }}
+            animate={!loading ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.65, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.p
-              initial={{ opacity: 0, y: 40, filter: "blur(15px)" }}
-              animate={
-                !loading ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}
-              }
+              initial={{ opacity: 0, y: 28 }}
+              animate={!loading ? { opacity: 1, y: 0 } : {}}
               transition={{
-                delay: 1.6,
-                duration: 1.4,
-                ease: [0.34, 1.56, 0.64, 1],
+                delay: 0.75,
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
               }}
               className="text-on-surface-variant text-lg md:text-xl font-light leading-relaxed mb-12 max-w-sm"
               data-cursor="text"
@@ -130,19 +139,16 @@ export const Hero = ({ loading, data = {} }) => {
               Building digital products that balance{" "}
               <motion.span
                 className="text-on-surface font-medium italic relative"
-                animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
+                animate={shouldUseEnhancedMotion ? { opacity: 1 } : undefined}
+                transition={{ duration: 0.25 }}
               >
                 technical precision
               </motion.span>{" "}
               with{" "}
               <motion.span
                 className="font-serif text-2xl"
-                animate={{
-                  scale: [1, 1.12, 1],
-                  rotateZ: [-1, 2, -1],
-                }}
-                transition={{ duration: 1.8, repeat: Infinity, delay: 0.2 }}
+                animate={shouldUseEnhancedMotion ? { rotateZ: 0 } : undefined}
+                transition={{ duration: 0.25 }}
               >
                 artful
               </motion.span>{" "}
@@ -153,11 +159,9 @@ export const Hero = ({ loading, data = {} }) => {
               initial={{ opacity: 0, scale: 0.7, y: 30 }}
               animate={!loading ? { opacity: 1, scale: 1, y: 0 } : {}}
               transition={{
-                delay: 2,
-                duration: 1.3,
-                type: "spring",
-                stiffness: 120,
-                damping: 12,
+                delay: 0.9,
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
               }}
               className="flex"
             >
@@ -171,12 +175,12 @@ export const Hero = ({ loading, data = {} }) => {
                   className="group flex items-center gap-8"
                   data-cursor="hover"
                 >
-                  <div className="relative w-20 h-20 rounded-full border border-border flex items-center justify-center overflow-hidden group-hover:border-primary transition-colors duration-700 group-hover:shadow-[0_0_30px_rgba(186,158,255,0.4)]">
-                    <motion.div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-[0.76, 0, 0.24, 1]" />
+                  <div className="relative w-20 h-20 rounded-full border border-border flex items-center justify-center overflow-hidden group-hover:border-primary transition-colors duration-500">
+                    <motion.div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.76,0,0.24,1]" />
                     <motion.span
                       className="material-symbols-outlined text-xl relative z-10 group-hover:text-background transition-colors duration-700"
-                      animate={{ y: [0, 6, 0] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
+                      whileHover={shouldUseEnhancedMotion ? { y: 2 } : undefined}
+                      transition={{ duration: 0.2 }}
                     >
                       arrow_downward
                     </motion.span>
@@ -184,14 +188,11 @@ export const Hero = ({ loading, data = {} }) => {
                   <div className="flex flex-col">
                     <motion.span
                       className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity duration-500"
-                      animate={{ letterSpacing: ["0.3em", "0.6em", "0.3em"] }}
-                      transition={{ duration: 2.2, repeat: Infinity }}
                     >
                       View Selected
                     </motion.span>
                     <motion.span
-                      className="text-sm font-serif italic"
-                      whileHover={{ scale: 1.1, x: 5 }}
+                      className="text-sm font-serif italic transition-transform duration-300 group-hover:translate-x-0.5"
                     >
                       Works (2024-2026)
                     </motion.span>
@@ -201,13 +202,10 @@ export const Hero = ({ loading, data = {} }) => {
             </motion.div>
           </motion.div>
 
-          {/* Hero Image - Decentered & Large */}
           <motion.div
-            initial={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            animate={
-              !loading ? { opacity: 1, scale: 1, filter: "blur(0px)" } : {}
-            }
-            transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+            initial={{ opacity: 0, scale: shouldUseEnhancedMotion ? 1.04 : 1 }}
+            animate={!loading ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
             className="lg:col-span-6 lg:col-start-7 order-1 lg:order-2 relative"
           >
             <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden group shadow-2xl">
@@ -220,7 +218,6 @@ export const Hero = ({ loading, data = {} }) => {
                 className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-[2s] ease-out scale-110 group-hover:scale-100"
               />
 
-              {/* Year Floating Label */}
               <div className="absolute top-10 right-10 z-20">
                 <span className="text-[clamp(4rem,8vw,8rem)] font-heading leading-none opacity-10 select-none">
                   '26
@@ -228,24 +225,18 @@ export const Hero = ({ loading, data = {} }) => {
               </div>
             </div>
 
-            {/* Decorative Element */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute -bottom-10 -left-10 w-32 h-32 border border-border/20 rounded-full flex items-center justify-center pointer-events-none"
-            >
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 border border-border/20 rounded-full flex items-center justify-center pointer-events-none">
               <div className="w-1 h-20 bg-gradient-to-t from-primary/20 to-transparent" />
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Background Section Number */}
       <div className="absolute left-12 bottom-12 hidden lg:block z-0 overflow-hidden">
         <motion.span
-          initial={{ y: "100%" }}
+          initial={{ y: shouldUseEnhancedMotion ? "100%" : 16 }}
           animate={!loading ? { y: 0 } : {}}
-          transition={{ delay: 2.2, duration: 1.5 }}
+          transition={{ delay: 1, duration: 0.8 }}
           className="text-[12rem] font-heading font-black opacity-[0.02] leading-none block select-none"
         >
           01
@@ -253,14 +244,4 @@ export const Hero = ({ loading, data = {} }) => {
       </div>
     </section>
   );
-};
-
-Hero.propTypes = {
-  loading: PropTypes.bool,
-  data: HERO_CONTENT_SHAPE,
-};
-
-Hero.defaultProps = {
-  loading: false,
-  data: {},
 };

@@ -16,7 +16,7 @@ function App() {
     <ErrorBoundary name="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={portfolioRoutes} />
+          <Route path="/*" element={portfolioRoutes} />
           <Route path="/dashboard/*" element={<DashboardApp />} />
 
           {/* Explicit status pages */}

@@ -1,19 +1,52 @@
-import React, { useRef } from "react";
-import PropTypes from 'prop-types';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useMemo, useRef } from "react";
+import PropTypes from "prop-types";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { ABOUT_CONTENT_SHAPE } from "@/shared/types";
 
-const Word = ({ word, scrollYProgress, index, total }) => {
+type FocusItem = {
+  title: string;
+  description: string;
+};
+
+const DEFAULT_SCRUB_TEXT =
+  "I design and build polished digital products where motion, usability, and performance work together.";
+
+const DEFAULT_BIO_TEXT =
+  "Frontend-focused software developer crafting memorable interfaces and fast, accessible user experiences.";
+
+const DEFAULT_FOCUS_ITEMS: FocusItem[] = [
+  {
+    title: "Product-Focused UI",
+    description:
+      "Designing clean interaction flows and expressive visual systems that support real user goals.",
+  },
+  {
+    title: "Performance-First Frontend",
+    description:
+      "Building responsive React applications with careful rendering, animation, and loading strategies.",
+  },
+];
+
+const Word = ({
+  word,
+  scrollYProgress,
+  index,
+  total,
+}: {
+  word: string;
+  scrollYProgress: MotionValue<number>;
+  index: number;
+  total: number;
+}) => {
   const start = index / total;
-  const end = start + (1 / total);
-  
-  // Bloom effect: Opacity + Y-translation (removed blur for better performance)
+  const end = start + 1 / total;
+
   const opacity = useTransform(scrollYProgress, [start, end], [0.1, 1]);
   const y = useTransform(scrollYProgress, [start, end], [10, 0]);
 
   return (
-    <motion.span 
-      style={{ opacity, y }} 
+    <motion.span
+      style={{ opacity, y }}
       className="inline-block transition-none"
     >
       {word}
@@ -21,41 +54,63 @@ const Word = ({ word, scrollYProgress, index, total }) => {
   );
 };
 
-const ScrubText = ({ text }) => {
-  const containerRef = useRef(null);
+const ScrubText = ({ text }: { text: string }) => {
+  const containerRef = useRef<HTMLParagraphElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start 85%", "end 50%"]
+    offset: ["start 85%", "end 50%"],
   });
+  const words = useMemo(() => text.trim().split(/\s+/), [text]);
 
-  const words = text.split(" ");
+  const totalWords = Math.max(words.length, 1);
 
   return (
     <p
       ref={containerRef}
-      className={`text-[clamp(1.8rem,4.8vw,4.2rem)] font-heading leading-[1.05] tracking-tighter flex flex-wrap gap-x-[0.35em] gap-y-2 mb-12 lg:mb-20`}
+      className="text-[clamp(1.8rem,4.8vw,4.2rem)] font-heading leading-[1.05] tracking-tighter flex flex-wrap gap-x-[0.35em] gap-y-2 mb-12 lg:mb-20"
       data-cursor="hover"
     >
       {words.map((word, i) => (
-        <Word 
-          key={i} 
-          word={word} 
-          scrollYProgress={scrollYProgress} 
-          index={i} 
-          total={words.length} 
+        <Word
+          key={`${word}-${i}`}
+          word={word}
+          scrollYProgress={scrollYProgress}
+          index={i}
+          total={totalWords}
         />
       ))}
     </p>
   );
 };
 
-export const About = ({ data = {} }) => {
-  const focusItems = data.focusItems || [
-    { title: 'Spatial Interfaces', description: 'Developing immersive, physics-driven UI systems that redefine digital interaction boundaries.' },
-    { title: 'System Architecture', description: 'Building high-scale, resilient backend ecosystems with sub-second latency targets.' }
-  ];
+const FocusCard = ({ item, idx }: { item: FocusItem; idx: number }) => (
+  <article className="rounded-2xl border border-border/35 bg-surface/15 px-6 py-7 md:px-7 md:py-8">
+    <div className="flex items-center gap-4 mb-5">
+      <span className="font-heading text-lg tracking-tight text-on-surface/65">
+        {String(idx + 1).padStart(2, "0")}
+      </span>
+      <div className="h-px flex-1 bg-border/60" />
+    </div>
+    <h4 className="font-heading text-[clamp(1.15rem,1.7vw,1.5rem)] tracking-tight leading-[1.05] mb-3">
+      {item.title}
+    </h4>
+    <p className="text-on-surface-variant text-[15px] leading-relaxed font-light opacity-85">
+      {item.description}
+    </p>
+  </article>
+);
 
-  const scrubText = data.scrubText || "Every line of code is a brushstroke in the digital landscape of tomorrow.";
+export const About = ({ data = {} }) => {
+  const scrubText = data.scrubText || DEFAULT_SCRUB_TEXT;
+  const bioText = data.bioText || DEFAULT_BIO_TEXT;
+  const focusItems = useMemo(() => {
+    const validItems = (data.focusItems || []).filter(
+      (item: FocusItem) => item?.title && item?.description,
+    );
+    return validItems.length > 0
+      ? (validItems.slice(0, 2) as FocusItem[])
+      : DEFAULT_FOCUS_ITEMS;
+  }, [data.focusItems]);
 
   return (
     <section
@@ -63,20 +118,18 @@ export const About = ({ data = {} }) => {
       id="about"
     >
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-12 lg:gap-32">
-        
-        {/* Left column: Philosophy and Narrative (Asymmetric larger width) */}
         <div className="lg:w-8/12 w-full">
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }} 
-            whileInView={{ opacity: 0.3 }} 
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 0.3 }}
             viewport={{ once: true }}
             className="section-label mb-16 block"
           >
             Philosophy
           </motion.div>
-          
+
           <ScrubText text={scrubText} />
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -85,34 +138,25 @@ export const About = ({ data = {} }) => {
             className="relative lg:pl-16 border-l border-border/40 ml-2 lg:ml-0"
           >
             <p className="text-xl md:text-2xl text-on-surface-variant font-light italic leading-relaxed max-w-xl">
-              {data.bioText || "A Digital Architect specialized in crafting high-end web experiences where technical excellence meets artistic vision. I believe in minimalism, performance, and the subtle power of motion."}
+              {bioText}
             </p>
-            <span className="font-serif text-6xl absolute -top-4 -left-4 opacity-5 select-none font-bold">“</span>
+            <span className="font-serif text-6xl absolute -top-4 -left-4 opacity-5 select-none font-bold">
+              "
+            </span>
           </motion.div>
         </div>
 
-        {/* Right column: Specific focus areas (Editorial sidebar style) */}
         <div className="lg:w-4/12 w-full lg:sticky lg:top-40">
-          <div className="space-y-12">
+          <div className="space-y-5 md:space-y-6">
             {focusItems.map((item, idx) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.2 * idx }}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
               >
-                <div className="group border-t border-border/20 pt-10">
-                  <div className="flex items-center gap-6 mb-6">
-                    <span className="text-[10px] font-serif italic opacity-30 group-hover:opacity-100 transition-opacity">0{idx + 1}</span>
-                    <h4 className="font-heading text-xl md:text-2xl tracking-tight leading-none group-hover:pl-2 transition-[padding] duration-500">
-                      {item.title}
-                    </h4>
-                  </div>
-                  <p className="text-on-surface-variant text-[15px] leading-relaxed font-light opacity-60 group-hover:opacity-100 transition-opacity">
-                    {item.description}
-                  </p>
-                </div>
+                <FocusCard item={item} idx={idx} />
               </motion.div>
             ))}
           </div>
@@ -125,12 +169,13 @@ export const About = ({ data = {} }) => {
             className="flex items-center gap-6 opacity-20 hover:opacity-100 transition-opacity pt-20"
           >
             <div className="w-12 h-[1px] bg-on-surface shrink-0" />
-            <span className="text-[9px] font-bold uppercase tracking-[0.5em]">System Aesthetics</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.5em]">
+              System Aesthetics
+            </span>
           </motion.div>
         </div>
       </div>
 
-      {/* Decorative Aura Overlay */}
       <div className="absolute -bottom-40 -left-20 w-[60%] h-1/2 bg-aura-1 blur-[150px] pointer-events-none opacity-20" />
     </section>
   );

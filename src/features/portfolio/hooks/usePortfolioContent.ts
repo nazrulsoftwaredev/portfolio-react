@@ -50,8 +50,7 @@ let inMemoryPortfolioData: PortfolioData =
 const subscribers = new Set<(data: PortfolioData) => void>();
 
 const notifySubscribers = (): void => {
-  const snapshot = clonePortfolioData(inMemoryPortfolioData);
-  subscribers.forEach((listener) => listener(snapshot));
+  subscribers.forEach((listener) => listener(inMemoryPortfolioData));
 };
 
 const persistPortfolioData = (data: PortfolioData): void => {

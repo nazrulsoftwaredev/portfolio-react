@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import PropTypes from "prop-types";
-import { motion, useInView } from "framer-motion";
-import { TECH_DOMAIN_SHAPE } from "@/shared/types";
+import React, { useMemo } from "react";
+import { motion } from "framer-motion";
+import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
 
 const getTechLogo = (name) => {
   const mapping = {
@@ -30,7 +29,7 @@ const getTechLogo = (name) => {
   return `https://cdn.simpleicons.org/${slug}`;
 };
 
-const Tag = ({ tech }) => {
+const Tag = React.memo(({ tech, shouldUseEnhancedMotion }) => {
   /**
    * Avoid hover-toggling CSS filters on external SVGs (Simple Icons) because it
    * can cause rasterization flicker in some browsers, especially for dark-mode
@@ -51,17 +50,24 @@ const Tag = ({ tech }) => {
 
   return (
     <motion.span
-      whileHover={{
-        scale: 1.03,
-        backgroundColor: "var(--aura-1)",
-        borderColor: "var(--primary)",
-      }}
+      whileHover={
+        shouldUseEnhancedMotion
+          ? {
+              scale: 1.02,
+              backgroundColor: "var(--aura-1)",
+              borderColor: "var(--primary)",
+            }
+          : undefined
+      }
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="group/tag flex items-center gap-2 px-4 py-2 rounded-full border border-border/60 text-sm md:text-base font-medium tracking-tight whitespace-nowrap transition-colors duration-300 backdrop-blur-sm cursor-default"
+      className="group/tag flex items-center gap-2 px-4 py-2 rounded-full border border-border/60 text-sm md:text-base font-medium tracking-tight whitespace-nowrap transition-colors duration-300 cursor-default"
     >
       <img
         src={getTechLogo(tech)}
         alt={`${tech} logo`}
+        width={20}
+        height={20}
+        fetchPriority="low"
         className={`w-4 h-4 md:w-5 md:h-5 object-contain opacity-50 group-hover/tag:opacity-100 transition-[opacity,transform] duration-300 will-change-transform ${
           isDarkTech ? "dark:brightness-0 dark:invert" : "dark:invert-0"
         }`}
@@ -74,18 +80,9 @@ const Tag = ({ tech }) => {
       </span>
     </motion.span>
   );
-};
+});
 
-const DomainCard = ({ title, techs, index }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    if (isInView) {
-      setHasAnimated(true);
-    }
-  }, [isInView]);
+const DomainCard = React.memo(({ title, techs, index, shouldUseEnhancedMotion }) => {
 
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -107,17 +104,17 @@ const DomainCard = ({ title, techs, index }) => {
 
   return (
     <motion.div
-      ref={ref}
       variants={containerVariants}
       initial="hidden"
-      animate={hasAnimated ? "visible" : "hidden"}
-      whileHover={{ y: -2 }}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      whileHover={shouldUseEnhancedMotion ? { y: -2 } : undefined}
       transition={{ type: "spring", stiffness: 260, damping: 26 }}
-      className="group relative rounded-3xl border border-border/40 bg-surface/20 backdrop-blur-xl p-7 md:p-10 overflow-hidden"
+      className="group relative rounded-3xl border border-border/40 bg-surface/20 p-7 md:p-10 overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-foreground/[0.05] to-transparent pointer-events-none opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/10 blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-      <div className="absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-aura-1/10 blur-[90px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/10 blur-[48px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-aura-1/10 blur-[48px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col gap-8">
         <div className="flex items-start justify-between gap-6">
@@ -153,7 +150,7 @@ const DomainCard = ({ title, techs, index }) => {
         <div className="flex flex-wrap gap-3">
           {techs.map((tech) => (
             <motion.div key={tech} variants={tagVariants}>
-              <Tag tech={tech} />
+              <Tag tech={tech} shouldUseEnhancedMotion={shouldUseEnhancedMotion} />
             </motion.div>
           ))}
         </div>
@@ -162,9 +159,10 @@ const DomainCard = ({ title, techs, index }) => {
       <div className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center" />
     </motion.div>
   );
-};
+});
 
 export const TechStack = ({ data = [] }) => {
+  const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
   const domains =
     data.length > 0
       ? data
@@ -224,22 +222,15 @@ export const TechStack = ({ data = [] }) => {
               title={domain.category}
               techs={domain.items}
               index={index}
+              shouldUseEnhancedMotion={shouldUseEnhancedMotion}
             />
           ))}
         </div>
       </div>
 
       {/* Background Decor */}
-      <div className="absolute -top-40 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[150px] pointer-events-none" />
+      <div className="absolute -top-40 right-0 w-1/3 h-1/3 bg-primary/[0.03] blur-[80px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border/10 to-transparent pointer-events-none" />
     </section>
   );
 };
-TechStack.propTypes = {
-  data: PropTypes.arrayOf(TECH_DOMAIN_SHAPE),
-};
-
-TechStack.defaultProps = {
-  data: [],
-};
-
