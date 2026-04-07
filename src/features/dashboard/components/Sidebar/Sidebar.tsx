@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import {
+  Activity,
   LayoutDashboard,
   Users,
   FileText,
@@ -12,6 +13,7 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: "Overview", path: "/dashboard" },
+  { icon: Activity, label: "Activity", path: "/dashboard/activity" },
   { icon: Users, label: "Clients", path: "/dashboard/clients" },
   { icon: FileText, label: "Invoices", path: "/dashboard/invoices" },
   { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
@@ -22,12 +24,14 @@ const navItems = [
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onSignOut: () => void;
   className?: string;
 }
 
 export const Sidebar = memo(function Sidebar({
   isOpen,
   onClose,
+  onSignOut,
   className,
 }: SidebarProps) {
   const handleNavClick = useCallback(() => {
@@ -36,21 +40,20 @@ export const Sidebar = memo(function Sidebar({
 
   return (
     <aside
-      className={`relative h-full flex flex-col rounded-3xl border border-border
-                 bg-card
-                 shadow-sm overflow-hidden
+      className={`relative h-full flex flex-col rounded-3xl bg-card
+                 shadow-sm overflow-hidden min-h-0
                  transition-[width] duration-300 ease-out ${className ?? ""}`}
       style={{ width: isOpen ? 264 : 88 }}
     >
       {/* HEADER */}
       <div
-        className={`p-4 flex items-center ${isOpen ? "" : "justify-center"}`}
+        className={`p-3 flex items-center ${isOpen ? "" : "justify-center"}`}
       >
         <div
           className={`flex items-center ${isOpen ? "w-full" : "justify-center"}`}
         >
           {/* LOGO */}
-          <div className="w-10 h-10 rounded-2xl overflow-hidden bg-muted border border-border">
+          <div className="w-9 h-9 rounded-2xl overflow-hidden bg-muted">
             <img
               src="/logo.png"
               alt="Dashboard logo"
@@ -71,7 +74,7 @@ export const Sidebar = memo(function Sidebar({
       </div>
 
       {/* NAV */}
-      <nav className="flex-1 px-3 space-y-2">
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 space-y-2 pb-2">
         {navItems.map((item, i) => (
           <NavLink
             key={item.path}
@@ -86,8 +89,7 @@ export const Sidebar = memo(function Sidebar({
                 {isActive && (
                   <div
                     className="absolute inset-0 rounded-2xl
-                               bg-muted
-                               border border-border"
+                               bg-muted"
                   />
                 )}
 
@@ -96,12 +98,12 @@ export const Sidebar = memo(function Sidebar({
 
                 {/* CONTENT */}
                 <div
-                  className={`relative flex items-center h-12 rounded-2xl
+                  className={`relative flex items-center h-11 rounded-2xl
                   ${isOpen ? "px-3" : "justify-center"}`}
                 >
                   {/* ICON */}
                   <div
-                    className={`flex items-center justify-center w-10 h-10 transition-opacity duration-200 ${
+                    className={`flex items-center justify-center w-9 h-9 transition-opacity duration-200 ${
                       isOpen ? "" : "group-hover:opacity-0"
                     }`}
                   >
@@ -120,7 +122,7 @@ export const Sidebar = memo(function Sidebar({
 
                   {/* LABEL */}
                   {isOpen && (
-                    <span className="ml-2 text-sm font-medium text-foreground transition-all duration-200 group-hover:text-foreground group-hover:translate-x-0.5">
+                    <span className="ml-2 text-[13px] font-medium text-foreground transition-all duration-200 group-hover:text-foreground group-hover:translate-x-0.5">
                       {item.label}
                     </span>
                   )}
@@ -133,11 +135,12 @@ export const Sidebar = memo(function Sidebar({
 
       {/* FOOTER */}
       <div className="p-3">
-        <div className="h-px bg-border mb-3" />
+        <div className="h-px bg-border/60 mb-3" />
 
         <button
           type="button"
-          className={`relative w-full flex items-center h-12 rounded-2xl
+          onClick={onSignOut}
+          className={`relative w-full flex items-center h-11 rounded-2xl
           ${isOpen ? "px-3" : "justify-center"}
           text-muted-foreground hover:text-foreground`}
         >
@@ -145,7 +148,9 @@ export const Sidebar = memo(function Sidebar({
 
           <LogOut className="w-5 h-5 relative z-10" />
 
-          {isOpen && <span className="ml-2 text-sm font-medium">Sign Out</span>}
+          {isOpen && (
+            <span className="ml-2 text-[13px] font-medium">Sign Out</span>
+          )}
         </button>
       </div>
     </aside>

@@ -74,8 +74,8 @@ export const RecentActivityCard = ({
               aria-pressed={activityFilter === filter.value}
               className={`rounded-full min-h-9 px-3 py-1.5 text-xs font-semibold transition-colors ${
                 activityFilter === filter.value
-                  ? "bg-primary text-primary-foreground border border-primary"
-                  : "bg-muted/40 text-muted-foreground border border-border hover:bg-muted/70"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/40 text-muted-foreground hover:bg-muted/70"
               }`}
             >
               {label}
@@ -90,7 +90,7 @@ export const RecentActivityCard = ({
             key={`${activity.label}-${i}`}
             type="button"
             onClick={() => onActivityClick?.(activity.type, activity.label)}
-            className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-border/70 bg-background transition-colors hover:bg-muted/30"
+            className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-muted/20 transition-colors hover:bg-muted/30"
           >
             <div className={`p-2.5 rounded-lg ${activity.color}`}>
               <activity.icon className={`w-5 h-5 ${activity.textColor}`} />
@@ -103,7 +103,7 @@ export const RecentActivityCard = ({
                 {activity.client || activity.industry || activity.preview}
               </p>
             </div>
-            <p className="text-xs sm:text-sm font-semibold text-emerald-600">
+            <p className="text-xs sm:text-sm font-semibold text-emerald-500">
               {activity.amount}
             </p>
           </button>

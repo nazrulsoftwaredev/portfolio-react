@@ -94,10 +94,10 @@ export const RevenueInsightsCard = () => {
           value={selectedRange}
           onValueChange={(value) => setSelectedRange(value as RevenueRange)}
         >
-          <SelectTrigger className="h-10 min-w-[148px] md:min-w-[168px] bg-background border border-border rounded-xl px-3 text-xs font-semibold text-foreground cursor-pointer">
+          <SelectTrigger className="h-10 min-w-[148px] md:min-w-[168px] bg-muted/20 rounded-xl px-3 text-xs font-semibold text-foreground cursor-pointer">
             <SelectValue placeholder="Select range" />
           </SelectTrigger>
-          <SelectContent className="bg-popover border-border text-foreground">
+          <SelectContent className="bg-popover border-border/60 text-foreground">
             {rangeOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
@@ -112,10 +112,10 @@ export const RevenueInsightsCard = () => {
           type="button"
           onClick={() => setSelectedStat("revenue")}
           aria-pressed={selectedStat === "revenue"}
-          className={`rounded-xl border bg-muted/20 p-4 text-left transition-colors ${
+          className={`rounded-xl bg-muted/20 p-4 text-left transition-colors ${
             selectedStat === "revenue"
-              ? "border-primary/40 bg-primary/5"
-              : "border-border"
+              ? "bg-primary/5"
+              : ""
           }`}
         >
           <p className="text-xs font-medium text-muted-foreground">
@@ -129,10 +129,10 @@ export const RevenueInsightsCard = () => {
           type="button"
           onClick={() => setSelectedStat("invoices")}
           aria-pressed={selectedStat === "invoices"}
-          className={`rounded-xl border bg-muted/20 p-4 text-left transition-colors ${
+          className={`rounded-xl bg-muted/20 p-4 text-left transition-colors ${
             selectedStat === "invoices"
-              ? "border-primary/40 bg-primary/5"
-              : "border-border"
+              ? "bg-primary/5"
+              : ""
           }`}
         >
           <p className="text-xs font-medium text-muted-foreground">
@@ -146,10 +146,10 @@ export const RevenueInsightsCard = () => {
           type="button"
           onClick={() => setSelectedStat("ticket")}
           aria-pressed={selectedStat === "ticket"}
-          className={`rounded-xl border bg-muted/20 p-4 text-left transition-colors ${
+          className={`rounded-xl bg-muted/20 p-4 text-left transition-colors ${
             selectedStat === "ticket"
-              ? "border-primary/40 bg-primary/5"
-              : "border-border"
+              ? "bg-primary/5"
+              : ""
           }`}
         >
           <p className="text-xs font-medium text-muted-foreground">
@@ -161,13 +161,13 @@ export const RevenueInsightsCard = () => {
         </button>
       </div>
 
-      <div className="rounded-xl border border-border bg-muted/20 px-4 py-3">
+      <div className="rounded-xl bg-muted/20 px-4 py-3">
         <p className="text-xs text-muted-foreground font-semibold tracking-wide leading-relaxed">
           {statInsight}
         </p>
       </div>
 
-      <div className="h-[260px] sm:h-[300px] lg:h-[330px] w-full rounded-xl border border-border bg-background p-2 sm:p-3">
+      <div className="h-[260px] sm:h-[300px] lg:h-[330px] w-full rounded-xl bg-muted/20 p-2 sm:p-3">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={selectedRevenueData}>
             <defs>
@@ -249,7 +249,7 @@ export const RevenueInsightsCard = () => {
                 r: 5,
                 stroke: "var(--primary)",
                 strokeWidth: 2,
-                fill: "var(--background)",
+                fill: "var(--card)",
               }}
               isAnimationActive
             />
@@ -258,17 +258,17 @@ export const RevenueInsightsCard = () => {
       </div>
 
       {latestPoint && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-xl border border-border bg-muted/20 px-3.5 py-3">
-            <p className="text-xs font-medium text-muted-foreground">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-xl bg-muted/20 px-3.5 py-3">
+          <p className="text-xs font-medium text-muted-foreground">
             Latest: {latestPoint.label}
           </p>
-            <p className="text-xs sm:text-sm font-semibold text-foreground">
+          <p className="text-xs sm:text-sm font-semibold text-foreground">
             Revenue: {formatCurrency(latestPoint.revenue)}
           </p>
-            <p className="text-xs sm:text-sm font-semibold text-foreground">
+          <p className="text-xs sm:text-sm font-semibold text-foreground">
             Invoices: {latestPoint.invoices}
           </p>
-            <p className="text-xs sm:text-sm font-semibold text-primary">
+          <p className="text-xs sm:text-sm font-semibold text-primary">
             Ticket:{" "}
             {formatCompactCurrency(latestPoint.revenue / latestPoint.invoices)}
           </p>

@@ -168,8 +168,8 @@ export const StartProject: React.FC = () => {
                         product.
                       </h1>
                       <p className="text-on-surface-variant text-lg font-light tracking-wide leading-relaxed opacity-60 max-w-md">
-                        Share a quick brief. I’ll reply with next steps, timeline,
-                        and a clear plan for execution.
+                        Share a quick brief. I’ll reply with next steps,
+                        timeline, and a clear plan for execution.
                       </p>
                     </motion.div>
 
@@ -254,11 +254,11 @@ export const StartProject: React.FC = () => {
                               value={form.name}
                               onChange={(e) => setField("name", e.target.value)}
                               onBlur={() => markTouched("name")}
-                              className={`w-full px-5 py-4 rounded-2xl bg-background/40 border ${
+                              className={`w-full px-5 py-4 rounded-2xl bg-black/55 border ${
                                 showError("name")
                                   ? "border-red-500/40"
-                                  : "border-border/40"
-                              } focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                                  : "border-white/15"
+                              } text-white placeholder:text-white/45 caret-primary focus:outline-none focus:ring-2 focus:ring-primary/50`}
                               placeholder="Your name"
                               autoComplete="name"
                             />
@@ -279,11 +279,11 @@ export const StartProject: React.FC = () => {
                                 setField("email", e.target.value)
                               }
                               onBlur={() => markTouched("email")}
-                              className={`w-full px-5 py-4 rounded-2xl bg-background/40 border ${
+                              className={`w-full px-5 py-4 rounded-2xl bg-black/55 border ${
                                 showError("email")
                                   ? "border-red-500/40"
-                                  : "border-border/40"
-                              } focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                                  : "border-white/15"
+                              } text-white placeholder:text-white/45 caret-primary focus:outline-none focus:ring-2 focus:ring-primary/50`}
                               placeholder="you@company.com"
                               autoComplete="email"
                               inputMode="email"
@@ -305,7 +305,7 @@ export const StartProject: React.FC = () => {
                                 setField("company", e.target.value)
                               }
                               onBlur={() => markTouched("company")}
-                              className="w-full px-5 py-4 rounded-2xl bg-background/40 border border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                              className="w-full px-5 py-4 rounded-2xl bg-black/55 border border-white/15 text-white placeholder:text-white/45 caret-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
                               placeholder="Studio / Startup / Team"
                               autoComplete="organization"
                             />
@@ -325,7 +325,7 @@ export const StartProject: React.FC = () => {
                                   )
                                 }
                                 onBlur={() => markTouched("budget")}
-                                className="w-full px-5 py-4 rounded-2xl bg-background/40 border border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="w-full px-5 py-4 rounded-2xl bg-black/55 border border-white/15 text-white [&>option]:bg-[#0c0c0c] [&>option]:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
                               >
                                 {(
                                   [
@@ -356,7 +356,7 @@ export const StartProject: React.FC = () => {
                                   )
                                 }
                                 onBlur={() => markTouched("timeline")}
-                                className="w-full px-5 py-4 rounded-2xl bg-background/40 border border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="w-full px-5 py-4 rounded-2xl bg-black/55 border border-white/15 text-white [&>option]:bg-[#0c0c0c] [&>option]:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
                               >
                                 {(
                                   [
@@ -386,11 +386,11 @@ export const StartProject: React.FC = () => {
                               setField("message", e.target.value)
                             }
                             onBlur={() => markTouched("message")}
-                            className={`w-full min-h-[180px] px-5 py-4 rounded-2xl bg-background/40 border ${
+                            className={`w-full min-h-[180px] px-5 py-4 rounded-2xl bg-black/55 border ${
                               showError("message")
                                 ? "border-red-500/40"
-                                : "border-border/40"
-                            } focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none`}
+                                : "border-white/15"
+                            } text-white placeholder:text-white/45 caret-primary focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none`}
                             placeholder="What are you building, and what does success look like?"
                           />
                           {showError("message") && (
@@ -450,4 +450,3 @@ export const StartProject: React.FC = () => {
     </ErrorBoundary>
   );
 };
-

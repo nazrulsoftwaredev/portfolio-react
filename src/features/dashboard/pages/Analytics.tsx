@@ -42,9 +42,9 @@ const deviceData = [
 ];
 
 const PopularRoute = ({ route, views, growth }: any) => (
-  <div className="flex items-center justify-between p-5 rounded-2xl border border-border bg-muted/30">
+  <div className="flex items-center justify-between p-5 rounded-2xl bg-muted/30">
     <div className="flex items-center gap-5">
-      <div className="w-12 h-12 rounded-2xl bg-background border border-border flex items-center justify-center text-muted-foreground">
+      <div className="w-12 h-12 rounded-2xl bg-background flex items-center justify-center text-muted-foreground">
         <Globe className="w-6 h-6" />
       </div>
       <div>
@@ -57,10 +57,10 @@ const PopularRoute = ({ route, views, growth }: any) => (
       </div>
     </div>
     <div
-      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider border ${
+      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider ${
         growth.startsWith("+")
-          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-          : "bg-red-500/10 text-red-600 border-red-500/20"
+          ? "bg-emerald-500/10 text-emerald-600"
+          : "bg-red-500/10 text-red-600"
       }`}
     >
       {growth.startsWith("+") ? (
@@ -75,7 +75,7 @@ const PopularRoute = ({ route, views, growth }: any) => (
 
 export const Analytics: React.FC = () => {
   return (
-    <div className="space-y-10">
+    <div className="dash-stack">
       <div>
         <PageHeader
           title={
@@ -91,7 +91,7 @@ export const Analytics: React.FC = () => {
           }
           actions={
             <>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
                 <Calendar className="w-4 h-4" />
                 Last 30 Days
               </Button>
@@ -104,7 +104,7 @@ export const Analytics: React.FC = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 dash-grid-gap">
         <div className="lg:col-span-2 premium-card space-y-10">
           <div className="flex items-center justify-between">
             <div>
@@ -250,7 +250,7 @@ export const Analytics: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-4 pt-6 border-t border-border">
+          <div className="space-y-4 pt-6 border-t border-border/60">
             {deviceData.map((device) => (
               <div
                 key={device.name}
@@ -274,7 +274,7 @@ export const Analytics: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 dash-grid-gap">
         <div className="premium-card space-y-8">
           <div className="flex items-center justify-between">
             <div>
@@ -285,7 +285,7 @@ export const Analytics: React.FC = () => {
                 High-traffic access points
               </p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
               <Activity className="w-4 h-4" />
               View Full Log
             </Button>
@@ -321,7 +321,7 @@ export const Analytics: React.FC = () => {
                 Expansion metrics
               </p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
               <Layers className="w-4 h-4" />
               Export Data
             </Button>

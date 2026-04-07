@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Skeleton } from "@/shared/components";
+import { Error404 } from "@/shared/pages/errors";
 
 const PortfolioHome = lazy(() =>
   import("./pages/Home").then((module) => ({
@@ -38,13 +39,6 @@ export const portfolioRoutes = (
         </Suspense>
       }
     />
-    <Route
-      path="*"
-      element={
-        <Suspense fallback={<LoadingFallback />}>
-          <PortfolioHome />
-        </Suspense>
-      }
-    />
+    <Route path="*" element={<Error404 />} />
   </Routes>
 );

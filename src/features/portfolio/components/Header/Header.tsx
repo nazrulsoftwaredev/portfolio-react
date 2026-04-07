@@ -45,7 +45,9 @@ const HeaderComponent = ({ loading, data }) => {
       setHidden(nextHidden);
     }
 
-    setScrolled((prev) => (prev !== shouldBeScrolled ? shouldBeScrolled : prev));
+    setScrolled((prev) =>
+      prev !== shouldBeScrolled ? shouldBeScrolled : prev,
+    );
   });
 
   // Close menu on Escape key
@@ -68,7 +70,6 @@ const HeaderComponent = ({ loading, data }) => {
           { label: "Expertise", href: "#expertise" },
           { label: "Tech Stack", href: "#tech-stack" },
           { label: "Contact", href: "#contact" },
-          { label: "Dashboard", href: "/dashboard", isRoute: true },
         ]
   ).map((item, index) => ({ ...item, num: `0${index + 1}` }));
 
@@ -158,7 +159,7 @@ const HeaderComponent = ({ loading, data }) => {
         </nav>
 
         <button
-          className="md:hidden pointer-events-auto mix-blend-difference invert dark:invert-0 p-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+          className="md:hidden pointer-events-auto p-2 rounded-xl border border-border bg-background/80 text-foreground backdrop-blur-md hover:bg-muted/60 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
           onClick={() => setIsMenuOpen(true)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {

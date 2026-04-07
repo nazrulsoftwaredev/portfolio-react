@@ -9,14 +9,19 @@ import type {
   DashboardApiResponse,
   AnalyticsData,
   DashboardUser,
+  DashboardAuthSession,
+  ClientsPage,
+  ClientsQueryParams,
+  ClientActivityEvent,
+  ClientInvoice,
+  ClientMessage,
+  ClientProject,
+  PagedResponse,
 } from "./types";
+import { dashboardService } from "./services";
+import type { Client } from "../components/Clients/types";
 
-const MOCK_USER: DashboardUser = {
-  id: "demo-user",
-  email: "demo@curator.local",
-  name: "Demo User",
-  role: "admin",
-};
+const AUTH_STORAGE_KEY = "dashboardAdminSession";
 
 const MOCK_ANALYTICS: AnalyticsData = {
   metrics: [
@@ -40,50 +45,66 @@ const wait = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
+const readStoredSession = (): DashboardAuthSession | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const raw = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as DashboardAuthSession;
+    if (
+      !parsed?.token ||
+      !parsed?.user ||
+      !dashboardService.isSessionValid(parsed.token, parsed.expiresAt)
+    ) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
 export const useDashboardAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<DashboardUser | null>(null);
+  const [session, setSession] = useState<DashboardAuthSession | null>(() =>
+    readStoredSession(),
+  );
+
+  const user = session?.user ?? null;
+  const isAuthenticated = Boolean(session);
 
   const login = useCallback(
     async (
       credentials: AuthCredentials,
-    ): Promise<
-      DashboardApiResponse<{ token: string; user: DashboardUser }>
-    > => {
+    ): Promise<DashboardApiResponse<DashboardAuthSession>> => {
       setLoading(true);
       setError(null);
 
       try {
-        await wait(250);
+        const result = await dashboardService.loginAdmin(credentials);
+        setSession(result.data);
 
-        if (!credentials.email.trim() || !credentials.password.trim()) {
-          throw new Error("Please enter both email and password");
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem(
+            AUTH_STORAGE_KEY,
+            JSON.stringify(result.data),
+          );
         }
 
-        const user = {
-          ...MOCK_USER,
-          email: credentials.email,
-          name: credentials.email.split("@")[0] || MOCK_USER.name,
-        };
-        const result: DashboardApiResponse<{
-          token: string;
-          user: DashboardUser;
-        }> = {
-          status: "success",
-          message: "UI-only login successful",
-          data: {
-            token: "ui-only-token",
-            user,
-          },
-        };
-        setUser(user);
         return result;
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "Login failed";
+          dashboardService.parseApiError(err) || "Login failed";
         setError(errorMessage);
-        throw err;
+        throw new Error(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -92,10 +113,14 @@ export const useDashboardAuth = () => {
   );
 
   const logout = useCallback(async () => {
-    setUser(null);
+    setSession(null);
+
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    }
   }, []);
 
-  return { login, logout, user, loading, error, setUser };
+  return { login, logout, user, session, isAuthenticated, loading, error };
 };
 
 export const useDashboardAnalytics = () => {
@@ -120,4 +145,186 @@ export const useDashboardAnalytics = () => {
   }, []);
 
   return { fetchAnalytics, loading, error };
+};
+
+export const useDashboardClients = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchClientsPage = useCallback(
+    async (params: ClientsQueryParams): Promise<ClientsPage<Client>> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await dashboardService.getClientsPage(params);
+        return result.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch clients";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  return { fetchClientsPage, loading, error };
+};
+
+export const useClientCrm = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchClient = useCallback(async (clientId: string): Promise<Client> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await dashboardService.getClientById(clientId);
+      return result.data;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch client";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchProjects = useCallback(
+    async ({
+      clientId,
+      page,
+      pageSize,
+    }: {
+      clientId: string;
+      page: number;
+      pageSize: number;
+    }): Promise<PagedResponse<ClientProject>> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await dashboardService.getClientProjects({
+          clientId,
+          page,
+          pageSize,
+        });
+        return result.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch projects";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const fetchInvoices = useCallback(
+    async ({
+      clientId,
+      page,
+      pageSize,
+    }: {
+      clientId: string;
+      page: number;
+      pageSize: number;
+    }): Promise<PagedResponse<ClientInvoice>> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await dashboardService.getClientInvoices({
+          clientId,
+          page,
+          pageSize,
+        });
+        return result.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch invoices";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const fetchMessages = useCallback(
+    async ({
+      clientId,
+      page,
+      pageSize,
+    }: {
+      clientId: string;
+      page: number;
+      pageSize: number;
+    }): Promise<PagedResponse<ClientMessage>> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await dashboardService.getClientMessages({
+          clientId,
+          page,
+          pageSize,
+        });
+        return result.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch messages";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const fetchActivity = useCallback(
+    async ({
+      clientId,
+      page,
+      pageSize,
+    }: {
+      clientId: string;
+      page: number;
+      pageSize: number;
+    }): Promise<PagedResponse<ClientActivityEvent>> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await dashboardService.getClientActivity({
+          clientId,
+          page,
+          pageSize,
+        });
+        return result.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch activity";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  return {
+    loading,
+    error,
+    fetchClient,
+    fetchProjects,
+    fetchInvoices,
+    fetchMessages,
+    fetchActivity,
+  };
 };

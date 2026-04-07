@@ -1,5 +1,5 @@
-import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Skeleton } from "@/shared/components";
 import { Login } from "./pages/Login";
 
@@ -10,7 +10,15 @@ const DashboardLayout = lazy(() =>
   })),
 );
 
-const DashboardLogin = () => <Login onLogin={() => undefined} />;
+const DashboardLogin = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  if (isLoggedIn) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Login onLogin={() => setIsLoggedIn(true)} />;
+};
 
 const LoadingFallback = () => <Skeleton className="w-full h-96" />;
 

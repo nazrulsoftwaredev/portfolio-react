@@ -13,28 +13,33 @@ export const ClientsStatItem: React.FC<ClientsStatItemProps> = ({
   trend,
   icon: Icon,
 }) => (
-  <div className="premium-card">
-    <div className="flex items-center justify-between">
-      <div className="p-3 rounded-2xl bg-muted border border-border text-muted-foreground">
+  <div className="premium-card min-h-[176px] p-5 md:p-6">
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted/50 text-foreground">
         <Icon className="w-5 h-5" />
       </div>
       <div
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider border ${
+        className={`flex h-7 items-center gap-1.5 px-2.5 text-[11px] font-semibold rounded-full ${
           trend.startsWith("+")
-            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+            ? "bg-emerald-500/10 text-emerald-600"
             : trend === "0%"
-              ? "bg-muted text-muted-foreground border-border"
-              : "bg-red-500/10 text-red-500 border-red-500/20"
+              ? "bg-muted/60 text-muted-foreground"
+              : "bg-red-500/10 text-red-600"
         }`}
       >
         {trend}
       </div>
     </div>
-    <div className="mt-5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <h3 className="text-2xl font-display font-semibold text-foreground mt-1 tracking-tight">
+
+    <div className="mt-5 space-y-1.5">
+      <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+        {label}
+      </p>
+      <h3 className="text-2xl md:text-[28px] font-display font-semibold text-foreground tracking-tight leading-tight tabular-nums">
         {value}
       </h3>
     </div>
+
+    <div className="mt-4 h-px w-full bg-border/50" />
   </div>
 );

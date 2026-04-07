@@ -1,6 +1,5 @@
 export type ClientStatus = "Active" | "On Hold" | "Inactive";
 export type SortOption = "name-asc" | "value-desc" | "value-asc";
-export type ClientDialogMode = "create" | "edit";
 
 export interface Client {
   id: string;

@@ -135,7 +135,7 @@ const PipelineCard = ({ client, project, value, date, priority }: any) => (
       <p className="text-xs font-medium text-muted-foreground">{project}</p>
     </div>
 
-    <div className="flex items-center justify-between pt-5 mt-5 border-t border-border">
+    <div className="flex items-center justify-between pt-5 mt-5 border-t border-border/60">
       <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <Calendar className="w-3.5 h-3.5 text-primary" />
         {date}
@@ -149,7 +149,7 @@ const PipelineCard = ({ client, project, value, date, priority }: any) => (
 
 export const Pipeline: React.FC = () => {
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col space-y-10">
+    <div className="dash-stack flex flex-col min-h-0">
       <div>
         <PageHeader
           title={
@@ -165,7 +165,7 @@ export const Pipeline: React.FC = () => {
           }
           actions={
             <>
-              <div className="flex bg-muted/30 p-1 rounded-xl border border-border">
+              <div className="flex bg-muted/30 p-1 rounded-xl">
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold">
                   <Layout className="w-3.5 h-3.5" />
                   Board
@@ -184,7 +184,7 @@ export const Pipeline: React.FC = () => {
         />
       </div>
 
-      <div className="flex-1 flex gap-8 overflow-x-auto no-scrollbar pb-10 min-h-0">
+      <div className="flex-1 min-h-0 flex dash-grid-gap overflow-x-auto no-scrollbar pb-10">
         {pipelineData.map((column, idx) => (
           <div
             key={column.title}
@@ -198,7 +198,7 @@ export const Pipeline: React.FC = () => {
                 <h3 className="font-display font-semibold text-xl text-foreground tracking-tight">
                   {column.title}
                 </h3>
-                <span className="px-2.5 py-0.5 rounded-lg bg-muted text-foreground text-[10px] font-semibold tabular-nums border border-border">
+                <span className="px-2.5 py-0.5 rounded-lg bg-muted/70 text-foreground text-[10px] font-semibold tabular-nums">
                   {column.count}
                 </span>
               </div>
@@ -207,12 +207,12 @@ export const Pipeline: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex-1 space-y-5 p-3 rounded-3xl bg-muted/20 border border-dashed border-border overflow-y-auto no-scrollbar">
+            <div className="flex-1 space-y-5 p-3 rounded-3xl bg-muted/20 ring-1 ring-border/40 overflow-y-auto no-scrollbar">
               {column.items.map((item) => (
                 <PipelineCard key={item.id} {...item} />
               ))}
 
-              <button className="w-full py-5 rounded-2xl border border-dashed border-border text-xs font-medium text-muted-foreground flex items-center justify-center gap-3">
+              <button className="w-full py-5 rounded-2xl bg-muted/20 text-xs font-medium text-muted-foreground flex items-center justify-center gap-3 hover:bg-muted/30 transition">
                 <Plus className="w-4 h-4" />
                 Add new item
               </button>

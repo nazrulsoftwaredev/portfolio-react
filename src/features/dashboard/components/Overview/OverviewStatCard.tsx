@@ -40,16 +40,16 @@ export const OverviewStatCard = React.memo(
       aria-label={onClick ? `${label} details` : undefined}
     >
       <div className="flex items-center justify-between gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/40 text-foreground">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted/50 text-foreground">
           <Icon className="w-5 h-5" />
         </div>
         {trend && (
           <Badge
             variant="outline"
-            className={`h-7 gap-1.5 px-2.5 text-[11px] font-semibold border ${
+            className={`h-7 gap-1.5 px-2.5 text-[11px] font-semibold border border-transparent ${
               trendPositive
-                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                : "bg-red-500/10 text-red-600 border-red-500/20"
+                ? "bg-emerald-500/10 text-emerald-600"
+                : "bg-red-500/10 text-red-600"
             }`}
           >
             {trendPositive ? (
@@ -74,7 +74,7 @@ export const OverviewStatCard = React.memo(
         </p>
       </div>
 
-      <div className="mt-4 h-px w-full bg-border/70" />
+      <div className="mt-4 h-px w-full bg-border/50" />
     </div>
   ),
 );

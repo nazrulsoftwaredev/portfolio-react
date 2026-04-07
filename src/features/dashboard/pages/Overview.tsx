@@ -22,22 +22,12 @@ export const Overview: React.FC = () => {
   };
 
   const handleViewAllActivity = () => {
-    navigate("/dashboard/messages");
+    navigate("/dashboard/activity");
   };
 
   const handleActivityClick = (type: ActivityType, label: string) => {
-    void label;
-    if (type === "invoice") {
-      navigate("/dashboard/invoices");
-      return;
-    }
-
-    if (type === "client") {
-      navigate("/dashboard/clients");
-      return;
-    }
-
-    navigate("/dashboard/messages");
+    void type;
+    navigate(`/dashboard/activity?focus=${encodeURIComponent(label)}`);
   };
 
   const handleStatClick = (label: string) => {
@@ -56,7 +46,7 @@ export const Overview: React.FC = () => {
 
   return (
     <motion.div
-      className="space-y-6 md:space-y-8 xl:space-y-10"
+      className="dash-stack"
       initial={reduceMotion ? false : { opacity: 0, y: 10 }}
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
@@ -81,7 +71,7 @@ export const Overview: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 xl:grid-cols-3 gap-5 md:gap-6 xl:gap-7"
+        className="grid grid-cols-1 xl:grid-cols-3 dash-grid-gap"
         initial={reduceMotion ? false : { opacity: 0, y: 8 }}
         animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}

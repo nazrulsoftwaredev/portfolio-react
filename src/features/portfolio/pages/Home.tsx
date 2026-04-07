@@ -63,8 +63,8 @@ export const Home: React.FC = () => {
   const { data: portfolioData } = usePortfolioContent();
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
+    // Preloader handles timing and reduced-motion behavior.
+    // Keep this effect to avoid shifting semantics elsewhere.
   }, []);
 
   return (

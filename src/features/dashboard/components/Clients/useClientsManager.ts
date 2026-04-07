@@ -1,21 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { INITIAL_CLIENTS } from "./constants";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { INITIAL_CLIENTS, STORAGE_KEY } from "./constants";
 import type {
   Client,
-  ClientDialogMode,
   ClientStatus,
   ClientValidationErrors,
   ClientsStats,
   SortOption,
 } from "./types";
-import {
-  exportClientsCsv,
-  filterAndSortClients,
-  formatCurrency,
-  formatGrowth,
-  nextStatus,
-  validateClient,
-} from "./utils";
+import { exportClientsCsv, nextStatus, validateClient } from "./utils";
+import { useDashboardClients } from "../../api/hooks";
 
 type ToastType = "info" | "success" | "error" | "warning";
 
@@ -25,20 +18,90 @@ interface ToastState {
   type: ToastType;
 }
 
-const PAGE_SIZE = 5;
+interface UseClientsManagerOptions {
+  query: string;
+  statusFilter: "All" | ClientStatus;
+  sortBy: SortOption;
+  page: number;
+  pageSize: number;
+}
 
-export const useClientsManager = () => {
-  const [clients, setClients] = useState<Client[]>(() => INITIAL_CLIENTS);
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"All" | ClientStatus>("All");
-  const [sortBy, setSortBy] = useState<SortOption>("value-desc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [draftClient, setDraftClient] = useState<Client | null>(null);
-  const [dialogMode, setDialogMode] = useState<ClientDialogMode | null>(null);
-  const [errors, setErrors] = useState<ClientValidationErrors>({});
+const mergeWithInitialClients = (storedClients: Client[]) => {
+  const existingIds = new Set(storedClients.map((client) => client.id));
+  const missingDefaults = INITIAL_CLIENTS.filter(
+    (client) => !existingIds.has(client.id),
+  );
+
+  if (missingDefaults.length === 0) {
+    return storedClients;
+  }
+
+  return [...storedClients, ...missingDefaults];
+};
+
+export const useClientsManager = ({
+  query,
+  statusFilter,
+  sortBy,
+  page,
+  pageSize,
+}: UseClientsManagerOptions) => {
+  const [allClients, setAllClients] = useState<Client[]>(() => {
+    if (typeof window === "undefined") {
+      return INITIAL_CLIENTS;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        return INITIAL_CLIENTS;
+      }
+
+      const parsed = JSON.parse(stored) as unknown;
+      if (!Array.isArray(parsed)) {
+        return INITIAL_CLIENTS;
+      }
+
+      return mergeWithInitialClients(parsed as Client[]);
+    } catch {
+      return INITIAL_CLIENTS;
+    }
+  });
   const [toasts, setToasts] = useState<ToastState[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { fetchClientsPage, loading, error } = useDashboardClients();
+  const [pageData, setPageData] = useState<{
+    items: Client[];
+    totalItems: number;
+    totalPages: number;
+    resolvedPage: number;
+    resolvedPageSize: number;
+    stats: ClientsStats;
+  }>(() => ({
+    items: [],
+    totalItems: 0,
+    totalPages: 1,
+    resolvedPage: 1,
+    resolvedPageSize: Math.min(Math.max(pageSize, 1), 100),
+    stats: {
+      totalNodes: 0,
+      activeCount: 0,
+      trustIndex: "0%",
+      avgLtv: "$0",
+      totalTrend: "+0%",
+      activeTrend: "+0%",
+    },
+  }));
 
-  const showToast = (message: string, type: ToastType = "info") => {
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(allClients));
+  }, [allClients]);
+
+  const showToast = useCallback((message: string, type: ToastType = "info") => {
     setToasts((previous) => [
       ...previous,
       {
@@ -47,90 +110,59 @@ export const useClientsManager = () => {
         type,
       },
     ]);
-  };
+  }, []);
 
-  const dismissToast = (id: number) => {
+  const dismissToast = useCallback((id: number) => {
     setToasts((previous) => previous.filter((toast) => toast.id !== id));
-  };
-
-  const filteredClients = useMemo(
-    () => filterAndSortClients(clients, query, statusFilter, sortBy),
-    [clients, query, statusFilter, sortBy],
-  );
-
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filteredClients.length / PAGE_SIZE)),
-    [filteredClients.length],
-  );
-
-  const paginatedClients = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    return filteredClients.slice(start, end);
-  }, [filteredClients, currentPage]);
+  }, []);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [query, statusFilter, sortBy]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+    fetchClientsPage({
+      q: query,
+      status: statusFilter,
+      sort: sortBy,
+      page,
+      pageSize,
+    })
+      .then((result) => {
+        if (cancelled) return;
+        setPageData({
+          items: result.items,
+          totalItems: result.totalItems,
+          totalPages: result.totalPages,
+          resolvedPage: result.page,
+          resolvedPageSize: result.pageSize,
+          stats: result.stats,
+        });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        showToast("Failed to load clients", "error");
+      });
 
-  const stats = useMemo<ClientsStats>(() => {
-    const totalNodes = clients.length;
-    const activeCount = clients.filter(
-      (client) => client.status === "Active",
-    ).length;
-    const avgGrowth =
-      totalNodes > 0
-        ? clients.reduce((sum, client) => sum + client.growth, 0) / totalNodes
-        : 0;
-    const avgLtv =
-      totalNodes > 0
-        ? clients.reduce((sum, client) => sum + client.value, 0) / totalNodes
-        : 0;
-
-    return {
-      totalNodes,
-      activeCount,
-      trustIndex: `${Math.max(90, Math.min(99.9, 96 + avgGrowth / 10)).toFixed(1)}%`,
-      avgLtv: formatCurrency(avgLtv),
-      totalTrend: formatGrowth(Math.round(avgGrowth)),
-      activeTrend: formatGrowth(Math.max(1, Math.round(avgGrowth / 2))),
+    return () => {
+      cancelled = true;
     };
-  }, [clients]);
+  }, [
+    fetchClientsPage,
+    query,
+    statusFilter,
+    sortBy,
+    page,
+    pageSize,
+    refreshKey,
+  ]);
 
-  const cycleStatusFilter = () => {
-    setStatusFilter((previous) => {
-      if (previous === "All") {
-        return "Active";
-      }
-      if (previous === "Active") {
-        return "On Hold";
-      }
-      if (previous === "On Hold") {
-        return "Inactive";
-      }
-      return "All";
-    });
-    showToast("Client filter updated", "info");
-  };
-
-  const openCreateDialog = () => {
-    if (dialogMode) {
-      return;
-    }
-
+  const buildClientDraft = (seedQuery = ""): Client => {
     const id = `${Date.now()}`;
     const normalizedSeed =
-      query.trim().replace(/\s+/g, "-").toLowerCase() || id;
+      seedQuery.trim().replace(/\s+/g, "-").toLowerCase() || id;
 
-    setDraftClient({
+    return {
       id,
-      name: query.trim() || "",
+      name: seedQuery.trim() || "",
       industry: "",
       status: "Active",
       value: 0,
@@ -139,98 +171,67 @@ export const useClientsManager = () => {
       email: "",
       phone: "",
       website: "",
-    });
-    setErrors({});
-    setDialogMode("create");
-    showToast("Create client form opened", "info");
+    };
   };
 
-  const openEditDialog = (client: Client) => {
-    if (dialogMode) {
-      return;
-    }
-
-    setDraftClient({ ...client });
-    setErrors({});
-    setDialogMode("edit");
-    showToast(`Editing ${client.name}`, "info");
+  const getClientById = (id: string) => {
+    return allClients.find((client) => client.id === id);
   };
 
-  const closeDialog = () => {
-    setDialogMode(null);
-    setDraftClient(null);
-    setErrors({});
-  };
-
-  const updateDraft = (updater: (previous: Client) => Client) => {
-    setDraftClient((previous) => {
-      if (!previous) {
-        return previous;
-      }
-      return updater(previous);
-    });
-  };
-
-  const saveDialogClient = () => {
-    if (!draftClient) {
-      showToast("No client data to save", "error");
-      return false;
-    }
-
-    const nextErrors = validateClient(draftClient);
-    setErrors(nextErrors);
-
+  const saveClient = (client: Client) => {
+    const nextErrors = validateClient(client);
     if (Object.keys(nextErrors).length > 0) {
-      showToast("Please fix form validation errors", "warning");
-      return false;
+      return {
+        success: false,
+        errors: nextErrors,
+      };
     }
 
-    const isUpdate = clients.some((item) => item.id === draftClient.id);
+    const isUpdate = allClients.some((item) => item.id === client.id);
 
-    setClients((previous) => {
-      const existingIndex = previous.findIndex(
-        (item) => item.id === draftClient.id,
-      );
+    setAllClients((previous) => {
+      const existingIndex = previous.findIndex((item) => item.id === client.id);
       if (existingIndex === -1) {
-        return [{ ...draftClient }, ...previous];
+        return [{ ...client }, ...previous];
       }
 
       const next = [...previous];
-      next[existingIndex] = { ...draftClient };
+      next[existingIndex] = { ...client };
       return next;
     });
 
-    closeDialog();
     showToast(
       isUpdate
-        ? `Client ${draftClient.name} updated`
-        : `Client ${draftClient.name} created`,
+        ? `Client ${client.name} updated`
+        : `Client ${client.name} created`,
       "success",
     );
-    return true;
+    setRefreshKey((previous) => previous + 1);
+    return {
+      success: true,
+      errors: {},
+    };
   };
 
   const removeClient = (id: string) => {
-    const removed = clients.find((client) => client.id === id);
-    setClients((previous) => previous.filter((client) => client.id !== id));
-    if (draftClient?.id === id) {
-      closeDialog();
-    }
+    const removed = allClients.find((client) => client.id === id);
+    setAllClients((previous) => previous.filter((client) => client.id !== id));
     showToast(
       removed ? `Client ${removed.name} removed` : "Client removed",
       "warning",
     );
+    setRefreshKey((previous) => previous + 1);
   };
 
   const toggleClientStatus = (id: string) => {
-    const target = clients.find((client) => client.id === id);
+    const target = allClients.find((client) => client.id === id);
     if (!target) {
       showToast("Client not found", "error");
       return;
     }
 
     const updatedStatus = nextStatus(target.status);
-    setClients((previous) =>
+    setAllClients((previous) =>
       previous.map((client) =>
         client.id === id
           ? { ...client, status: nextStatus(client.status) }
@@ -238,72 +239,93 @@ export const useClientsManager = () => {
       ),
     );
     showToast(`Status changed to ${updatedStatus}`, "success");
+    setRefreshKey((previous) => previous + 1);
   };
 
-  const exportVisibleClients = () => {
-    if (filteredClients.length === 0) {
+  const exportCurrentPage = () => {
+    if (pageData.items.length === 0) {
       showToast("No clients available to export", "warning");
       return;
     }
 
-    exportClientsCsv(filteredClients);
-    showToast(`Exported ${filteredClients.length} clients`, "success");
+    exportClientsCsv(pageData.items);
+    showToast(`Exported ${pageData.items.length} clients`, "success");
   };
 
-  const resetAll = () => {
-    setClients(INITIAL_CLIENTS);
-    setQuery("");
-    setStatusFilter("All");
-    setSortBy("value-desc");
-    setCurrentPage(1);
-    closeDialog();
+  const exportAllFiltered = useCallback(async () => {
+    const targetPageSize = 100;
+    const first = await fetchClientsPage({
+      q: query,
+      status: statusFilter,
+      sort: sortBy,
+      page: 1,
+      pageSize: targetPageSize,
+    });
+
+    if (first.totalItems === 0) {
+      showToast("No clients available to export", "warning");
+      return;
+    }
+
+    if (first.totalItems > 5000) {
+      showToast("Large export: this may take a moment", "info");
+    }
+
+    const all: Client[] = [...first.items];
+    for (let p = 2; p <= first.totalPages; p += 1) {
+      const next = await fetchClientsPage({
+        q: query,
+        status: statusFilter,
+        sort: sortBy,
+        page: p,
+        pageSize: targetPageSize,
+      });
+      all.push(...next.items);
+    }
+
+    exportClientsCsv(all);
+    showToast(`Exported ${all.length} clients`, "success");
+  }, [fetchClientsPage, query, showToast, sortBy, statusFilter]);
+
+  const resetData = () => {
+    setAllClients(INITIAL_CLIENTS);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
     showToast("Clients reset to default data", "info");
+    setRefreshKey((previous) => previous + 1);
   };
 
-  const goToPage = (page: number) => {
-    const safePage = Math.min(Math.max(page, 1), totalPages);
-    setCurrentPage(safePage);
-  };
-
-  const nextPage = () => {
-    setCurrentPage((previous) => Math.min(previous + 1, totalPages));
-  };
-
-  const prevPage = () => {
-    setCurrentPage((previous) => Math.max(previous - 1, 1));
-  };
+  const selectedClientIds = useMemo(() => new Set<string>(), []);
+  const allSelectedOnPage = false;
+  const toggleSelectAllPage = () => undefined;
+  const toggleSelectClient = () => undefined;
 
   return {
-    clients: paginatedClients,
-    stats,
-    query,
-    statusFilter,
-    sortBy,
-    dialogMode,
-    draftClient,
-    errors,
-    setQuery,
-    setSortBy,
-    cycleStatusFilter,
-    openCreateDialog,
-    openEditDialog,
-    closeDialog,
-    updateDraft,
-    saveDialogClient,
+    loading,
+    error,
+    allClients,
+    clients: pageData.items,
+    stats: pageData.stats,
+    selectedClientIds,
+    allSelectedOnPage,
+    toggleSelectAllPage,
+    toggleSelectClient,
+    buildClientDraft,
+    getClientById,
+    saveClient,
     removeClient,
     toggleClientStatus,
-    exportVisibleClients,
-    resetAll,
+    exportCurrentPage,
+    exportAllFiltered,
+    resetData,
     toasts,
     dismissToast,
     pagination: {
-      currentPage,
-      totalPages,
-      totalItems: filteredClients.length,
-      pageSize: PAGE_SIZE,
+      currentPage: pageData.resolvedPage,
+      totalPages: pageData.totalPages,
+      totalItems: pageData.totalItems,
+      pageSize: pageData.resolvedPageSize,
     },
-    goToPage,
-    nextPage,
-    prevPage,
   };
 };

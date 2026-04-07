@@ -24,7 +24,7 @@ export const OverviewHeader = ({
       titleClassName="text-2xl sm:text-3xl lg:text-4xl"
       subtitle={
         <div className="flex flex-wrap items-center gap-2.5 text-sm text-muted-foreground">
-          <span className="inline-flex items-center rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-wide text-foreground">
+          <span className="inline-flex items-center rounded-full bg-muted/40 px-3 py-1 text-xs font-semibold tracking-wide text-foreground">
             Executive Dashboard
           </span>
           <span className="text-xs font-medium">Reporting date: {today}</span>
@@ -37,7 +37,7 @@ export const OverviewHeader = ({
           </div>
           <Button
             variant="outline"
-            className="gap-2 min-h-11"
+            className="gap-2 min-h-11 border-transparent bg-muted/20 hover:bg-muted/30"
             type="button"
             onClick={onNewInvoice}
           >

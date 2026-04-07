@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "../components/common";
 import { Button, Input } from "@/components/ui";
+import { useDashboardSearch } from "../components/Layout/DashboardSearchContext";
 
 const messages = [
   {
@@ -53,8 +54,27 @@ const messages = [
 ];
 
 export const Messages: React.FC = () => {
+  const { searchQuery, setSearchQuery } = useDashboardSearch();
+
+  const filteredMessages = React.useMemo(() => {
+    const normalized = searchQuery.trim().toLowerCase();
+
+    if (!normalized) {
+      return messages;
+    }
+
+    return messages.filter((message) => {
+      return [message.sender, message.subject, message.preview, message.time]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalized);
+    });
+  }, [searchQuery]);
+
+  const activeMessage = filteredMessages[0] ?? messages[0];
+
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col space-y-10">
+    <div className="dash-stack flex flex-col min-h-0">
       <div>
         <PageHeader
           title={
@@ -77,16 +97,18 @@ export const Messages: React.FC = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-12 dash-grid-gap flex-1 min-h-0">
         {/* Message List */}
         <div className="lg:col-span-4 premium-card !p-0 flex flex-col overflow-hidden">
-          <div className="p-6 border-b border-border space-y-6 bg-muted/20">
+          <div className="p-6 border-b border-border/60 space-y-6 bg-muted/20">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search messages"
-                className="w-full bg-background border border-border rounded-xl pl-11 pr-4"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                className="w-full bg-background rounded-xl pl-11 pr-4"
               />
             </div>
             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
@@ -96,10 +118,10 @@ export const Messages: React.FC = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border ${
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border border-transparent ${
                     idx === 0
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40 border-transparent bg-transparent"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40 bg-transparent"
                   }`}
                 >
                   {tab}
@@ -108,64 +130,70 @@ export const Messages: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-border">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`p-6 cursor-pointer relative ${msg.unread ? "bg-primary/5" : ""}`}
-              >
-                {msg.unread && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-                )}
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-muted border border-border shrink-0 overflow-hidden">
-                    <img
-                      src={msg.avatar}
-                      alt={msg.sender}
-                      className="w-full h-full object-cover p-2 opacity-70"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-display font-semibold text-foreground text-base truncate">
-                        {msg.sender}
+          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-border/50">
+            {filteredMessages.length > 0 ? (
+              filteredMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`p-6 cursor-pointer relative ${msg.unread ? "bg-primary/5" : ""}`}
+                >
+                  {msg.unread && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+                  )}
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-muted/60 shrink-0 overflow-hidden">
+                      <img
+                        src={msg.avatar}
+                        alt={msg.sender}
+                        className="w-full h-full object-cover p-2 opacity-70"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-display font-semibold text-foreground text-base truncate">
+                          {msg.sender}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {msg.time}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold text-primary truncate mb-1">
+                        {msg.subject}
                       </p>
-                      <p className="text-xs text-muted-foreground font-medium">
-                        {msg.time}
+                      <p className="text-xs text-muted-foreground truncate font-medium">
+                        {msg.preview}
                       </p>
                     </div>
-                    <p className="text-sm font-semibold text-primary truncate mb-1">
-                      {msg.subject}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate font-medium">
-                      {msg.preview}
-                    </p>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-sm font-medium text-muted-foreground">
+                No conversations match your search.
               </div>
-            ))}
+            )}
           </div>
         </div>
 
         {/* Chat Window */}
         <div className="lg:col-span-8 premium-card !p-0 flex flex-col overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between bg-muted/20">
+          <div className="p-6 border-b border-border/60 flex items-center justify-between bg-muted/20">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-muted border border-border overflow-hidden">
+                <div className="w-14 h-14 rounded-2xl bg-muted/60 overflow-hidden">
                   <img
-                    src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
-                    alt="Acme Corp"
+                    src={activeMessage.avatar}
+                    alt={activeMessage.sender}
                     className="w-full h-full object-cover p-2"
                   />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full border border-border flex items-center justify-center">
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full shadow-sm flex items-center justify-center">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
                 </div>
               </div>
               <div>
                 <h4 className="font-display font-semibold text-xl text-foreground tracking-tight">
-                  Acme Corp
+                  {activeMessage.sender}
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-xs text-emerald-600 font-medium">
@@ -173,7 +201,7 @@ export const Messages: React.FC = () => {
                   </p>
                   <Hash className="w-3 h-3 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground font-medium">
-                    Project neon
+                    {activeMessage.subject}
                   </p>
                 </div>
               </div>
@@ -200,24 +228,22 @@ export const Messages: React.FC = () => {
 
           <div className="flex-1 p-8 overflow-y-auto no-scrollbar space-y-10 bg-muted/10">
             <div className="flex flex-col items-center gap-4">
-              <div className="px-4 py-1.5 rounded-full bg-muted border border-border text-xs font-medium text-muted-foreground">
+              <div className="px-4 py-1.5 rounded-full bg-muted/60 text-xs font-medium text-muted-foreground">
                 Transmission log: March 24
               </div>
             </div>
 
             <div className="flex gap-5 max-w-[85%]">
-              <div className="w-12 h-12 rounded-2xl bg-muted border border-border overflow-hidden shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-muted/60 overflow-hidden shrink-0">
                 <img
-                  src="https://api.dicebear.com/7.x/identicon/svg?seed=acme"
-                  alt="Acme Corp"
+                  src={activeMessage.avatar}
+                  alt={activeMessage.sender}
                   className="w-full h-full object-cover p-2 opacity-70"
                 />
               </div>
               <div className="space-y-2">
-                <div className="p-6 rounded-3xl rounded-tl-none bg-muted/40 border border-border text-sm leading-relaxed text-foreground font-medium">
-                  Hey Nazrul, just wanted to check in on the latest designs for
-                  the Neon Genesis project. The client is really excited to see
-                  the progress!
+                <div className="p-6 rounded-3xl rounded-tl-none bg-muted/40 text-sm leading-relaxed text-foreground font-medium">
+                  {activeMessage.preview}
                 </div>
                 <p className="text-xs text-muted-foreground font-medium pl-2">
                   10:24 AM · Received
@@ -242,8 +268,8 @@ export const Messages: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-border bg-muted/20">
-            <div className="flex items-center gap-4 bg-muted border border-border rounded-[2rem] p-3">
+          <div className="p-6 border-t border-border/60 bg-muted/20">
+            <div className="flex items-center gap-4 bg-muted/60 rounded-[2rem] p-3">
               <Button
                 type="button"
                 variant="ghost"

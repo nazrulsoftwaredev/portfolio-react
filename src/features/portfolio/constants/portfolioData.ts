@@ -11,7 +11,6 @@ export const portfolioData: PortfolioData = {
       { label: "Expertise", href: "#expertise" },
       { label: "Tech Stack", href: "#tech-stack" },
       { label: "Contact", href: "#contact" },
-      { label: "Dashboard", href: "/dashboard", isRoute: true },
     ],
   },
   about: {

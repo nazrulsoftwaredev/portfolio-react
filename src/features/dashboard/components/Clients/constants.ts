@@ -65,4 +65,16 @@ export const INITIAL_CLIENTS: Client[] = [
     phone: "+1-555-0105",
     website: "https://ecoworld.org",
   },
+  {
+    id: "6",
+    name: "Nova Metrics",
+    industry: "AI",
+    status: "Active",
+    value: 3100,
+    growth: 3,
+    avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=nova",
+    email: "hello@novametrics.dev",
+    phone: "+1-555-0106",
+    website: "https://novametrics.dev",
+  },
 ];
