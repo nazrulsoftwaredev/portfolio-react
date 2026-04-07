@@ -6,8 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "start": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
+    "heroku-postbuild": "npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=20.x",
+    "npm": ">=10.x"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
