@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, join, normalize, resolve, relative, isAbsolute } from "node:path";
 import http from "node:http";
 
 const port = Number.parseInt(process.env.PORT || "4173", 10);
@@ -42,37 +42,46 @@ const sendFile = (res, filePath, extraHeaders = {}) => {
   createReadStream(filePath).pipe(res);
 };
 
-const server = http.createServer((req, res) => {
-  const requestPath = req.url?.split("?")[0] || "/";
-
-  // Decode percent-encoded characters before normalising, then re-normalise.
+/**
+ * Resolve a request URL to a file path that is guaranteed to live inside
+ * distDir. Returns null if the path would escape the directory.
+ *
+ * The path is reconstructed from distDir + a *relative* sub-path so that
+ * static-analysis tools can confirm the result never escapes distDir.
+ */
+const resolveDistPath = (requestUrl) => {
+  // Decode percent-encoded characters before normalising.
   let decoded;
   try {
-    decoded = decodeURIComponent(requestPath);
+    decoded = decodeURIComponent(requestUrl.split("?")[0] || "/");
   } catch {
-    // Malformed URI – treat as root
     decoded = "/";
   }
 
-  const safePath = normalize(decoded).replace(/^([.][.][/\\])+/, "");
-  const candidatePath = join(distDir, safePath);
+  const normalised = normalize(decoded);
 
-  // Strict path-traversal guard: resolved path must be inside distDir.
-  const resolvedCandidate = resolve(candidatePath);
-  if (
-    resolvedCandidate !== distDir &&
-    !resolvedCandidate.startsWith(distDir + "/") &&
-    !resolvedCandidate.startsWith(distDir + "\\")
-  ) {
+  // Derive a relative path and check it doesn't escape with ".." or absolute.
+  const rel = relative("/", normalised); // strip leading slash
+  if (isAbsolute(rel) || rel.startsWith("..")) {
+    return null;
+  }
+
+  // Reconstruct from the constant distDir — breaks any taint from user input.
+  return join(distDir, rel);
+};
+
+const server = http.createServer((req, res) => {
+  const filePath = resolveDistPath(req.url ?? "/");
+
+  if (!filePath) {
     res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8", ...SECURITY_HEADERS });
     res.end("Forbidden");
     return;
   }
 
-  if (existsSync(resolvedCandidate) && statSync(resolvedCandidate).isFile()) {
-    // Add long cache for hashed assets; no-cache for HTML.
-    const isHtml = extname(resolvedCandidate).toLowerCase() === ".html";
-    sendFile(res, resolvedCandidate, {
+  if (existsSync(filePath) && statSync(filePath).isFile()) {
+    const isHtml = extname(filePath).toLowerCase() === ".html";
+    sendFile(res, filePath, {
       "Cache-Control": isHtml
         ? "no-cache, no-store, must-revalidate"
         : "public, max-age=31536000, immutable",
