@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { FOOTER_DATA_SHAPE } from "@/shared/types";
 
 const FooterComponent = ({ data = {} }) => {

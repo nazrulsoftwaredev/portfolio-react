@@ -24,6 +24,12 @@ import {
  * Business logic and data processing for dashboard feature
  */
 
+/**
+ * DEMO ONLY — These are placeholder credentials for the UI prototype.
+ * They are intentionally visible in source for demo purposes.
+ * Replace with a real authentication API (e.g., JWT endpoint) before
+ * deploying to any environment with real data.
+ */
 const MOCK_ADMIN_CREDENTIALS = {
   email: "admin@mdnazrul.com",
   password: "admin123",
@@ -240,8 +246,8 @@ export const dashboardService = {
   /**
    * Parse API errors to user-friendly messages
    */
-  parseApiError: (error: any): string => {
-    if (error.message) return error.message;
+  parseApiError: (error: unknown): string => {
+    if (error instanceof Error) return error.message;
     if (typeof error === "string") return error;
     return "An unexpected error occurred. Please try again.";
   },

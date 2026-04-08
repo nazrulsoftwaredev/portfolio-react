@@ -9,7 +9,21 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
+
+interface AccessibleInputProps {
+  id?: string;
+  label?: string;
+  type?: string;
+  required?: boolean;
+  error?: string | null;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  hint?: string | null;
+}
 
 export const AccessibleInput = ({
   id,
@@ -24,8 +38,8 @@ export const AccessibleInput = ({
   disabled = false,
   className = '',
   hint = null,
-}) => {
-  const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+}: AccessibleInputProps) => {
+  const inputId = id || `input-${Math.random().toString(36).slice(2, 11)}`;
   const errorId = `${inputId}-error`;
   const hintId = `${inputId}-hint`;
 
@@ -97,20 +111,24 @@ export const AccessibleInput = ({
   );
 };
 
-AccessibleInput.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  type: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onBlur: PropTypes.func,
-  placeholder: PropTypes.string,
-  disabled: PropTypes.bool,
-  className: PropTypes.string,
-  hint: PropTypes.string,
-};
+interface SelectOption {
+  value?: string;
+  label?: string;
+}
+
+interface AccessibleSelectProps {
+  id?: string;
+  label?: string;
+  required?: boolean;
+  error?: string | null;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  onBlur?: React.FocusEventHandler<HTMLSelectElement>;
+  options?: Array<string | SelectOption>;
+  disabled?: boolean;
+  className?: string;
+  hint?: string | null;
+}
 
 /**
  * AccessibleSelect Component
@@ -128,8 +146,8 @@ export const AccessibleSelect = ({
   disabled = false,
   className = '',
   hint = null,
-}) => {
-  const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+}: AccessibleSelectProps) => {
+  const selectId = id || `select-${Math.random().toString(36).slice(2, 11)}`;
   const errorId = `${selectId}-error`;
   const hintId = `${selectId}-hint`;
 
@@ -175,11 +193,15 @@ export const AccessibleSelect = ({
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}`}
       >
-        {options.map((opt) => (
-          <option key={opt.value || opt} value={opt.value || opt}>
-            {opt.label || opt}
-          </option>
-        ))}
+        {options.map((opt) => {
+          const val = typeof opt === 'string' ? opt : (opt.value ?? '');
+          const lbl = typeof opt === 'string' ? opt : (opt.label ?? val);
+          return (
+            <option key={val} value={val}>
+              {lbl}
+            </option>
+          );
+        })}
       </select>
 
       {error && (
@@ -205,27 +227,20 @@ export const AccessibleSelect = ({
   );
 };
 
-AccessibleSelect.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onBlur: PropTypes.func,
-  options: PropTypes.arrayOf(
-    PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.shape({
-        value: PropTypes.string,
-        label: PropTypes.string,
-      }),
-    ])
-  ),
-  disabled: PropTypes.bool,
-  className: PropTypes.string,
-  hint: PropTypes.string,
-};
+interface AccessibleTextareaProps {
+  id?: string;
+  label?: string;
+  required?: boolean;
+  error?: string | null;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  onBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
+  placeholder?: string;
+  disabled?: boolean;
+  rows?: number;
+  className?: string;
+  hint?: string | null;
+}
 
 /**
  * AccessibleTextarea Component
@@ -244,8 +259,8 @@ export const AccessibleTextarea = ({
   rows = 4,
   className = '',
   hint = null,
-}) => {
-  const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+}: AccessibleTextareaProps) => {
+  const textareaId = id || `textarea-${Math.random().toString(36).slice(2, 11)}`;
   const errorId = `${textareaId}-error`;
   const hintId = `${textareaId}-hint`;
 
@@ -315,19 +330,4 @@ export const AccessibleTextarea = ({
       )}
     </div>
   );
-};
-
-AccessibleTextarea.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onBlur: PropTypes.func,
-  placeholder: PropTypes.string,
-  disabled: PropTypes.bool,
-  rows: PropTypes.number,
-  className: PropTypes.string,
-  hint: PropTypes.string,
 };

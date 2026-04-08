@@ -1,14 +1,27 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
 import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
+import type { HeroContent } from "@/shared/types";
+
+interface WordRevealProps {
+  text: string;
+  delay?: number;
+  className?: string;
+  shouldUseEnhancedMotion: boolean;
+}
+
+interface HeroProps {
+  loading?: boolean;
+  data?: HeroContent;
+}
 
 const WordReveal = ({
   text,
   delay = 0,
   className = "",
   shouldUseEnhancedMotion,
-}) => {
+}: WordRevealProps) => {
   const words = text.split(" ");
   return (
     <div className={`flex flex-wrap py-2 ${className}`}>
@@ -54,7 +67,7 @@ const WordReveal = ({
   );
 };
 
-export const Hero = ({ loading, data = {} }) => {
+export const Hero = ({ loading = false, data = {} }: HeroProps) => {
   const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
 
   return (

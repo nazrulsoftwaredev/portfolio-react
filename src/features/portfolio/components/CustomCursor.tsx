@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { motion, useSpring, useMotionValue, useAnimation } from "framer-motion";
+import { motion, useSpring, useMotionValue, useAnimation } from "motion/react";
 import { usePortfolioMotionSettings } from "../hooks/usePortfolioMotionSettings";
 
 export const CustomCursor = () => {

@@ -13,6 +13,15 @@ export interface UserInfo {
   [key: string]: unknown;
 }
 
+type ConsoleLevel = "log" | "info" | "warn" | "error";
+
+const LOG_LEVEL_TO_CONSOLE: Record<LogLevel, ConsoleLevel> = {
+  fatal: "error",
+  error: "error",
+  warning: "warn",
+  info: "info",
+};
+
 /**
  * Centralized error reporting service
  * Handles both Sentry and console logging based on environment
@@ -25,17 +34,15 @@ export const errorReporter = {
     error: Error | unknown,
     context: ErrorContext = {},
   ): void => {
-    // Always log to Sentry if available
     if (import.meta.env.VITE_SENTRY_DSN) {
-      Sentry.captureException(
-        error as Error,
-        {
-          contexts: context,
-        } as any,
-      );
+      Sentry.withScope((scope) => {
+        if (Object.keys(context).length > 0) {
+          scope.setContext("extra", context);
+        }
+        Sentry.captureException(error);
+      });
     }
 
-    // Also log to console in development
     if (import.meta.env.DEV) {
       console.error("[Error Report]", error, context);
     }
@@ -50,25 +57,17 @@ export const errorReporter = {
     context: ErrorContext = {},
   ): void => {
     if (import.meta.env.VITE_SENTRY_DSN) {
-      Sentry.captureMessage(message, level);
-      if (Object.keys(context).length > 0) {
-        Sentry.setContext("message_context", context);
-      }
+      Sentry.withScope((scope) => {
+        if (Object.keys(context).length > 0) {
+          scope.setContext("message_context", context);
+        }
+        Sentry.captureMessage(message, level);
+      });
     }
 
     if (import.meta.env.DEV) {
-      const consoleMethod =
-        {
-          fatal: "error",
-          warning: "warn",
-          info: "info",
-          error: "error",
-        }[level] || "log";
-      (console[consoleMethod as keyof typeof console] as any)(
-        "[Report]",
-        message,
-        context,
-      );
+      const consoleMethod: ConsoleLevel = LOG_LEVEL_TO_CONSOLE[level] ?? "log";
+      console[consoleMethod]("[Report]", message, context);
     }
   },
 
@@ -95,11 +94,13 @@ export const errorReporter = {
   },
 
   /**
-   * Add breadcrumb for tracking user actions
+   * Add breadcrumb for tracking user actions.
+   * Uses Sentry.addBreadcrumb (not captureMessage) so it attaches to the
+   * next event rather than creating a standalone Sentry issue.
    */
   addBreadcrumb: (message: string, data: ErrorContext = {}): void => {
     if (import.meta.env.VITE_SENTRY_DSN) {
-      Sentry.captureMessage(message, "info");
+      Sentry.addBreadcrumb({ message, data });
     }
 
     if (import.meta.env.DEV) {

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
 import { EXPERTISE_SHAPE } from "@/shared/types";
 

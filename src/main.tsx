@@ -29,7 +29,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
-createRoot(document.getElementById("root")).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <App />

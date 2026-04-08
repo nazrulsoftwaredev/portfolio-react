@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactLenis from "lenis/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
 import { useLocation } from "react-router-dom";
 

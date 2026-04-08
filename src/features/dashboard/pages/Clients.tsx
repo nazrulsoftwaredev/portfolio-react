@@ -1,6 +1,6 @@
 import React from "react";
 import { Briefcase, Plus, ShieldCheck, Target, Users } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Button,

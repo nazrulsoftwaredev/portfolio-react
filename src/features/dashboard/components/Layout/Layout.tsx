@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../Sidebar";
 import { TopBar } from "../TopBar";
 import { DashboardSearchProvider } from "./DashboardSearchContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 interface LayoutProps {
   onSignOut: () => void;

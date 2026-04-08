@@ -13,7 +13,7 @@ import {
   Edit,
   Shield,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui";
 import { ThemeToggle } from "@/shared/components";
 import { NotificationsMenu } from "./NotificationsMenu";

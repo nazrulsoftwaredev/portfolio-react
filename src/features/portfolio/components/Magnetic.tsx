@@ -1,13 +1,18 @@
 import React, { useRef, useCallback, useEffect } from "react";
-import PropTypes from "prop-types";
-import { motion, useSpring } from "framer-motion";
+import { motion, useSpring } from "motion/react";
 import { usePortfolioMotionSettings } from "../hooks/usePortfolioMotionSettings";
+
+interface MagneticProps {
+  children: React.ReactNode;
+  intensity?: number;
+  cursor?: string;
+}
 
 export const Magnetic = ({
   children,
   intensity = 0.35,
   cursor = "hover",
-}) => {
+}: MagneticProps) => {
   const ref = useRef(null);
   const { shouldUseEnhancedMotion } = usePortfolioMotionSettings();
   const rectRef = useRef<DOMRect | null>(null);
@@ -88,15 +93,4 @@ export const Magnetic = ({
       {children}
     </motion.div>
   );
-};
-
-Magnetic.propTypes = {
-  children: PropTypes.node.isRequired,
-  intensity: PropTypes.number,
-  cursor: PropTypes.string,
-};
-
-Magnetic.defaultProps = {
-  intensity: 0.35,
-  cursor: "hover",
 };
