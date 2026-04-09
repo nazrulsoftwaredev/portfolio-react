@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import PropTypes from "prop-types";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { ABOUT_CONTENT_SHAPE } from "@/shared/types";
 
 type FocusItem = {

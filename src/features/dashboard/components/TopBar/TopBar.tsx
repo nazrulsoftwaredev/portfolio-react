@@ -13,7 +13,7 @@ import {
   Edit,
   Shield,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui";
 import { ThemeToggle } from "@/shared/components";
 import { NotificationsMenu } from "./NotificationsMenu";
@@ -33,6 +33,8 @@ const spring = {
 
 const workspaceLabels: Record<string, string> = {
   "/dashboard": "Overview",
+  "/dashboard/activity": "Activity",
+  "/dashboard/activity/details": "Activity Details",
   "/dashboard/clients": "Clients",
   "/dashboard/invoices": "Invoices",
   "/dashboard/analytics": "Analytics",
@@ -65,6 +67,12 @@ type SearchItem = { label: string; href: string; category: string };
 
 const searchItems: SearchItem[] = [
   { label: "Dashboard Overview", href: "/dashboard", category: "Page" },
+  { label: "Activity", href: "/dashboard/activity", category: "Page" },
+  {
+    label: "Activity Details",
+    href: "/dashboard/activity/details",
+    category: "Page",
+  },
   { label: "Clients", href: "/dashboard/clients", category: "Page" },
   { label: "Invoices", href: "/dashboard/invoices", category: "Page" },
   { label: "Analytics", href: "/dashboard/analytics", category: "Page" },
@@ -74,6 +82,11 @@ const searchItems: SearchItem[] = [
   { label: "Settings", href: "/dashboard/settings", category: "Page" },
   { label: "Security", href: "/dashboard/settings/security", category: "Page" },
   { label: "Help", href: "/dashboard/help", category: "Page" },
+  {
+    label: "Activity Feed",
+    href: "/dashboard/activity",
+    category: "Section",
+  },
   {
     label: "Client Relations",
     href: "/dashboard/clients",
@@ -110,19 +123,7 @@ const buildBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
     const maybeId = rest[1];
     const isEdit = rest[2] === "edit";
     if (maybeId) {
-      let clientLabel = "Client";
-      if (typeof window !== "undefined") {
-        try {
-          const raw = window.localStorage.getItem("dashboard-clients-v1");
-          const parsed = raw ? (JSON.parse(raw) as any) : null;
-          if (Array.isArray(parsed)) {
-            const match = parsed.find((c) => c?.id === maybeId);
-            if (match?.name) clientLabel = String(match.name);
-          }
-        } catch {
-          // ignore
-        }
-      }
+      const clientLabel = "Client";
 
       crumbs.push({
         label: clientLabel,
@@ -509,13 +510,21 @@ export const TopBar: React.FC<TopBarProps> = ({
                       label: "Edit Profile",
                       href: "/dashboard/profile/edit",
                     },
-                    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+                    {
+                      icon: Settings,
+                      label: "Settings",
+                      href: "/dashboard/settings",
+                    },
                     {
                       icon: Shield,
                       label: "Security",
                       href: "/dashboard/settings/security",
                     },
-                    { icon: HelpCircle, label: "Help", href: "/dashboard/help" },
+                    {
+                      icon: HelpCircle,
+                      label: "Help",
+                      href: "/dashboard/help",
+                    },
                   ].map((item) => {
                     const Icon = item.icon;
                     return (

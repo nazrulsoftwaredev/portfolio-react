@@ -6,8 +6,12 @@
 
 import React from 'react';
 
-export const SkipLink = ({ targetId = 'main-content' }) => {
-  const handleSkip = (e) => {
+interface SkipLinkProps {
+  targetId?: string;
+}
+
+export const SkipLink = ({ targetId = 'main-content' }: SkipLinkProps) => {
+  const handleSkip = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const mainContent = document.getElementById(targetId);
     if (mainContent) {

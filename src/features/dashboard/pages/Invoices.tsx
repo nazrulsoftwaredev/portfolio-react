@@ -21,6 +21,8 @@ import {
   TableRow,
 } from "@/components/ui";
 import { useDashboardSearch } from "../components/Layout/DashboardSearchContext";
+import { AnimatePresence } from "framer-motion";
+import { Toast } from "@/shared/components";
 
 const invoices = [
   {
@@ -85,28 +87,57 @@ const summaryCards = [
 
 export const Invoices: React.FC = () => {
   const { searchQuery, setSearchQuery } = useDashboardSearch();
+  const [statusFilter, setStatusFilter] = React.useState<
+    "All" | "Paid" | "Pending" | "Overdue" | "Draft"
+  >("All");
+  const [activeMenuInvoiceId, setActiveMenuInvoiceId] = React.useState<
+    string | null
+  >(null);
+  const [toasts, setToasts] = React.useState<
+    Array<{
+      id: string;
+      message: string;
+      type: "info" | "success" | "error" | "warning";
+    }>
+  >([]);
+
+  const pushToast = React.useCallback(
+    (message: string, type: "info" | "success" | "error" | "warning" = "info") =>
+      setToasts((previous) => [
+        ...previous,
+        { id: crypto.randomUUID(), message, type },
+      ]),
+    [],
+  );
 
   const filteredInvoices = React.useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
-
-    if (!normalized) {
-      return invoices;
-    }
-
     return invoices.filter((invoice) => {
-      return [
-        invoice.id,
-        invoice.client,
-        invoice.amount,
-        invoice.date,
-        invoice.status,
-        invoice.dueDate,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalized);
+      const matchesStatus =
+        statusFilter === "All" ? true : invoice.status === statusFilter;
+      const matchesSearch = normalized
+        ? [invoice.id, invoice.client, invoice.amount, invoice.date, invoice.status, invoice.dueDate]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalized)
+        : true;
+      return matchesStatus && matchesSearch;
     });
-  }, [searchQuery]);
+  }, [searchQuery, statusFilter]);
+
+  const cycleFilter = React.useCallback(() => {
+    setStatusFilter((previous) =>
+      previous === "All"
+        ? "Pending"
+        : previous === "Pending"
+          ? "Paid"
+          : previous === "Paid"
+            ? "Overdue"
+            : previous === "Overdue"
+              ? "Draft"
+              : "All",
+    );
+  }, []);
 
   return (
     <div className="dash-stack">
@@ -120,11 +151,21 @@ export const Invoices: React.FC = () => {
           }
           subtitle={
             <>
-              Billing channel: <span className="text-emerald-600">Live</span>
+              Billing channel: <span className="text-emerald-600">Live</span> ·{" "}
+              {statusFilter === "All" ? "All invoices" : `${statusFilter} only`}
             </>
           }
           actions={
-            <Button className="gap-2">
+            <Button
+              className="gap-2"
+              type="button"
+              onClick={() =>
+                pushToast(
+                  "Create invoice workflow opened. Connect it to your form endpoint when ready.",
+                  "success",
+                )
+              }
+            >
               <Plus className="w-4 h-4" />
               Create Invoice
             </Button>
@@ -147,9 +188,14 @@ export const Invoices: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <Button variant="outline" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
+              <Button
+                type="button"
+                variant="outline"
+                className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30"
+                onClick={cycleFilter}
+              >
                 <Filter className="w-4 h-4" />
-                Filter
+                {statusFilter === "All" ? "Filter" : statusFilter}
               </Button>
             </div>
           </div>
@@ -218,6 +264,9 @@ export const Invoices: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                            onClick={() =>
+                              pushToast(`Downloading ${invoice.id} as PDF.`, "info")
+                            }
                           >
                             <Download className="w-4 h-4" />
                           </Button>
@@ -226,6 +275,9 @@ export const Invoices: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                            onClick={() =>
+                              pushToast(`Invoice ${invoice.id} sent to ${invoice.client}.`, "success")
+                            }
                           >
                             <Send className="w-4 h-4" />
                           </Button>
@@ -234,10 +286,43 @@ export const Invoices: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                            onClick={() =>
+                              setActiveMenuInvoiceId((previous) =>
+                                previous === invoice.id ? null : invoice.id,
+                              )
+                            }
                           >
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </div>
+                        {activeMenuInvoiceId === invoice.id ? (
+                          <div className="mt-2 inline-flex rounded-xl border border-border/60 bg-background p-1 gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8"
+                              onClick={() => {
+                                pushToast(`Marked ${invoice.id} as paid.`, "success");
+                                setActiveMenuInvoiceId(null);
+                              }}
+                            >
+                              Mark Paid
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8"
+                              onClick={() => {
+                                pushToast(`Copied share link for ${invoice.id}.`, "info");
+                                setActiveMenuInvoiceId(null);
+                              }}
+                            >
+                              Copy Link
+                            </Button>
+                          </div>
+                        ) : null}
                       </TableCell>
                     </TableRow>
                   ))
@@ -301,6 +386,22 @@ export const Invoices: React.FC = () => {
             </PanelCard>
           </div>
         </div>
+      </div>
+      <div className="fixed bottom-6 left-6 z-[1060] flex max-w-sm flex-col gap-3">
+        <AnimatePresence initial={false}>
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              isOpen
+              message={toast.message}
+              type={toast.type}
+              onClose={() =>
+                setToasts((previous) => previous.filter((item) => item.id !== toast.id))
+              }
+              inline
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -117,7 +117,7 @@ export const ClientsToolbar: React.FC<ClientsToolbarProps> = ({
         onClick={onReset}
       >
         <RotateCcw className="w-4 h-4" />
-        Reset
+        Refresh
       </Button>
     </div>
   </div>

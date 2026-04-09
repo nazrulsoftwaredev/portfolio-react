@@ -1,3 +1,4 @@
+import React from "react";
 import {
   ClientPortfolioCard,
   OverviewHeader,
@@ -5,7 +6,7 @@ import {
   RecentActivityCard,
   RevenueInsightsCard,
 } from "@/features/dashboard/components/Overview";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import type { ActivityType } from "@/features/dashboard/components/Overview/overviewData";
 
@@ -25,9 +26,12 @@ export const Overview: React.FC = () => {
     navigate("/dashboard/activity");
   };
 
-  const handleActivityClick = (type: ActivityType, label: string) => {
-    void type;
-    navigate(`/dashboard/activity?focus=${encodeURIComponent(label)}`);
+  const handleActivityClick = (_type: ActivityType, label: string) => {
+    const params = new URLSearchParams({
+      type: _type,
+      label,
+    });
+    navigate(`/dashboard/activity/details?${params.toString()}`);
   };
 
   const handleStatClick = (label: string) => {

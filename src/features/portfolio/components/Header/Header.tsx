@@ -4,13 +4,19 @@ import {
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
-} from "framer-motion";
+} from "motion/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
 import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
+import type { HeroContent } from "@/shared/types";
 
-const HeaderComponent = ({ loading, data }) => {
+interface HeaderProps {
+  loading?: boolean;
+  data?: HeroContent;
+}
+
+const HeaderComponent = ({ loading = false, data }: HeaderProps) => {
   const { shouldUseEnhancedMotion, isDesktop } = usePortfolioMotionSettings();
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,16 +67,21 @@ const HeaderComponent = ({ loading, data }) => {
     );
   });
 
-  // Close menu on Escape key
+  // Close menu on Escape key - stable listener via ref
+  const isMenuOpenRef = useRef(isMenuOpen);
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && isMenuOpen) {
+    isMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMenuOpenRef.current) {
         setIsMenuOpen(false);
       }
     };
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [isMenuOpen]);
+  }, []);
 
   const navLinks = (
     data?.navigation?.length
@@ -110,8 +121,9 @@ const HeaderComponent = ({ loading, data }) => {
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 w-full z-[100] px-6 md:px-12 py-8 md:py-10 flex justify-between items-center pointer-events-none transition-[background-color,padding,border-color] duration-500 ${scrolled ? `${shouldUseEnhancedMotion ? "bg-background/70" : "bg-background/90"} py-4 md:py-5 border-b border-border/40` : ""}`}
       >
-        <div
-          className="flex items-center gap-12 pointer-events-auto cursor-pointer group"
+        <button
+          type="button"
+          className="flex items-center gap-12 pointer-events-auto cursor-pointer group bg-transparent border-0 p-0 text-left"
           onClick={() => {
             if (location.pathname !== "/") {
               navigate("/");
@@ -120,6 +132,7 @@ const HeaderComponent = ({ loading, data }) => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           data-cursor="hover"
+          aria-label="Go to homepage"
         >
           <div className="flex flex-col">
             <span className="font-heading text-2xl tracking-tighter leading-none group-hover:text-primary transition-all duration-500 italic">
@@ -135,7 +148,7 @@ const HeaderComponent = ({ loading, data }) => {
               </motion.span>
             </div>
           </div>
-        </div>
+        </button>
 
         <nav className="hidden md:flex items-center gap-6 pointer-events-auto">
           {navLinks.map((link) => (

@@ -1,6 +1,22 @@
 import React, { useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
+
+type ToastType = "info" | "success" | "error" | "warning";
+
+interface ToastAction {
+  (): void;
+}
+
+interface ToastProps {
+  isOpen: boolean;
+  message?: string;
+  type?: ToastType;
+  duration?: number;
+  onClose: () => void;
+  action?: ToastAction;
+  actionLabel?: string;
+  inline?: boolean;
+}
 
 /**
  * Toast Notification Component
@@ -9,13 +25,13 @@ import { motion } from "framer-motion";
 export const Toast = ({
   isOpen,
   message = "",
-  type = "info", // 'info', 'success', 'error', 'warning'
-  duration = 4000, // auto-close in ms, 0 = no auto-close
+  type = "info",
+  duration = 4000,
   onClose,
   action,
   actionLabel = "Undo",
   inline = false,
-}) => {
+}: ToastProps) => {
   const onCloseRef = useRef(onClose);
 
   useEffect(() => {
@@ -109,25 +125,6 @@ export const Toast = ({
       )}
     </motion.div>
   );
-};
-
-Toast.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  message: PropTypes.string,
-  type: PropTypes.oneOf(["info", "success", "error", "warning"]),
-  duration: PropTypes.number,
-  onClose: PropTypes.func.isRequired,
-  action: PropTypes.func,
-  actionLabel: PropTypes.string,
-  inline: PropTypes.bool,
-};
-
-Toast.defaultProps = {
-  message: "",
-  type: "info",
-  duration: 4000,
-  actionLabel: "Undo",
-  inline: false,
 };
 
 export default Toast;

@@ -3,7 +3,7 @@
  * Custom hooks for data fetching and API interactions
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type {
   AuthCredentials,
   DashboardApiResponse,
@@ -39,11 +39,6 @@ const MOCK_ANALYTICS: AnalyticsData = {
     { month: "Jun", value: 93 },
   ],
 };
-
-const wait = (ms: number) =>
-  new Promise<void>((resolve) => {
-    setTimeout(resolve, ms);
-  });
 
 const readStoredSession = (): DashboardAuthSession | null => {
   if (typeof window === "undefined") {
@@ -81,6 +76,25 @@ export const useDashboardAuth = () => {
   const user = session?.user ?? null;
   const isAuthenticated = Boolean(session);
 
+  useEffect(() => {
+    if (session) {
+      return;
+    }
+
+    void dashboardService.getCurrentSession().then((restored) => {
+      if (!restored) {
+        return;
+      }
+      setSession(restored);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(
+          AUTH_STORAGE_KEY,
+          JSON.stringify(restored),
+        );
+      }
+    });
+  }, [session]);
+
   const login = useCallback(
     async (
       credentials: AuthCredentials,
@@ -113,6 +127,7 @@ export const useDashboardAuth = () => {
   );
 
   const logout = useCallback(async () => {
+    await dashboardService.logoutAdmin();
     setSession(null);
 
     if (typeof window !== "undefined") {
@@ -132,8 +147,25 @@ export const useDashboardAnalytics = () => {
     setError(null);
 
     try {
-      await wait(250);
-      return MOCK_ANALYTICS;
+      const response = await fetch("/api/v1/analytics/overview", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = (await response.json()) as {
+        status: "success" | "error";
+        data?: AnalyticsData;
+      };
+
+      if (payload.status !== "success" || !payload.data) {
+        return MOCK_ANALYTICS;
+      }
+
+      return payload.data;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch analytics";

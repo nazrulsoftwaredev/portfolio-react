@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { INITIAL_CLIENTS, STORAGE_KEY } from "./constants";
+import { INITIAL_CLIENTS } from "./constants";
 import type {
   Client,
   ClientStatus,
@@ -7,8 +7,9 @@ import type {
   ClientsStats,
   SortOption,
 } from "./types";
-import { exportClientsCsv, nextStatus, validateClient } from "./utils";
+import { exportClientsCsv, validateClient } from "./utils";
 import { useDashboardClients } from "../../api/hooks";
+import { dashboardService } from "../../api/services";
 
 type ToastType = "info" | "success" | "error" | "warning";
 
@@ -26,19 +27,6 @@ interface UseClientsManagerOptions {
   pageSize: number;
 }
 
-const mergeWithInitialClients = (storedClients: Client[]) => {
-  const existingIds = new Set(storedClients.map((client) => client.id));
-  const missingDefaults = INITIAL_CLIENTS.filter(
-    (client) => !existingIds.has(client.id),
-  );
-
-  if (missingDefaults.length === 0) {
-    return storedClients;
-  }
-
-  return [...storedClients, ...missingDefaults];
-};
-
 export const useClientsManager = ({
   query,
   statusFilter,
@@ -46,27 +34,7 @@ export const useClientsManager = ({
   page,
   pageSize,
 }: UseClientsManagerOptions) => {
-  const [allClients, setAllClients] = useState<Client[]>(() => {
-    if (typeof window === "undefined") {
-      return INITIAL_CLIENTS;
-    }
-
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (!stored) {
-        return INITIAL_CLIENTS;
-      }
-
-      const parsed = JSON.parse(stored) as unknown;
-      if (!Array.isArray(parsed)) {
-        return INITIAL_CLIENTS;
-      }
-
-      return mergeWithInitialClients(parsed as Client[]);
-    } catch {
-      return INITIAL_CLIENTS;
-    }
-  });
+  const [allClients, setAllClients] = useState<Client[]>(() => INITIAL_CLIENTS);
   const [toasts, setToasts] = useState<ToastState[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const { fetchClientsPage, loading, error } = useDashboardClients();
@@ -92,14 +60,6 @@ export const useClientsManager = ({
       activeTrend: "+0%",
     },
   }));
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(allClients));
-  }, [allClients]);
 
   const showToast = useCallback((message: string, type: ToastType = "info") => {
     setToasts((previous) => [
@@ -128,6 +88,13 @@ export const useClientsManager = ({
     })
       .then((result) => {
         if (cancelled) return;
+        setAllClients((previous) => {
+          const merged = new Map(previous.map((item) => [item.id, item]));
+          result.items.forEach((item) => {
+            merged.set(item.id, item);
+          });
+          return Array.from(merged.values());
+        });
         setPageData({
           items: result.items,
           totalItems: result.totalItems,
@@ -178,7 +145,7 @@ export const useClientsManager = ({
     return allClients.find((client) => client.id === id);
   };
 
-  const saveClient = (client: Client) => {
+  const saveClient = async (client: Client) => {
     const nextErrors = validateClient(client);
     if (Object.keys(nextErrors).length > 0) {
       return {
@@ -189,57 +156,94 @@ export const useClientsManager = ({
 
     const isUpdate = allClients.some((item) => item.id === client.id);
 
-    setAllClients((previous) => {
-      const existingIndex = previous.findIndex((item) => item.id === client.id);
-      if (existingIndex === -1) {
-        return [{ ...client }, ...previous];
-      }
+    try {
+      const payload = {
+        name: client.name,
+        industry: client.industry,
+        status: client.status,
+        value: client.value,
+        avatar: client.avatar,
+        email: client.email,
+        phone: client.phone,
+        website: client.website,
+      };
 
-      const next = [...previous];
-      next[existingIndex] = { ...client };
-      return next;
-    });
+      const result = isUpdate
+        ? await dashboardService.updateClient(client.id, payload)
+        : await dashboardService.createClient(payload);
 
-    showToast(
-      isUpdate
-        ? `Client ${client.name} updated`
-        : `Client ${client.name} created`,
-      "success",
-    );
-    setRefreshKey((previous) => previous + 1);
-    return {
-      success: true,
-      errors: {},
-    };
+      setAllClients((previous) => {
+        const existingIndex = previous.findIndex(
+          (item) => item.id === result.data.id,
+        );
+        if (existingIndex === -1) {
+          return [result.data, ...previous];
+        }
+
+        const next = [...previous];
+        next[existingIndex] = result.data;
+        return next;
+      });
+
+      showToast(
+        isUpdate
+          ? `Client ${result.data.name} updated`
+          : `Client ${result.data.name} created`,
+        "success",
+      );
+      setRefreshKey((previous) => previous + 1);
+
+      return {
+        success: true,
+        errors: {},
+      };
+    } catch {
+      showToast("Unable to save client", "error");
+      return {
+        success: false,
+        errors: {
+          name: "Unable to save client right now",
+        } as ClientValidationErrors,
+      };
+    }
   };
 
   const removeClient = (id: string) => {
     const removed = allClients.find((client) => client.id === id);
-    setAllClients((previous) => previous.filter((client) => client.id !== id));
-    showToast(
-      removed ? `Client ${removed.name} removed` : "Client removed",
-      "warning",
-    );
-    setRefreshKey((previous) => previous + 1);
+    void dashboardService
+      .archiveClient(id)
+      .then(() => {
+        setAllClients((previous) =>
+          previous.filter((client) => client.id !== id),
+        );
+        showToast(
+          removed ? `Client ${removed.name} removed` : "Client removed",
+          "warning",
+        );
+        setRefreshKey((previous) => previous + 1);
+      })
+      .catch(() => {
+        showToast("Unable to remove client", "error");
+      });
   };
 
   const toggleClientStatus = (id: string) => {
-    const target = allClients.find((client) => client.id === id);
-    if (!target) {
-      showToast("Client not found", "error");
-      return;
-    }
-
-    const updatedStatus = nextStatus(target.status);
-    setAllClients((previous) =>
-      previous.map((client) =>
-        client.id === id
-          ? { ...client, status: nextStatus(client.status) }
-          : client,
-      ),
-    );
-    showToast(`Status changed to ${updatedStatus}`, "success");
-    setRefreshKey((previous) => previous + 1);
+    void dashboardService
+      .cycleClientStatus(id)
+      .then((updatedClient) => {
+        setAllClients((previous) =>
+          previous.map((client) =>
+            client.id === id
+              ? { ...client, status: updatedClient.status }
+              : client,
+          ),
+        );
+        showToast(`Status changed to ${updatedClient.status}`, "success");
+        setRefreshKey((previous) => previous + 1);
+      })
+      .catch(() => {
+        showToast("Unable to update status", "error");
+      });
   };
 
   const exportCurrentPage = () => {
@@ -288,11 +292,7 @@ export const useClientsManager = ({
   }, [fetchClientsPage, query, showToast, sortBy, statusFilter]);
 
   const resetData = () => {
-    setAllClients(INITIAL_CLIENTS);
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
-    showToast("Clients reset to default data", "info");
+    showToast("Refreshing clients from server", "info");
     setRefreshKey((previous) => previous + 1);
   };
 

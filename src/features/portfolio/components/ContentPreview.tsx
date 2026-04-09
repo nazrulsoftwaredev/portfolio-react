@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Monitor, Smartphone, Tablet, Eye, EyeOff } from "lucide-react";
 import { Hero } from "../../components/sections/Hero";
 import { About } from "../../components/sections/About";

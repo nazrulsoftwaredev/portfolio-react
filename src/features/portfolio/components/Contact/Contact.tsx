@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Magnetic } from "@/features/portfolio/components/Magnetic";
 import { SocialLink } from "@/shared/components/common/SocialLink";
 import { ArrowUpRight, Globe, Clock, MapPin } from "lucide-react";
+import type { HeroContent } from "@/shared/types";
 
-export const Contact = ({ data = {} }) => {
+interface ContactProps {
+  data?: HeroContent;
+}
+
+export const Contact = ({ data = {} }: ContactProps) => {
   const email = data.email || "hello@mdnazrul.com";
   const formatDhakaTime = () =>
     new Date().toLocaleTimeString("en-US", {
@@ -16,10 +21,10 @@ export const Contact = ({ data = {} }) => {
   const [currentTime, setCurrentTime] = useState(formatDhakaTime);
 
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
+    const intervalId = setInterval(() => {
       setCurrentTime(formatDhakaTime());
     }, 60_000);
-    return () => window.clearInterval(intervalId);
+    return () => clearInterval(intervalId);
   }, []);
 
   const socials = [

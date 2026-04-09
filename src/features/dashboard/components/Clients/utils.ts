@@ -91,6 +91,14 @@ export const filterAndSortClients = (
 };
 
 export const exportClientsCsv = (clients: Client[]): void => {
+  // Sanitize a CSV cell: quote it and neutralise formula-injection characters.
+  // Values starting with =, +, -, or @ can be executed by spreadsheet apps.
+  const sanitizeCell = (value: string): string => {
+    const escaped = value.replace(/"/g, '""');
+    const dangerous = /^[=+\-@\t\r]/.test(escaped);
+    return `"${dangerous ? `'${escaped}` : escaped}"`;
+  };
+
   const rows = [
     [
       "Name",
@@ -115,9 +123,7 @@ export const exportClientsCsv = (clients: Client[]): void => {
   ];
 
   const csvContent = rows
-    .map((row) =>
-      row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-    )
+    .map((row) => row.map((cell) => sanitizeCell(String(cell))).join(","))
     .join("\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -125,6 +131,8 @@ export const exportClientsCsv = (clients: Client[]): void => {
   const link = document.createElement("a");
   link.href = url;
   link.download = "clients-export.csv";
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };

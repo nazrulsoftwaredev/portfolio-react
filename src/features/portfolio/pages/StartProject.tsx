@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactLenis from "lenis/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import { ErrorBoundary, SkipLink, Toast } from "@/shared/components";
+import { PORTFOLIO_API_ENDPOINTS } from "../api/endpoints";
 import { SocialLink } from "@/shared/components/common/SocialLink";
 import { PremiumBackground } from "../components/PremiumBackground";
 import { Header } from "../components/Header/Header";
@@ -90,7 +91,7 @@ const StartProjectContent: React.FC = () => {
   const markTouched = (key: keyof FormState) =>
     setTouched((prev) => ({ ...prev, [key]: true }));
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({
       name: true,
@@ -110,27 +111,63 @@ const StartProjectContent: React.FC = () => {
       return;
     }
 
-    const subject = encodeURIComponent(`Project inquiry from ${form.name}`);
-    const body = encodeURIComponent(
-      [
-        `Name: ${form.name}`,
-        `Email: ${form.email}`,
-        `Company: ${form.company || "-"}`,
-        `Budget: ${form.budget}`,
-        `Timeline: ${form.timeline}`,
-        "",
-        "Brief:",
-        form.message,
-      ].join("\n"),
-    );
+    try {
+      const response = await fetch(
+        PORTFOLIO_API_ENDPOINTS.startProject.submit,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            company: form.company,
+            projectDetails: form.message,
+            message: form.message,
+            budget: form.budget,
+            timeline: form.timeline,
+          }),
+        },
+      );
 
-    window.location.href = `mailto:${portfolioData.hero?.email || "hello@mdnazrul.com"}?subject=${subject}&body=${body}`;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
-    setToast({
-      open: true,
-      type: "success",
-      message: "Drafted an email — add any extra details and send it over.",
-    });
+      const payload = (await response.json()) as {
+        status?: string;
+        message?: string;
+      };
+
+      setToast({
+        open: true,
+        type: "success",
+        message: payload.message || "Project submission received successfully.",
+      });
+      setForm(initialForm);
+      setTouched({});
+    } catch {
+      const subject = encodeURIComponent(`Project inquiry from ${form.name}`);
+      const body = encodeURIComponent(
+        [
+          `Name: ${form.name}`,
+          `Email: ${form.email}`,
+          `Company: ${form.company || "-"}`,
+          `Budget: ${form.budget}`,
+          `Timeline: ${form.timeline}`,
+          "",
+          "Brief:",
+          form.message,
+        ].join("\n"),
+      );
+
+      window.location.href = `mailto:${portfolioData.hero?.email || "hello@mdnazrul.com"}?subject=${subject}&body=${body}`;
+
+      setToast({
+        open: true,
+        type: "success",
+        message: "Drafted an email — add any extra details and send it over.",
+      });
+    }
   };
 
   const showError = (key: keyof FormState) => touched[key] && errors[key];

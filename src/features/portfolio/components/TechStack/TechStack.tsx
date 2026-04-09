@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { usePortfolioMotionSettings } from "../../hooks/usePortfolioMotionSettings";
 
 const getTechLogo = (name) => {

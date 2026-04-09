@@ -1,0 +1,22 @@
+import { Router } from "express";
+import analyticsRoutes from "./analytics.js";
+import authRoutes from "./auth.js";
+import clientsRoutes from "./clients.js";
+import portfolioRoutes from "./portfolio.js";
+import systemRoutes from "./system.js";
+import projectsRoutes from "./projects.js";
+import invoicesRoutes from "./invoices.js";
+import messagesRoutes from "./messages.js";
+
+const router = Router();
+
+router.use("/auth", authRoutes);
+router.use("/clients", clientsRoutes);
+router.use("/projects", projectsRoutes);
+router.use("/invoices", invoicesRoutes);
+router.use("/messages", messagesRoutes);
+router.use("/analytics", analyticsRoutes);
+router.use("/portfolio", portfolioRoutes);
+router.use(systemRoutes);
+
+export default router;

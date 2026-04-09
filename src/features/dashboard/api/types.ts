@@ -77,12 +77,7 @@ export interface PagedResponse<TItem> {
   totalPages: number;
 }
 
-export type ClientProjectStage =
-  | "Discovery"
-  | "Design"
-  | "Build"
-  | "Review"
-  | "Delivered";
+export type ClientProjectStage = "Lead" | "Active" | "Completed" | "Archived";
 
 export interface ClientProject {
   id: string;
@@ -93,7 +88,12 @@ export interface ClientProject {
   updatedAt: number;
 }
 
-export type ClientInvoiceStatus = "Paid" | "Pending" | "Overdue" | "Draft";
+export type ClientInvoiceStatus =
+  | "Draft"
+  | "Sent"
+  | "Paid"
+  | "Overdue"
+  | "Cancelled";
 
 export interface ClientInvoice {
   id: string;

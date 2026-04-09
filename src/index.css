@@ -371,14 +371,12 @@
     );
   }
 
-  @media (prefers-color-scheme: dark) {
-    .bg-vignette {
-      background: radial-gradient(
-        circle at center,
-        transparent 0%,
-        rgba(0, 0, 0, 0.4) 100%
-      );
-    }
+  :root[data-theme="dark"] .bg-vignette {
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
   }
 
   .no-scrollbar::-webkit-scrollbar {

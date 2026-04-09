@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 interface DashboardSearchContextValue {
   searchQuery: string;
@@ -11,11 +12,20 @@ const DashboardSearchContext =
 export const DashboardSearchProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const { pathname } = useLocation();
+  const [queriesByPath, setQueriesByPath] = React.useState<Record<string, string>>(
+    {},
+  );
+  const searchQuery = queriesByPath[pathname] ?? "";
+  const setSearchQuery = React.useCallback(
+    (query: string) =>
+      setQueriesByPath((previous) => ({ ...previous, [pathname]: query })),
+    [pathname],
+  );
 
   const value = React.useMemo(
     () => ({ searchQuery, setSearchQuery }),
-    [searchQuery],
+    [searchQuery, setSearchQuery],
   );
 
   return (

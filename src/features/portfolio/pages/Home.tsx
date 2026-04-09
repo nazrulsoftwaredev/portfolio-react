@@ -1,4 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
+import { AnimatePresence } from "motion/react";
 import ReactLenis from "lenis/react";
 import { useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/shared/components";
@@ -84,27 +85,29 @@ const HomeContent: React.FC = () => {
   useEffect(() => {
     if (!location.hash) return undefined;
 
-    let rafId = 0;
-    let attempts = 0;
-    const maxAttempts = 180;
-
-    const tryScroll = () => {
+    // Use MutationObserver to wait for the target element efficiently,
+    // with a 3-second timeout as a safety net.
+    const scrollToTarget = () => {
       const target = document.querySelector(location.hash);
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
+        return true;
       }
-
-      if (attempts < maxAttempts) {
-        attempts += 1;
-        rafId = requestAnimationFrame(tryScroll);
-      }
+      return false;
     };
 
-    tryScroll();
+    if (scrollToTarget()) return undefined;
+
+    const observer = new MutationObserver(() => {
+      if (scrollToTarget()) observer.disconnect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    const timeoutId = setTimeout(() => observer.disconnect(), 3000);
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
+      observer.disconnect();
+      clearTimeout(timeoutId);
     };
   }, [location.hash, loading]);
 
@@ -123,7 +126,9 @@ const HomeContent: React.FC = () => {
       >
         <div className="bg-background min-h-screen text-on-surface selection:bg-primary/30 relative z-0">
           <SkipLink targetId="main-content" />
-          {loading && <Preloader onComplete={() => setLoading(false)} />}
+          <AnimatePresence>
+            {loading && <Preloader onComplete={() => setLoading(false)} />}
+          </AnimatePresence>
 
           <PremiumBackground />
 
@@ -132,7 +137,7 @@ const HomeContent: React.FC = () => {
           <main
             id="main-content"
             className="relative z-10 w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-none"
-            tabIndex="-1"
+            tabIndex={-1}
           >
             <Hero loading={loading} data={portfolioData.hero} />
 
