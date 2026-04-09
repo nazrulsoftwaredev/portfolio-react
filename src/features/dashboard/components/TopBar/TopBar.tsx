@@ -34,6 +34,7 @@ const spring = {
 const workspaceLabels: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/activity": "Activity",
+  "/dashboard/activity/details": "Activity Details",
   "/dashboard/clients": "Clients",
   "/dashboard/invoices": "Invoices",
   "/dashboard/analytics": "Analytics",
@@ -67,6 +68,11 @@ type SearchItem = { label: string; href: string; category: string };
 const searchItems: SearchItem[] = [
   { label: "Dashboard Overview", href: "/dashboard", category: "Page" },
   { label: "Activity", href: "/dashboard/activity", category: "Page" },
+  {
+    label: "Activity Details",
+    href: "/dashboard/activity/details",
+    category: "Page",
+  },
   { label: "Clients", href: "/dashboard/clients", category: "Page" },
   { label: "Invoices", href: "/dashboard/invoices", category: "Page" },
   { label: "Analytics", href: "/dashboard/analytics", category: "Page" },

@@ -52,6 +52,11 @@ const Help = React.lazy(() =>
 const Activity = React.lazy(() =>
   import("./pages/Activity").then((mod) => ({ default: mod.Activity })),
 );
+const ActivityDetails = React.lazy(() =>
+  import("./pages/ActivityDetails").then((mod) => ({
+    default: mod.ActivityDetails,
+  })),
+);
 
 const DashboardLoadingSkeleton: React.FC = () => {
   return (
@@ -149,6 +154,7 @@ export const DashboardFeature: React.FC = () => {
           <Route element={<Layout onSignOut={logout} />}>
             <Route index element={<Overview />} />
             <Route path="activity" element={<Activity />} />
+            <Route path="activity/details" element={<ActivityDetails />} />
             <Route path="clients" element={<Clients />} />
             <Route path="clients/new" element={<NewClientForm />} />
             <Route path="clients/:clientId" element={<ClientDetails />} />

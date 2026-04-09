@@ -27,7 +27,11 @@ export const Overview: React.FC = () => {
   };
 
   const handleActivityClick = (_type: ActivityType, label: string) => {
-    navigate(`/dashboard/activity?focus=${encodeURIComponent(label)}`);
+    const params = new URLSearchParams({
+      type: _type,
+      label,
+    });
+    navigate(`/dashboard/activity/details?${params.toString()}`);
   };
 
   const handleStatClick = (label: string) => {
