@@ -12,198 +12,118 @@ import type {
   PagedResponse,
 } from "./types";
 import type { Client } from "../components/Clients/types";
-import { INITIAL_CLIENTS, STORAGE_KEY } from "../components/Clients/constants";
-import {
-  filterAndSortClients,
-  formatCurrency,
-  formatGrowth,
-} from "../components/Clients/utils";
+import { nextStatus } from "../components/Clients/utils";
 
 /**
  * Dashboard Feature API Services
  * Business logic and data processing for dashboard feature
  */
 
-/**
- * DEMO ONLY — These are placeholder credentials for the UI prototype.
- * They are intentionally visible in source for demo purposes.
- * Replace with a real authentication API (e.g., JWT endpoint) before
- * deploying to any environment with real data.
- */
-const MOCK_ADMIN_CREDENTIALS = {
-  email: "admin@mdnazrul.com",
-  password: "admin123",
+type ApiSuccess<T> = {
+  status: "success";
+  data: T;
+  message?: string;
+  meta?: Record<string, unknown>;
 };
 
-const MOCK_ADMIN_USER: DashboardUser = {
-  id: "admin-user",
-  email: MOCK_ADMIN_CREDENTIALS.email,
-  name: "Admin",
-  role: "admin",
+type ApiError = {
+  status: "error";
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+  };
 };
 
-const AUTH_TTL_MS = 1000 * 60 * 60 * 8;
+const API_BASE = "/api/v1";
 
-const PROJECTS_STORAGE_KEY = "dashboard-client-projects-v1";
-const INVOICES_STORAGE_KEY = "dashboard-client-invoices-v1";
-const MESSAGES_STORAGE_KEY = "dashboard-client-messages-v1";
-const ACTIVITY_STORAGE_KEY = "dashboard-client-activity-v1";
+const toQueryString = (params: Record<string, string | number | undefined>) => {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === "") {
+      return;
+    }
+    search.set(key, String(value));
+  });
+  const query = search.toString();
+  return query ? `?${query}` : "";
+};
 
-const wait = (ms: number) =>
-  new Promise<void>((resolve) => {
-    setTimeout(resolve, ms);
+const toErrorMessage = (payload: unknown, fallback: string) => {
+  if (!payload || typeof payload !== "object") {
+    return fallback;
+  }
+
+  const errorPayload = payload as ApiError;
+  if (errorPayload.error?.message) {
+    return errorPayload.error.message;
+  }
+
+  return fallback;
+};
+
+const requestJson = async <T>(
+  path: string,
+  init?: RequestInit,
+): Promise<ApiSuccess<T>> => {
+  const response = await fetch(`${API_BASE}${path}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+    ...init,
   });
 
-const clampInt = (value: number, min: number, max: number) =>
-  Math.min(Math.max(Math.floor(value), min), max);
+  const payload = (await response.json().catch(() => null)) as unknown;
+  if (!response.ok) {
+    throw new Error(toErrorMessage(payload, `HTTP ${response.status}`));
+  }
 
-const paginate = <TItem,>(
-  items: TItem[],
-  page: number,
-  pageSize: number,
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Invalid API response");
+  }
+
+  const successPayload = payload as ApiSuccess<T>;
+  if (successPayload.status !== "success") {
+    throw new Error(toErrorMessage(payload, "API request failed"));
+  }
+
+  return successPayload;
+};
+
+const normalizePaged = <TItem>(
+  payload: ApiSuccess<PagedResponse<TItem> | { items: TItem[] }>,
 ): PagedResponse<TItem> => {
-  const safePageSize = clampInt(pageSize || 25, 1, 100);
-  const safePage = Math.max(1, Math.floor(page || 1));
-  const totalItems = items.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
-  const clampedPage = Math.min(safePage, totalPages);
-  const start = (clampedPage - 1) * safePageSize;
+  const data = payload.data as Partial<PagedResponse<TItem>> & {
+    items: TItem[];
+  };
+  const meta = payload.meta ?? {};
+
+  const page = Number(data.page ?? meta.page ?? 1);
+  const pageSize = Number(
+    data.pageSize ?? meta.pageSize ?? data.items.length ?? 1,
+  );
+  const totalItems = Number(
+    data.totalItems ?? meta.totalItems ?? data.items.length ?? 0,
+  );
+  const totalPages = Number(
+    data.totalPages ??
+      meta.totalPages ??
+      Math.max(1, Math.ceil(totalItems / Math.max(pageSize, 1))),
+  );
+
   return {
-    items: items.slice(start, start + safePageSize),
-    page: clampedPage,
-    pageSize: safePageSize,
+    items: data.items ?? [],
+    page,
+    pageSize,
     totalItems,
     totalPages,
   };
 };
 
-const readJsonArray = <TItem,>(key: string, fallback: TItem[]): TItem[] => {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as TItem[]) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const writeJsonArray = <TItem,>(key: string, value: TItem[]) => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // ignore
-  }
-};
-
-const seedCrmIfMissing = () => {
-  if (typeof window === "undefined") return;
-
-  const hasAny = (key: string) => {
-    try {
-      return Boolean(window.localStorage.getItem(key));
-    } catch {
-      return false;
-    }
-  };
-
-  if (
-    hasAny(PROJECTS_STORAGE_KEY) &&
-    hasAny(INVOICES_STORAGE_KEY) &&
-    hasAny(MESSAGES_STORAGE_KEY) &&
-    hasAny(ACTIVITY_STORAGE_KEY)
-  ) {
-    return;
-  }
-
-  const now = Date.now();
-  const projects: ClientProject[] = [];
-  const invoices: ClientInvoice[] = [];
-  const messages: ClientMessage[] = [];
-  const events: ClientActivityEvent[] = [];
-
-  INITIAL_CLIENTS.forEach((client, idx) => {
-    const base = now - (idx + 1) * 1000 * 60 * 60 * 24 * 7;
-    const p1: ClientProject = {
-      id: `prj-${client.id}-1`,
-      clientId: client.id,
-      name: `${client.name} — Brand system`,
-      stage: "Design",
-      value: Math.max(1800, Math.round(client.value * 0.12)),
-      updatedAt: base + 1000 * 60 * 60 * 24 * 2,
-    };
-    const p2: ClientProject = {
-      id: `prj-${client.id}-2`,
-      clientId: client.id,
-      name: `${client.name} — Website revamp`,
-      stage: idx % 2 === 0 ? "Build" : "Discovery",
-      value: Math.max(2400, Math.round(client.value * 0.18)),
-      updatedAt: base + 1000 * 60 * 60 * 24 * 5,
-    };
-    projects.push(p1, p2);
-
-    const inv1: ClientInvoice = {
-      id: `inv-${client.id}-1`,
-      clientId: client.id,
-      code: `INV-${new Date(base).getFullYear()}-${String(idx + 1).padStart(3, "0")}`,
-      amount: Math.max(900, Math.round(p1.value * 0.6)),
-      issuedAt: base + 1000 * 60 * 60 * 24 * 1,
-      dueAt: base + 1000 * 60 * 60 * 24 * 14,
-      status: idx % 4 === 0 ? "Paid" : idx % 4 === 1 ? "Pending" : idx % 4 === 2 ? "Overdue" : "Draft",
-    };
-    invoices.push(inv1);
-
-    const msg1: ClientMessage = {
-      id: `msg-${client.id}-1`,
-      clientId: client.id,
-      subject: "Kickoff details",
-      preview: "Sharing next steps and timeline. Let’s align on the deliverables…",
-      unread: idx % 2 === 0,
-      createdAt: base + 1000 * 60 * 60 * 20,
-    };
-    const msg2: ClientMessage = {
-      id: `msg-${client.id}-2`,
-      clientId: client.id,
-      subject: "Invoice & payment",
-      preview: "Invoice is ready. Let me know if you need PO details or billing updates…",
-      unread: false,
-      createdAt: base + 1000 * 60 * 60 * 24 * 3,
-    };
-    messages.push(msg1, msg2);
-
-    events.push(
-      {
-        id: `evt-${client.id}-p1`,
-        clientId: client.id,
-        kind: "project",
-        label: `Project created: ${p1.name}`,
-        createdAt: p1.updatedAt - 1000 * 60 * 60 * 6,
-      },
-      {
-        id: `evt-${client.id}-i1`,
-        clientId: client.id,
-        kind: "invoice",
-        label: `Invoice issued: ${inv1.code}`,
-        createdAt: inv1.issuedAt,
-        meta: { amount: inv1.amount, status: inv1.status },
-      },
-      {
-        id: `evt-${client.id}-m1`,
-        clientId: client.id,
-        kind: "message",
-        label: `Message received: ${msg1.subject}`,
-        createdAt: msg1.createdAt,
-      },
-    );
-  });
-
-  writeJsonArray(PROJECTS_STORAGE_KEY, projects);
-  writeJsonArray(INVOICES_STORAGE_KEY, invoices);
-  writeJsonArray(MESSAGES_STORAGE_KEY, messages);
-  writeJsonArray(ACTIVITY_STORAGE_KEY, events);
-};
+type ClientWritePayload = Omit<Client, "id" | "growth">;
+type ClientUpdatePayload = Partial<ClientWritePayload>;
 
 export const dashboardService = {
   /**
@@ -260,33 +180,42 @@ export const dashboardService = {
   loginAdmin: async (
     credentials: AuthCredentials,
   ): Promise<DashboardApiResponse<DashboardAuthSession>> => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 350));
-
-    const email = credentials.email.trim().toLowerCase();
-
-    if (!email || !credentials.password.trim()) {
+    if (!credentials.email.trim() || !credentials.password.trim()) {
       throw new Error("Please enter both email and password");
     }
 
-    if (
-      email !== MOCK_ADMIN_CREDENTIALS.email ||
-      credentials.password !== MOCK_ADMIN_CREDENTIALS.password
-    ) {
-      throw new Error("Invalid admin credentials");
-    }
-
-    const expiresAt = Date.now() + AUTH_TTL_MS;
-    const session: DashboardAuthSession = {
-      token: "ui-only-admin-token",
-      user: MOCK_ADMIN_USER,
-      expiresAt,
-    };
+    const payload = await requestJson<DashboardAuthSession>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: credentials.email.trim().toLowerCase(),
+        password: credentials.password,
+      }),
+    });
 
     return {
       status: "success",
-      message: "Admin login successful",
-      data: session,
+      message: payload.message,
+      data: payload.data,
     };
+  },
+
+  getCurrentSession: async (): Promise<DashboardAuthSession | null> => {
+    try {
+      const me = await requestJson<DashboardUser>("/auth/me", {
+        method: "GET",
+      });
+      return {
+        token: "cookie-session",
+        user: me.data,
+        expiresAt: Date.now() + 15 * 60 * 1000,
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  logoutAdmin: async (): Promise<void> => {
+    await requestJson<{ ok: boolean }>("/auth/logout", { method: "POST" });
   },
 
   /**
@@ -306,74 +235,39 @@ export const dashboardService = {
   getClientsPage: async (
     params: ClientsQueryParams,
   ): Promise<DashboardApiResponse<ClientsPage<Client>>> => {
-    await wait(220);
-
-    const safePageSize = Math.min(Math.max(Math.floor(params.pageSize || 25), 1), 100);
-    const safePage = Math.max(1, Math.floor(params.page || 1));
-
-    const readAllClients = (): Client[] => {
-      if (typeof window === "undefined") {
-        return INITIAL_CLIENTS;
-      }
-
-      try {
-        const stored = window.localStorage.getItem(STORAGE_KEY);
-        if (!stored) {
-          return INITIAL_CLIENTS;
-        }
-
-        const parsed = JSON.parse(stored) as unknown;
-        if (!Array.isArray(parsed)) {
-          return INITIAL_CLIENTS;
-        }
-
-        return parsed as Client[];
-      } catch {
-        return INITIAL_CLIENTS;
-      }
+    const query = toQueryString({
+      page: params.page,
+      pageSize: params.pageSize,
+      q: params.q,
+      status: params.status,
+      sort: params.sort,
+    });
+    const payload = await requestJson<{ items: Client[] }>(`/clients${query}`, {
+      method: "GET",
+    });
+    const stats = (payload.meta?.stats as
+      | ClientsPage<Client>["stats"]
+      | undefined) ?? {
+      totalNodes: payload.data.items.length,
+      activeCount: payload.data.items.filter(
+        (client) => client.status === "Active",
+      ).length,
+      trustIndex: "0%",
+      avgLtv: "$0",
+      totalTrend: "+0%",
+      activeTrend: "+0%",
     };
-
-    const allClients = readAllClients();
-    const filtered = filterAndSortClients(
-      allClients,
-      params.q ?? "",
-      params.status ?? "All",
-      params.sort ?? "value-desc",
-    );
-
-    const totalItems = filtered.length;
-    const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
-    const clampedPage = Math.min(safePage, totalPages);
-    const start = (clampedPage - 1) * safePageSize;
-    const items = filtered.slice(start, start + safePageSize);
-
-    const totalNodes = allClients.length;
-    const activeCount = allClients.filter((client) => client.status === "Active").length;
-    const avgGrowth =
-      totalNodes > 0
-        ? allClients.reduce((sum, client) => sum + client.growth, 0) / totalNodes
-        : 0;
-    const avgLtv =
-      totalNodes > 0
-        ? allClients.reduce((sum, client) => sum + client.value, 0) / totalNodes
-        : 0;
-
     return {
       status: "success",
       data: {
-        items,
-        page: clampedPage,
-        pageSize: safePageSize,
-        totalItems,
-        totalPages,
-        stats: {
-          totalNodes,
-          activeCount,
-          trustIndex: `${Math.max(90, Math.min(99.9, 96 + avgGrowth / 10)).toFixed(1)}%`,
-          avgLtv: formatCurrency(avgLtv),
-          totalTrend: formatGrowth(Math.round(avgGrowth)),
-          activeTrend: formatGrowth(Math.max(1, Math.round(avgGrowth / 2))),
-        },
+        items: payload.data.items,
+        page: Number(payload.meta?.page ?? 1),
+        pageSize: Number(payload.meta?.pageSize ?? params.pageSize ?? 25),
+        totalItems: Number(
+          payload.meta?.totalItems ?? payload.data.items.length,
+        ),
+        totalPages: Number(payload.meta?.totalPages ?? 1),
+        stats,
       },
     };
   },
@@ -381,15 +275,53 @@ export const dashboardService = {
   getClientById: async (
     clientId: string,
   ): Promise<DashboardApiResponse<Client>> => {
-    await wait(160);
+    const payload = await requestJson<Client>(`/clients/${clientId}`, {
+      method: "GET",
+    });
+    return { status: "success", data: payload.data, message: payload.message };
+  },
 
-    const allClients = readJsonArray<Client>(STORAGE_KEY, INITIAL_CLIENTS);
-    const client = allClients.find((c) => c.id === clientId) ?? null;
-    if (!client) {
-      throw new Error("Client not found");
-    }
+  createClient: async (
+    payload: ClientWritePayload,
+  ): Promise<DashboardApiResponse<Client>> => {
+    const response = await requestJson<Client>("/clients", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    return {
+      status: "success",
+      data: response.data,
+      message: response.message,
+    };
+  },
 
-    return { status: "success", data: client };
+  updateClient: async (
+    clientId: string,
+    payload: ClientUpdatePayload,
+  ): Promise<DashboardApiResponse<Client>> => {
+    const response = await requestJson<Client>(`/clients/${clientId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+    return {
+      status: "success",
+      data: response.data,
+      message: response.message,
+    };
+  },
+
+  archiveClient: async (clientId: string) => {
+    await requestJson<{ id: string }>(`/clients/${clientId}`, {
+      method: "DELETE",
+    });
+  },
+
+  cycleClientStatus: async (clientId: string): Promise<Client> => {
+    const existing = await dashboardService.getClientById(clientId);
+    const updated = await dashboardService.updateClient(clientId, {
+      status: nextStatus(existing.data.status),
+    });
+    return updated.data;
   },
 
   getClientProjects: async ({
@@ -401,13 +333,11 @@ export const dashboardService = {
     page: number;
     pageSize: number;
   }): Promise<DashboardApiResponse<PagedResponse<ClientProject>>> => {
-    await wait(200);
-    seedCrmIfMissing();
-    const all = readJsonArray<ClientProject>(PROJECTS_STORAGE_KEY, []);
-    const scoped = all
-      .filter((p) => p.clientId === clientId)
-      .sort((a, b) => b.updatedAt - a.updatedAt);
-    return { status: "success", data: paginate(scoped, page, pageSize) };
+    const query = toQueryString({ page, pageSize });
+    const payload = await requestJson<
+      PagedResponse<ClientProject> | { items: ClientProject[] }
+    >(`/clients/${clientId}/projects${query}`, { method: "GET" });
+    return { status: "success", data: normalizePaged(payload) };
   },
 
   getClientInvoices: async ({
@@ -419,13 +349,11 @@ export const dashboardService = {
     page: number;
     pageSize: number;
   }): Promise<DashboardApiResponse<PagedResponse<ClientInvoice>>> => {
-    await wait(200);
-    seedCrmIfMissing();
-    const all = readJsonArray<ClientInvoice>(INVOICES_STORAGE_KEY, []);
-    const scoped = all
-      .filter((inv) => inv.clientId === clientId)
-      .sort((a, b) => b.issuedAt - a.issuedAt);
-    return { status: "success", data: paginate(scoped, page, pageSize) };
+    const query = toQueryString({ page, pageSize });
+    const payload = await requestJson<
+      PagedResponse<ClientInvoice> | { items: ClientInvoice[] }
+    >(`/clients/${clientId}/invoices${query}`, { method: "GET" });
+    return { status: "success", data: normalizePaged(payload) };
   },
 
   getClientMessages: async ({
@@ -437,13 +365,11 @@ export const dashboardService = {
     page: number;
     pageSize: number;
   }): Promise<DashboardApiResponse<PagedResponse<ClientMessage>>> => {
-    await wait(220);
-    seedCrmIfMissing();
-    const all = readJsonArray<ClientMessage>(MESSAGES_STORAGE_KEY, []);
-    const scoped = all
-      .filter((m) => m.clientId === clientId)
-      .sort((a, b) => b.createdAt - a.createdAt);
-    return { status: "success", data: paginate(scoped, page, pageSize) };
+    const query = toQueryString({ page, pageSize });
+    const payload = await requestJson<
+      PagedResponse<ClientMessage> | { items: ClientMessage[] }
+    >(`/clients/${clientId}/messages${query}`, { method: "GET" });
+    return { status: "success", data: normalizePaged(payload) };
   },
 
   getClientActivity: async ({
@@ -455,12 +381,10 @@ export const dashboardService = {
     page: number;
     pageSize: number;
   }): Promise<DashboardApiResponse<PagedResponse<ClientActivityEvent>>> => {
-    await wait(180);
-    seedCrmIfMissing();
-    const all = readJsonArray<ClientActivityEvent>(ACTIVITY_STORAGE_KEY, []);
-    const scoped = all
-      .filter((e) => e.clientId === clientId)
-      .sort((a, b) => b.createdAt - a.createdAt);
-    return { status: "success", data: paginate(scoped, page, pageSize) };
+    const query = toQueryString({ page, pageSize });
+    const payload = await requestJson<
+      PagedResponse<ClientActivityEvent> | { items: ClientActivityEvent[] }
+    >(`/clients/${clientId}/activity${query}`, { method: "GET" });
+    return { status: "success", data: normalizePaged(payload) };
   },
 };

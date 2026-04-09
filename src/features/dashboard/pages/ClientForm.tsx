@@ -54,6 +54,36 @@ const ClientFormPage: React.FC<ClientFormPageProps> = ({ mode }) => {
     setDraftClient({ ...existingClient });
   }, [existingClient, isEdit]);
 
+  const updateDraft = (updater: (previous: Client) => Client) => {
+    setDraftClient((previous) => updater(previous));
+  };
+
+  const handleClose = React.useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/dashboard/clients");
+  }, [navigate]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const result = await saveClient(draftClient);
+    if (!result.success) {
+      setErrors(result.errors);
+      return;
+    }
+
+    setErrors({});
+    if (isEdit && clientId) {
+      navigate(`/dashboard/clients/${clientId}`);
+      return;
+    }
+    navigate("/dashboard/clients");
+  };
+
   if (isEdit && !existingClient) {
     return (
       <div className="dash-stack">
@@ -76,30 +106,6 @@ const ClientFormPage: React.FC<ClientFormPageProps> = ({ mode }) => {
     );
   }
 
-  const updateDraft = (updater: (previous: Client) => Client) => {
-    setDraftClient((previous) => updater(previous));
-  };
-
-  const backHref =
-    isEdit && clientId ? `/dashboard/clients/${clientId}` : "/dashboard/clients";
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const result = saveClient(draftClient);
-    if (!result.success) {
-      setErrors(result.errors);
-      return;
-    }
-
-    setErrors({});
-    if (isEdit && clientId) {
-      navigate(`/dashboard/clients/${clientId}`);
-      return;
-    }
-    navigate("/dashboard/clients");
-  };
-
   return (
     <div className="dash-stack">
       <PageHeader
@@ -116,7 +122,7 @@ const ClientFormPage: React.FC<ClientFormPageProps> = ({ mode }) => {
             type="button"
             variant="outline"
             className="gap-2 min-h-11"
-            onClick={() => navigate(backHref)}
+            onClick={handleClose}
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -125,182 +131,204 @@ const ClientFormPage: React.FC<ClientFormPageProps> = ({ mode }) => {
       />
 
       <form onSubmit={handleSubmit} className="premium-card p-5 md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Client Name
-            </label>
-            <Input
-              value={draftClient.name}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  name: event.target.value,
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground"
-              placeholder="Acme Holdings"
-            />
-            {errors.name && (
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
-                {errors.name}
+        <div className="space-y-7">
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Company Information
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Basic profile details used across client records.
               </p>
-            )}
-          </div>
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Industry
-            </label>
-            <Input
-              value={draftClient.industry}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  industry: event.target.value,
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground"
-              placeholder="Technology"
-            />
-            {errors.industry && (
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
-                {errors.industry}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Email
-            </label>
-            <Input
-              value={draftClient.email}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  email: event.target.value,
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground"
-              placeholder="hello@client.com"
-            />
-            {errors.email && (
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Phone
-            </label>
-            <Input
-              value={draftClient.phone}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  phone: event.target.value,
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground"
-              placeholder="+1-555-0100"
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Website
-            </label>
-            <Input
-              value={draftClient.website}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  website: event.target.value,
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground"
-              placeholder="https://client.com"
-            />
-            {errors.website && (
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-500">
-                {errors.website}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Lifetime Value
-            </label>
-            <Input
-              type="number"
-              min={0}
-              value={draftClient.value}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  value: Math.max(0, Number(event.target.value || 0)),
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Momentum %
-            </label>
-            <Input
-              type="number"
-              value={draftClient.growth}
-              onChange={(event) =>
-                updateDraft((previous) => ({
-                  ...previous,
-                  growth: Number(event.target.value || 0),
-                }))
-              }
-              className="w-full bg-background rounded-xl px-4 min-h-11 text-sm font-semibold text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Protocol Status
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {STATUS_ORDER.map((status) => (
-                <Button
-                  key={status}
-                  type="button"
-                  onClick={() =>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">
+                  Client Name
+                </label>
+                <Input
+                  value={draftClient.name}
+                  onChange={(event) =>
                     updateDraft((previous) => ({
                       ...previous,
-                      status,
+                      name: event.target.value,
                     }))
                   }
-                  variant="outline"
-                  className={`px-4 py-2 rounded-xl h-auto text-[10px] font-semibold uppercase tracking-[0.15em] border border-transparent ${
-                    draftClient.status === status
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted/20 text-foreground"
-                  }`}
-                >
-                  {status}
-                </Button>
-              ))}
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm"
+                  placeholder="Acme Holdings"
+                />
+                {errors.name && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">
+                  Industry
+                </label>
+                <Input
+                  value={draftClient.industry}
+                  onChange={(event) =>
+                    updateDraft((previous) => ({
+                      ...previous,
+                      industry: event.target.value,
+                    }))
+                  }
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm"
+                  placeholder="Technology"
+                />
+                {errors.industry && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.industry}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          </section>
+
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Contact Details
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Primary communication channels for this client.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">
+                  Email
+                </label>
+                <Input
+                  value={draftClient.email}
+                  onChange={(event) =>
+                    updateDraft((previous) => ({
+                      ...previous,
+                      email: event.target.value,
+                    }))
+                  }
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm"
+                  placeholder="hello@client.com"
+                />
+                {errors.email && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">
+                  Phone
+                </label>
+                <Input
+                  value={draftClient.phone}
+                  onChange={(event) =>
+                    updateDraft((previous) => ({
+                      ...previous,
+                      phone: event.target.value,
+                    }))
+                  }
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm"
+                  placeholder="+1-555-0100"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs font-medium text-foreground">
+                  Website
+                </label>
+                <Input
+                  value={draftClient.website}
+                  onChange={(event) =>
+                    updateDraft((previous) => ({
+                      ...previous,
+                      website: event.target.value,
+                    }))
+                  }
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm"
+                  placeholder="https://client.com"
+                />
+                {errors.website && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.website}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Commercial
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Track account value and operational status.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">
+                  Lifetime Value
+                </label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={draftClient.value}
+                  onChange={(event) =>
+                    updateDraft((previous) => ({
+                      ...previous,
+                      value: Math.max(0, Number(event.target.value || 0)),
+                    }))
+                  }
+                  className="h-11 rounded-lg border-border bg-background px-3 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs font-medium text-foreground">
+                  Protocol Status
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {STATUS_ORDER.map((status) => (
+                    <Button
+                      key={status}
+                      type="button"
+                      onClick={() =>
+                        updateDraft((previous) => ({
+                          ...previous,
+                          status,
+                        }))
+                      }
+                      variant="outline"
+                      className={`h-9 rounded-md px-3 text-xs font-medium ${
+                        draftClient.status === status
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-foreground hover:bg-muted/40"
+                      }`}
+                    >
+                      {status}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
         <div className="mt-7 flex items-center justify-end gap-3">
           <Button
             type="button"
             variant="outline"
-            className="min-h-11 border-transparent bg-muted/20 hover:bg-muted/30"
-            onClick={() => navigate(backHref)}
+            className="min-h-11 border-border bg-background hover:bg-muted/30"
+            onClick={handleClose}
           >
             Cancel
           </Button>

@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
+const apiTarget = process.env.VITE_API_PROXY_TARGET ?? "http://localhost:5000";
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -27,6 +29,12 @@ export default defineConfig({
     port: 5173,
     open: true,
     strictPort: false,
+    proxy: {
+      "/api": {
+        target: apiTarget,
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "dist",

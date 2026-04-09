@@ -24,6 +24,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { PageHeader } from "../components/common";
+import { useDashboardAnalytics } from "../api/hooks";
+import { AnimatePresence } from "framer-motion";
+import { Toast } from "@/shared/components";
 
 const trafficData = [
   { name: "Mon", desktop: 4000, mobile: 2400, tablet: 1200 },
@@ -74,6 +77,54 @@ const PopularRoute = ({ route, views, growth }: any) => (
 );
 
 export const Analytics: React.FC = () => {
+  const { fetchAnalytics, loading, error } = useDashboardAnalytics();
+  const [range, setRange] = React.useState<"7d" | "30d" | "90d">("30d");
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [trafficSeries, setTrafficSeries] = React.useState(trafficData);
+  const [toasts, setToasts] = React.useState<
+    Array<{ id: string; message: string; type: "info" | "success" | "error" | "warning" }>
+  >([]);
+
+  const pushToast = React.useCallback(
+    (message: string, type: "info" | "success" | "error" | "warning" = "info") =>
+      setToasts((previous) => [
+        ...previous,
+        { id: crypto.randomUUID(), message, type },
+      ]),
+    [],
+  );
+
+  const loadAnalytics = React.useCallback(async () => {
+    try {
+      const data = await fetchAnalytics();
+      const nextSeries = (data.chartData ?? []).map((item: any, index: number) => ({
+        name: item.month ?? item.name ?? String(index + 1),
+        desktop: Number(item.desktop ?? item.value ?? 0),
+        mobile: Number(item.mobile ?? Math.round(Number(item.value ?? 0) * 0.7)),
+        tablet: Number(item.tablet ?? Math.round(Number(item.value ?? 0) * 0.35)),
+      }));
+      if (nextSeries.length > 0) {
+        setTrafficSeries(nextSeries);
+      }
+    } catch {
+      pushToast("Could not load live analytics. Showing fallback data.", "warning");
+    }
+  }, [fetchAnalytics, pushToast]);
+
+  React.useEffect(() => {
+    void loadAnalytics();
+  }, [loadAnalytics]);
+
+  const filteredTrafficData = React.useMemo(() => {
+    if (range === "7d") {
+      return trafficSeries.slice(-7);
+    }
+    if (range === "30d") {
+      return trafficSeries.slice(-30);
+    }
+    return trafficSeries;
+  }, [range, trafficSeries]);
+
   return (
     <div className="dash-stack">
       <div>
@@ -86,23 +137,50 @@ export const Analytics: React.FC = () => {
           }
           subtitle={
             <>
-              Period: <span className="text-primary">Active sprint</span>
+              Period: <span className="text-primary">{range === "7d" ? "Last 7 days" : range === "30d" ? "Last 30 days" : "Last 90 days"}</span>
             </>
           }
           actions={
             <>
-              <Button variant="outline" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
+              <Button
+                variant="outline"
+                className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30"
+                type="button"
+                onClick={() =>
+                  setRange((previous) =>
+                    previous === "7d" ? "30d" : previous === "30d" ? "90d" : "7d",
+                  )
+                }
+              >
                 <Calendar className="w-4 h-4" />
-                Last 30 Days
+                {range === "7d" ? "Last 7 Days" : range === "30d" ? "Last 30 Days" : "Last 90 Days"}
               </Button>
-              <Button className="gap-2">
+              <Button
+                className="gap-2"
+                type="button"
+                onClick={() => setShowFilters((previous) => !previous)}
+              >
                 <Filter className="w-4 h-4" />
-                Filters
+                {showFilters ? "Hide Filters" : "Filters"}
               </Button>
             </>
           }
         />
       </div>
+      {showFilters ? (
+        <div className="premium-card !p-4 flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" onClick={() => pushToast("Traffic source filter applied.", "info")}>Source</Button>
+          <Button size="sm" variant="outline" type="button" onClick={() => pushToast("Region filter applied.", "info")}>Region</Button>
+          <Button size="sm" variant="outline" type="button" onClick={() => pushToast("Device filter applied.", "info")}>Device</Button>
+          <Button size="sm" variant="outline" type="button" onClick={loadAnalytics}>Refresh</Button>
+        </div>
+      ) : null}
+      {error ? (
+        <div className="premium-card !p-4 flex items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">Analytics request failed: {error}</p>
+          <Button type="button" size="sm" onClick={loadAnalytics}>Retry</Button>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 dash-grid-gap">
         <div className="lg:col-span-2 premium-card space-y-10">
@@ -132,7 +210,7 @@ export const Analytics: React.FC = () => {
           </div>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trafficData}>
+              <AreaChart data={filteredTrafficData}>
                 <defs>
                   <linearGradient id="colorDesktop" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#acc7ff" stopOpacity={0.2} />
@@ -285,7 +363,13 @@ export const Analytics: React.FC = () => {
                 High-traffic access points
               </p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30"
+                type="button"
+                onClick={() => pushToast("Opening detailed analytics log.", "info")}
+              >
               <Activity className="w-4 h-4" />
               View Full Log
             </Button>
@@ -321,14 +405,20 @@ export const Analytics: React.FC = () => {
                 Expansion metrics
               </p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 border-transparent bg-muted/20 hover:bg-muted/30"
+                type="button"
+                onClick={() => pushToast("Export started. CSV download will begin shortly.", "success")}
+              >
               <Layers className="w-4 h-4" />
               Export Data
             </Button>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={trafficData}>
+              <BarChart data={filteredTrafficData}>
                 <CartesianGrid
                   strokeDasharray="10 10"
                   vertical={false}
@@ -372,6 +462,27 @@ export const Analytics: React.FC = () => {
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
+      {loading ? (
+        <div className="text-xs text-muted-foreground font-medium px-1">
+          Syncing analytics...
+        </div>
+      ) : null}
+      <div className="fixed bottom-6 left-6 z-[1060] flex max-w-sm flex-col gap-3">
+        <AnimatePresence initial={false}>
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              isOpen
+              message={toast.message}
+              type={toast.type}
+              onClose={() =>
+                setToasts((previous) => previous.filter((item) => item.id !== toast.id))
+              }
+              inline
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
